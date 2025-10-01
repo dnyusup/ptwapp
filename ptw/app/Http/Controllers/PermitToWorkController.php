@@ -129,13 +129,29 @@ class PermitToWorkController extends Controller
      */
     public function update(Request $request, PermitToWork $permit)
     {
+        // Debug logging
+        \Log::info('Update attempt', [
+            'permit_id' => $permit->id,
+            'permit_status' => $permit->status,
+            'user_id' => Auth::id(),
+            'permit_issuer_id' => $permit->permit_issuer_id,
+            'user_role' => Auth::user()->role,
+            'request_data' => $request->all()
+        ]);
+
         if (!in_array($permit->status, ['draft', 'rejected'])) {
+            \Log::warning('Update blocked: wrong status', ['status' => $permit->status]);
             return redirect()->route('permits.show', $permit)
                 ->with('error', 'Only draft and rejected permits can be updated.');
         }
 
         // Check if user is the permit creator or administrator
         if (Auth::id() !== $permit->permit_issuer_id && Auth::user()->role !== 'administrator') {
+            \Log::warning('Update blocked: no permission', [
+                'user_id' => Auth::id(),
+                'permit_issuer_id' => $permit->permit_issuer_id,
+                'user_role' => Auth::user()->role
+            ]);
             return redirect()->route('permits.show', $permit)
                 ->with('error', 'You do not have permission to update this permit.');
         }
@@ -168,7 +184,20 @@ class PermitToWorkController extends Controller
         $validated['form_y_n'] = $request->form_y_n;
         $validated['form_detail'] = $request->form_detail;
 
+        // Debug: Log data before update
+        \Log::info('Data to update', ['validated' => $validated]);
+        
+        $beforeUpdate = $permit->toArray();
         $permit->update($validated);
+        $afterUpdate = $permit->fresh()->toArray();
+        
+        // Debug: Log before and after
+        \Log::info('Update result', [
+            'before' => $beforeUpdate,
+            'after' => $afterUpdate,
+            'changed' => $permit->wasChanged(),
+            'dirty' => $permit->getDirty()
+        ]);
 
         return redirect()->route('permits.show', $permit)->with('success', 'Permit updated successfully!');
     }
