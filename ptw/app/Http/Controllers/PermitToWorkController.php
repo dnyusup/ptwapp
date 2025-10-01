@@ -139,25 +139,32 @@ class PermitToWorkController extends Controller
             'request_data' => $request->except(['_token', '_method'])
         ]);
 
-        // Temporary bypass for debugging - comment out validations
-        /*
-        if (!in_array($permit->status, ['draft', 'rejected'])) {
-            \Log::warning('Update blocked: wrong status', ['status' => $permit->status]);
+        // Enhanced validation with better debugging
+        $validStatuses = ['draft', 'rejected'];
+        if (!in_array($permit->status, $validStatuses)) {
+            \Log::warning('Update blocked: wrong status', [
+                'current_status' => $permit->status,
+                'valid_statuses' => $validStatuses
+            ]);
             return redirect()->route('permits.show', $permit)
-                ->with('error', 'Only draft and rejected permits can be updated.');
+                ->with('error', "Only permits with status 'draft' or 'rejected' can be updated. Current status: {$permit->status}");
         }
 
         // Check if user is the permit creator or administrator
-        if (Auth::id() !== $permit->permit_issuer_id && Auth::user()->role !== 'administrator') {
+        $currentUserId = Auth::id();
+        $currentUserRole = Auth::user()->role ?? 'unknown';
+        $canEdit = ($currentUserId == $permit->permit_issuer_id) || ($currentUserRole === 'administrator');
+        
+        if (!$canEdit) {
             \Log::warning('Update blocked: no permission', [
-                'user_id' => Auth::id(),
+                'user_id' => $currentUserId,
                 'permit_issuer_id' => $permit->permit_issuer_id,
-                'user_role' => Auth::user()->role
+                'user_role' => $currentUserRole,
+                'can_edit' => $canEdit
             ]);
             return redirect()->route('permits.show', $permit)
-                ->with('error', 'You do not have permission to update this permit.');
+                ->with('error', "You do not have permission to update this permit. User: {$currentUserId}, Creator: {$permit->permit_issuer_id}, Role: {$currentUserRole}");
         }
-        */
 
         $validated = $request->validate([
             'work_title' => 'nullable|string|max:255',
