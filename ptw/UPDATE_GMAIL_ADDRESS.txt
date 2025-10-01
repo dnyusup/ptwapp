@@ -1,0 +1,27 @@
+# UPDATE REQUIRED IN .env FILE
+
+Please update the MAIL_USERNAME and MAIL_FROM_ADDRESS in .env file with your actual Gmail address.
+
+Current configuration:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-gmail@gmail.com  ← CHANGE THIS
+MAIL_PASSWORD=bwxhzvvjpecbmued
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=your-gmail@gmail.com  ← CHANGE THIS
+MAIL_FROM_NAME="PTW Portal"
+```
+
+Example (replace with your actual Gmail):
+```env
+MAIL_USERNAME=johndoe@gmail.com
+MAIL_FROM_ADDRESS=johndoe@gmail.com
+```
+
+After updating, run:
+```bash
+php artisan config:clear
+php artisan test:email-approval 16 deni.yusup@bekaert.com
+```

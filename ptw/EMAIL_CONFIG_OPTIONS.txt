@@ -1,0 +1,54 @@
+# ===========================================
+# TEMPORARY EMAIL CONFIG FOR LOCALHOST TESTING
+# ===========================================
+
+# Backup konfigurasi Hostinger (untuk production nanti)
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.hostinger.com
+MAIL_PORT=587
+MAIL_USERNAME=no-reply@ptw.aplikasibebas.com
+MAIL_PASSWORD=ptw2025
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=no-reply@ptw.aplikasibebas.com
+MAIL_FROM_NAME="PTW Portal"
+
+# ===========================================
+# ALTERNATIF 1: GMAIL SMTP (untuk testing localhost)
+# ===========================================
+# Uncomment lines berikut dan ganti dengan Gmail Anda:
+
+# MAIL_MAILER=smtp
+# MAIL_HOST=smtp.gmail.com
+# MAIL_PORT=587
+# MAIL_USERNAME=your-gmail@gmail.com
+# MAIL_PASSWORD=your-app-password (bukan password Gmail biasa!)
+# MAIL_ENCRYPTION=tls
+# MAIL_FROM_ADDRESS=your-gmail@gmail.com
+# MAIL_FROM_NAME="PTW Portal"
+
+# Cara mendapatkan Gmail App Password:
+# 1. Enable 2FA di Gmail
+# 2. Google Account > Security > App passwords
+# 3. Generate password untuk "Mail"
+# 4. Use that 16-character password
+
+# ===========================================
+# ALTERNATIF 2: MAILTRAP (untuk testing only)
+# ===========================================
+# Untuk testing tanpa email real:
+
+# MAIL_MAILER=smtp
+# MAIL_HOST=smtp.mailtrap.io
+# MAIL_PORT=2525
+# MAIL_USERNAME=your-mailtrap-username
+# MAIL_PASSWORD=your-mailtrap-password
+# MAIL_ENCRYPTION=null
+# MAIL_FROM_ADDRESS=test@example.com
+# MAIL_FROM_NAME="PTW Portal"
+
+# ===========================================
+# ALTERNATIF 3: LOG DRIVER (untuk debugging)
+# ===========================================
+# Email akan ditulis ke file log, tidak dikirim:
+
+# MAIL_MAILER=log
