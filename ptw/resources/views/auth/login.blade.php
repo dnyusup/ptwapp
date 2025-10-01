@@ -10,7 +10,7 @@
                         <div class="mb-3">
                             <i class="fas fa-hard-hat fa-3x text-primary" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
                         </div>
-                        <h3 class="fw-bold text-primary mb-2">PTW Portal</h3>
+                        <h3 class="fw-bold text-primary mb-2">PTW Portals</h3>
                         <p class="text-muted">Permit to Work Management</p>
                     </div>
 
