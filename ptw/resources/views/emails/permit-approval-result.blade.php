@@ -44,6 +44,8 @@
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         /* Header styles */
@@ -185,13 +187,17 @@
     </style>
 </head>
 <body>
-    <!--[if mso | IE]>
-    <table align="center" border="0" cellpadding="0" cellspacing="0" class="email-container-outlook" style="width:600px;" width="600">
+    <!-- Outer container for proper spacing -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f4; padding: 20px 0;">
         <tr>
-            <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
-    <![endif]-->
-    
-    <div class="email-container">
+            <td align="center">
+                <!--[if mso | IE]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" class="email-container-outlook" style="width:600px;" width="600">
+                    <tr>
+                        <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+                <![endif]-->
+                
+                <div class="email-container">
         <!-- Header -->
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
@@ -251,12 +257,15 @@
                 </td>
             </tr>
         </table>
-    </div>
-    
-    <!--[if mso | IE]>
+                </div>
+                
+                <!--[if mso | IE]>
+                        </td>
+                    </tr>
+                </table>
+                <![endif]-->
             </td>
         </tr>
     </table>
-    <![endif]-->
 </body>
 </html>
