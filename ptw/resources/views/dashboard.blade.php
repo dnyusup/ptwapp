@@ -10,7 +10,7 @@
     <div class="dashboard-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h2>Dashboard123</h2>
+                <h2>Dashboard</h2>
                 <p>Welcome back, {{ auth()->user()->name }}!</p>
             </div>
             <div class="d-flex gap-2">
