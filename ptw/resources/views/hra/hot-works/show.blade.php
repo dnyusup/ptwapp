@@ -1,0 +1,508 @@
+@extends('layouts.app')
+
+@section('styles')
+<style>
+    .badge-yes {
+        background: linear-gradient(135deg, #28a745, #20c997) !important;
+        color: white;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+    }
+    
+    .badge-no {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+        color: white;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+    }
+    
+    .badge-na {
+        background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+        color: white;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+    }
+    
+    .badge-yes:hover, .badge-no:hover, .badge-na:hover {
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+    
+    .badge-info-custom {
+        background: linear-gradient(135deg, #17a2b8, #138496) !important;
+        color: white;
+        font-weight: 600;
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+    }
+</style>
+@endsection
+
+@section('content')
+@include('layouts.sidebar-styles')
+@include('layouts.sidebar')
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Header -->
+    <div class="content-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-1">HRA - Hot Work Details</h4>
+                <p class="text-muted mb-0">
+                    HRA Permit: <strong>{{ $hraHotWork->hra_permit_number }}</strong>
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
+                </a>
+                
+                @if(!isset($hraHotWork->approval_status) || $hraHotWork->approval_status === 'draft')
+                    @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
+                    <button type="button" class="btn btn-info" onclick="requestApproval()">
+                        <i class="fas fa-paper-plane me-2"></i>Request Approval
+                    </button>
+                    @endif
+                @elseif($hraHotWork->approval_status === 'pending')
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-clock me-2"></i>Waiting for Approval
+                    </span>
+                @elseif($hraHotWork->approval_status === 'approved')
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        <i class="fas fa-check-circle me-2"></i>Approved
+                    </span>
+                @elseif($hraHotWork->approval_status === 'rejected')
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="fas fa-times-circle me-2"></i>Rejected
+                    </span>
+                    @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
+                    <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
+                        <i class="fas fa-redo me-2"></i>Re-request Approval
+                    </button>
+                    @endif
+                @endif
+
+                @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
+                <a href="{{ route('hra.hot-works.edit', [$permit, $hraHotWork]) }}" class="btn btn-warning">
+                    <i class="fas fa-edit me-2"></i>Edit HRA
+                </a>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Basic Information Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none;">
+            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="fas fa-info-circle me-2"></i>Basic Information
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <strong>Nama Pekerja:</strong>
+                    <div class="mt-1">{{ $hraHotWork->worker_name ?? '-' }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>No HP Pekerja:</strong>
+                    <div class="mt-1">{{ $hraHotWork->worker_phone ?? '-' }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Nama Pendamping:</strong>
+                    <div class="mt-1">{{ $hraHotWork->supervisor_name ?? '-' }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Lokasi Kerja:</strong>
+                    <div class="mt-1">{{ $hraHotWork->work_location ?? '-' }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Tanggal & Jam Mulai:</strong>
+                    <div class="mt-1">{{ $hraHotWork->start_datetime ? $hraHotWork->start_datetime->format('d/m/Y H:i') : '-' }}</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <strong>Tanggal & Jam Selesai:</strong>
+                    <div class="mt-1">{{ $hraHotWork->end_datetime ? $hraHotWork->end_datetime->format('d/m/Y H:i') : '-' }}</div>
+                </div>
+                <div class="col-12 mb-3">
+                    <strong>Deskripsi Pekerjaan:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">{{ $hraHotWork->work_description ?? '-' }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <!-- HRA Hot Work Assessment -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%); color: white; border: none;">
+                    <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                        <i class="fas fa-clipboard-check me-2"></i>HRA Hot Work Assessment
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Questions 1-6 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>1.</strong> Apakah alternatif pengganti pekerjaan panas (Hot work) sudah dipertimbangkan</span>
+                                <span class="badge {{ $hraHotWork->q1_alternative_considered === 1 ? 'badge-yes' : ($hraHotWork->q1_alternative_considered === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q1_alternative_considered === 1 ? 'YA' : ($hraHotWork->q1_alternative_considered === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>2.</strong> Apakah peralatan diperiksa dan apakah dalam kondisi baik?</span>
+                                <span class="badge {{ $hraHotWork->q2_equipment_checked === 1 ? 'badge-yes' : ($hraHotWork->q2_equipment_checked === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q2_equipment_checked === 1 ? 'YA' : ($hraHotWork->q2_equipment_checked === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span><strong>3.</strong> Benda mudah terbakar (flammable) & dapat terbakar (combustible) dipindah?</span>
+                                    <div class="text-muted small">Jarak: {{ $hraHotWork->q3_distance ?? '-' }}m (min 12m)</div>
+                                </div>
+                                <span class="badge {{ $hraHotWork->q3_flammable_moved === 1 ? 'badge-yes' : ($hraHotWork->q3_flammable_moved === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q3_flammable_moved === 1 ? 'YA' : ($hraHotWork->q3_flammable_moved === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>4.</strong> Jika tidak bisa dipindah: flammable atau combustible dilindungi oleh lembar logam dan/atau cover tahan api</span>
+                                <span class="badge {{ $hraHotWork->q4_protected_cover === 1 ? 'badge-yes' : ($hraHotWork->q4_protected_cover === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q4_protected_cover === 1 ? 'YA' : ($hraHotWork->q4_protected_cover === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>5.</strong> Kotoran atau debu dibersihkan?</span>
+                                <span class="badge {{ $hraHotWork->q5_debris_cleaned === 1 ? 'badge-yes' : ($hraHotWork->q5_debris_cleaned === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q5_debris_cleaned === 1 ? 'YA' : ($hraHotWork->q5_debris_cleaned === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>6.</strong> Area sekitar termasuk tangki, pipa, dinding, dll diperiksa sebagai antisipasi jika flammable/combustible material tersembunyi?</span>
+                                <span class="badge {{ $hraHotWork->q6_area_inspected === 1 ? 'badge-yes' : ($hraHotWork->q6_area_inspected === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q6_area_inspected === 1 ? 'YA' : ($hraHotWork->q6_area_inspected === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Questions 7-12 -->
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span><strong>7.</strong> Apakah dinding yang dapat terbakar, atap dan/atau struktur lainnya ada di lokasi?</span>
+                                    @if($hraHotWork->q7_flammable_structures === 1 && $hraHotWork->q7_actions_taken)
+                                        <div class="text-muted small mt-1">Tindakan: {{ $hraHotWork->q7_actions_taken }}</div>
+                                    @endif
+                                </div>
+                                <span class="badge {{ $hraHotWork->q7_flammable_structures === 1 ? 'badge-yes' : ($hraHotWork->q7_flammable_structures === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q7_flammable_structures === 1 ? 'YA' : ($hraHotWork->q7_flammable_structures === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>8.</strong> Selimut/blanket tahan api atau screen dipasang untuk membatasi bunga api?</span>
+                                <span class="badge {{ $hraHotWork->q8_fire_blanket === 1 ? 'badge-yes' : ($hraHotWork->q8_fire_blanket === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q8_fire_blanket === 1 ? 'YA' : ($hraHotWork->q8_fire_blanket === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>9.</strong> Tutup valve otomatis, saluran pembuangan (drain), cover, dll?</span>
+                                <span class="badge {{ $hraHotWork->q9_valve_drain_covered === 1 ? 'badge-yes' : ($hraHotWork->q9_valve_drain_covered === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q9_valve_drain_covered === 1 ? 'YA' : ($hraHotWork->q9_valve_drain_covered === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>10.</strong> Isolasi ducting/conveyor/exhaust yang mungkin kemasukan bunga api atau material terbakar?</span>
+                                <span class="badge {{ $hraHotWork->q10_isolation_ducting === 1 ? 'badge-yes' : ($hraHotWork->q10_isolation_ducting === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q10_isolation_ducting === 1 ? 'YA' : ($hraHotWork->q10_isolation_ducting === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span><strong>11.</strong> Lubang dan lubang pembuangan tertutup (sealing pada joint, chinks, bukaan, ducting, dll)?</span>
+                                <span class="badge {{ $hraHotWork->q11_holes_sealed === 1 ? 'badge-yes' : ($hraHotWork->q11_holes_sealed === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q11_holes_sealed === 1 ? 'YA' : ($hraHotWork->q11_holes_sealed === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span><strong>12.</strong> Ventilasi cukup di lokasi pekerjaan?</span>
+                                    <div class="text-muted small">
+                                        Jenis: 
+                                        @if($hraHotWork->q12_ventilation_type)
+                                            {{ ucfirst($hraHotWork->q12_ventilation_type) }}
+                                        @else
+                                            -
+                                        @endif
+                                    </div>
+                                </div>
+                                <span class="badge {{ $hraHotWork->q12_ventilation_adequate === 1 ? 'badge-yes' : ($hraHotWork->q12_ventilation_adequate === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->q12_ventilation_adequate === 1 ? 'YA' : ($hraHotWork->q12_ventilation_adequate === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Questions 13-17 -->
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3"><i class="fas fa-shield-alt me-2"></i>Additional Safety Measures</h6>
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <span><strong>13.</strong> Peralatan listrik dan kabel terlindungi?</span>
+                                        <span class="badge {{ $hraHotWork->q13_electrical_protected === 1 ? 'badge-yes' : ($hraHotWork->q13_electrical_protected === 0 ? 'badge-no' : 'badge-na') }}">
+                                            {{ $hraHotWork->q13_electrical_protected === 1 ? 'YA' : ($hraHotWork->q13_electrical_protected === 0 ? 'TIDAK' : 'N/A') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <span><strong>14.</strong> Peralatan/mesin disekitarnya, pipa dan material terlindungi?</span>
+                                        <span class="badge {{ $hraHotWork->q14_equipment_protected === 1 ? 'badge-yes' : ($hraHotWork->q14_equipment_protected === 0 ? 'badge-no' : 'badge-na') }}">
+                                            {{ $hraHotWork->q14_equipment_protected === 1 ? 'YA' : ($hraHotWork->q14_equipment_protected === 0 ? 'TIDAK' : 'N/A') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <span><strong>15.</strong> Pekerjaan panas yang berada di atas, tambahan perlindungan disediakan di bawah?</span>
+                                        <span class="badge {{ $hraHotWork->q15_overhead_protection === 1 ? 'badge-yes' : ($hraHotWork->q15_overhead_protection === 0 ? 'badge-no' : 'badge-na') }}">
+                                            {{ $hraHotWork->q15_overhead_protection === 1 ? 'YA' : ($hraHotWork->q15_overhead_protection === 0 ? 'TIDAK' : 'N/A') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <span><strong>16.</strong> Lokasi kerja diberi tanda/barikade yang memadai?</span>
+                                        <span class="badge {{ $hraHotWork->q16_area_marked === 1 ? 'badge-yes' : ($hraHotWork->q16_area_marked === 0 ? 'badge-no' : 'badge-na') }}">
+                                            {{ $hraHotWork->q16_area_marked === 1 ? 'YA' : ($hraHotWork->q16_area_marked === 0 ? 'TIDAK' : 'N/A') }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span><strong>17.</strong> Gas monitoring untuk kemungkinan adanya gas flammable harus dilakukan sebelum pekerjaan dilakukan</span>
+                                            <div class="text-muted small">Jika "Ya" formulir H-Exposures harus diisi</div>
+                                        </div>
+                                        <span class="badge {{ $hraHotWork->q17_gas_monitoring === 1 ? 'badge-yes' : ($hraHotWork->q17_gas_monitoring === 0 ? 'badge-no' : 'badge-na') }}">
+                                            {{ $hraHotWork->q17_gas_monitoring === 1 ? 'YA' : ($hraHotWork->q17_gas_monitoring === 0 ? 'TIDAK' : 'N/A') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Peralatan Pemadam Api -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border: none;">
+                    <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                        <i class="fas fa-fire-extinguisher me-2"></i>Peralatan Pemadam Api
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- APAR Section -->
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-danger mb-3"><i class="fas fa-fire-extinguisher me-2"></i>APAR (Alat Pemadam Api Ringan)</h6>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>APAR Air</span>
+                                <span class="badge {{ $hraHotWork->apar_air === 1 ? 'badge-yes' : ($hraHotWork->apar_air === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->apar_air === 1 ? 'YA' : ($hraHotWork->apar_air === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>APAR Powder</span>
+                                <span class="badge {{ $hraHotWork->apar_powder === 1 ? 'badge-yes' : ($hraHotWork->apar_powder === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->apar_powder === 1 ? 'YA' : ($hraHotWork->apar_powder === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>APAR CO2</span>
+                                <span class="badge {{ $hraHotWork->apar_co2 === 1 ? 'badge-yes' : ($hraHotWork->apar_co2 === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->apar_co2 === 1 ? 'YA' : ($hraHotWork->apar_co2 === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Fire Blanket</span>
+                                <span class="badge {{ $hraHotWork->fire_blanket === 1 ? 'badge-yes' : ($hraHotWork->fire_blanket === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->fire_blanket === 1 ? 'YA' : ($hraHotWork->fire_blanket === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span>Petugas Fire Watch</span>
+                                    @if($hraHotWork->fire_watch_officer === 1 && $hraHotWork->fire_watch_name)
+                                        <div class="text-muted small">Nama: {{ $hraHotWork->fire_watch_name }}</div>
+                                    @endif
+                                </div>
+                                <span class="badge {{ $hraHotWork->fire_watch_officer === 1 ? 'badge-yes' : ($hraHotWork->fire_watch_officer === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->fire_watch_officer === 1 ? 'YA' : ($hraHotWork->fire_watch_officer === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Monitoring Section -->
+                        <div class="col-md-6 mb-4">
+                            <h6 class="text-danger mb-3"><i class="fas fa-shield-alt me-2"></i>Monitoring & Safety</h6>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Bangunan terpasang sprinkler</span>
+                                <span class="badge {{ $hraHotWork->monitoring_sprinkler === 1 ? 'badge-yes' : ($hraHotWork->monitoring_sprinkler === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->monitoring_sprinkler === 1 ? 'YA' : ($hraHotWork->monitoring_sprinkler === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span style="flex: 1;">Tidak ada combustible material di konstruksi</span>
+                                <span class="badge {{ $hraHotWork->monitoring_combustible === 1 ? 'badge-yes' : ($hraHotWork->monitoring_combustible === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->monitoring_combustible === 1 ? 'YA' : ($hraHotWork->monitoring_combustible === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span style="flex: 1;">Material combustible minimal 11m dari lokasi kerja</span>
+                                <span class="badge {{ $hraHotWork->monitoring_distance === 1 ? 'badge-yes' : ($hraHotWork->monitoring_distance === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->monitoring_distance === 1 ? 'YA' : ($hraHotWork->monitoring_distance === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Cek kondisi sistem sprinkler</span>
+                                <span class="badge {{ $hraHotWork->sprinkler_check === 1 ? 'badge-yes' : ($hraHotWork->sprinkler_check === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->sprinkler_check === 1 ? 'YA' : ($hraHotWork->sprinkler_check === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Gas monitoring selama bekerja dibutuhkan</span>
+                                <span class="badge {{ $hraHotWork->gas_monitoring_required === 1 ? 'badge-yes' : ($hraHotWork->gas_monitoring_required === 0 ? 'badge-no' : 'badge-na') }}">
+                                    {{ $hraHotWork->gas_monitoring_required === 1 ? 'YA' : ($hraHotWork->gas_monitoring_required === 0 ? 'TIDAK' : 'N/A') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Info -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-danger mb-3"><i class="fas fa-phone me-2"></i>Emergency Information</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Breakglass/Emergency Call Terdekat:</strong>
+                                    <div class="mt-1 p-2 bg-light rounded">{{ $hraHotWork->emergency_call ?? '-' }}</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span><strong>Mematikan peralatan detektor api?</strong></span>
+                                        <span class="badge {{ $hraHotWork->detector_shutdown === 1 ? 'badge-yes' : ($hraHotWork->detector_shutdown === 0 ? 'badge-no' : 'badge-na') }}">
+                                            {{ $hraHotWork->detector_shutdown === 1 ? 'YA' : ($hraHotWork->detector_shutdown === 0 ? 'TIDAK' : 'N/A') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detector Shutdown Details -->
+                        <div class="col-12">
+                            <div class="card border-start border-4 border-danger" style="background-color: #fff3cd; border-color: #dc3545 !important;">
+                                <div class="card-body">
+                                    <h6 class="card-title text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Detail Pematian Detektor</h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Pemberitahuan ke SHE & Security dibutuhkan?</span>
+                                            <span class="badge {{ $hraHotWork->notification_required === 1 ? 'badge-yes' : ($hraHotWork->notification_required === 0 ? 'badge-no' : 'badge-na') }}">
+                                                {{ $hraHotWork->notification_required === 1 ? 'YA' : ($hraHotWork->notification_required === 0 ? 'TIDAK' : 'N/A') }}
+                                            </span>
+                                        </div>
+                                        @if($hraHotWork->notification_required === 1)
+                                            <div class="mt-2">
+                                                <small><strong>Telepon:</strong> {{ $hraHotWork->notification_phone ?? '-' }}</small><br>
+                                                <small><strong>Nama:</strong> {{ $hraHotWork->notification_name ?? '-' }}</small>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>Pemberitahuan ke Asuransi dibutuhkan?</span>
+                                            <span class="badge {{ $hraHotWork->insurance_notification === 1 ? 'badge-yes' : ($hraHotWork->insurance_notification === 0 ? 'badge-no' : 'badge-na') }}">
+                                                {{ $hraHotWork->insurance_notification === 1 ? 'YA' : ($hraHotWork->insurance_notification === 0 ? 'TIDAK' : 'N/A') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><strong>Memastikan detektor sudah mati?</strong></span>
+                                            <span class="badge {{ $hraHotWork->detector_confirmed_off === 1 ? 'badge-yes' : ($hraHotWork->detector_confirmed_off === 0 ? 'badge-no' : 'badge-na') }}">
+                                                {{ $hraHotWork->detector_confirmed_off === 1 ? 'YA' : ($hraHotWork->detector_confirmed_off === 0 ? 'TIDAK' : 'N/A') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+</div>
+
+<!-- Request Approval Modal -->
+<div class="modal fade" id="requestApprovalModal" tabindex="-1" aria-labelledby="requestApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestApprovalModalLabel">Request Approval</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Anda akan mengirim permintaan approval untuk HRA Hot Work ini kepada:</p>
+                <ul>
+                    <li><strong>Pemilik Area:</strong> {{ $permit->area_owner_name ?? 'Belum ditentukan' }}</li>
+                    <li><strong>Tim EHS</strong></li>
+                </ul>
+                <p class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Setelah approval diminta, HRA tidak dapat diedit sampai mendapat persetujuan atau penolakan.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('hra.hot-works.request-approval', [$permit, $hraHotWork]) }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-paper-plane me-2"></i>Send Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function requestApproval() {
+    const modal = new bootstrap.Modal(document.getElementById('requestApprovalModal'));
+    modal.show();
+}
+</script>
+
+@include('layouts.sidebar-scripts')
+@endsection

@@ -153,9 +153,12 @@ class HraWorkAtHeight extends Model
     /**
      * Generate unique HRA permit number
      */
-    public static function generateHraPermitNumber($mainPermitNumber)
+    public static function generateHraPermitNumber($permitNumber)
     {
-        $count = self::where('permit_number', $mainPermitNumber)->count();
-        return $mainPermitNumber . '-WaH-' . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+        // Get count of existing HRA Work at Heights for this permit
+        $count = static::where('permit_number', $permitNumber)->count();
+        
+        // Format: General Permit Number + HRA Type + Sequence
+        return $permitNumber . '-WaH-' . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
     }
 }
