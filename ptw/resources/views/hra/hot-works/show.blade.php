@@ -73,8 +73,8 @@
                     <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
                 </a>
                 
-                @if(!isset($hraHotWork->approval_status) || $hraHotWork->approval_status === 'draft')
-                    @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
+                @if(($hraHotWork->approval_status ?? 'draft') === 'draft')
+                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                     <button type="button" class="btn btn-info" onclick="requestApproval()">
                         <i class="fas fa-paper-plane me-2"></i>Request Approval
                     </button>
@@ -91,14 +91,14 @@
                     <span class="badge bg-danger fs-6 px-3 py-2">
                         <i class="fas fa-times-circle me-2"></i>Rejected
                     </span>
-                    @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
+                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                     <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
                         <i class="fas fa-redo me-2"></i>Re-request Approval
                     </button>
                     @endif
                 @endif
 
-                @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
+                @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                 <a href="{{ route('hra.hot-works.edit', [$permit, $hraHotWork]) }}" class="btn btn-warning">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>

@@ -79,6 +79,13 @@ Route::middleware('auth')->group(function () {
     Route::put('/permits/{permit}/hra/hot-works/{hraHotWork}', [HraHotWorkController::class, 'update'])->name('hra.hot-works.update');
     Route::delete('/permits/{permit}/hra/hot-works/{hraHotWork}', [HraHotWorkController::class, 'destroy'])->name('hra.hot-works.destroy');
     
+    // HRA Hot Work approval routes
+    Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/request-approval', [HraHotWorkController::class, 'requestApproval'])->name('hra.hot-works.request-approval');
+    Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/approve', [HraHotWorkController::class, 'approve'])->name('hra.hot-works.approve');
+    Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/reject', [HraHotWorkController::class, 'reject'])->name('hra.hot-works.reject');
+    Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/approve', [HraHotWorkController::class, 'processApproval'])->name('hra.hot-works.process-approval');
+    Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/reject', [HraHotWorkController::class, 'processRejection'])->name('hra.hot-works.process-rejection');
+    
     // HRA LOTO/Isolation routes
     Route::get('/permits/{permit}/hra/loto-isolations', [HraLotoIsolationController::class, 'index'])->name('hra.loto-isolations.index');
     Route::get('/permits/{permit}/hra/loto-isolations/create', [HraLotoIsolationController::class, 'create'])->name('hra.loto-isolations.create');

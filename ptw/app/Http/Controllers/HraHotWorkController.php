@@ -217,4 +217,142 @@ class HraHotWorkController extends Controller
         return redirect()->route('permits.show', $permit)
             ->with('success', 'HRA Hot Work permit deleted successfully!');
     }
+
+    /**
+     * Request approval for HRA Hot Work
+     */
+    public function requestApproval(PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        // Check if already requested approval
+        if ($hraHotWork->approval_status !== 'draft') {
+            return redirect()->back()->with('error', 'Approval has already been requested for this HRA.');
+        }
+
+        // Update approval status
+        $hraHotWork->update([
+            'approval_status' => 'pending',
+            'approval_requested_at' => now(),
+            'area_owner_approval' => 'pending',
+            'ehs_approval' => 'pending',
+            'area_owner_notified' => false,
+            'ehs_notified' => false,
+        ]);
+
+        // Send email notification
+        try {
+            // Get email addresses
+            $areaOwnerEmail = $permit->area_owner_email;
+            $ehsEmail = $permit->ehs_email ?? config('mail.ehs_default_email', 'ehs@company.com');
+            
+            // Combine both emails for notification
+            $recipients = array_filter([$areaOwnerEmail, $ehsEmail]);
+            
+            if (!empty($recipients)) {
+                \Mail::to($recipients)->send(new \App\Mail\HraApprovalRequest($hraHotWork, $permit));
+                
+                $hraHotWork->update([
+                    'area_owner_notified' => !empty($areaOwnerEmail),
+                    'ehs_notified' => !empty($ehsEmail),
+                ]);
+            }
+            
+            return redirect()->back()->with('success', 'Approval request sent successfully to Area Owner and EHS Team!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Approval request updated but email notification failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show approval form
+     */
+    public function approve(PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        $token = request('token');
+        
+        if (!in_array($token, ['area_owner', 'ehs'])) {
+            abort(400, 'Invalid approval token');
+        }
+
+        return view('hra.hot-works.approve', compact('permit', 'hraHotWork', 'token'));
+    }
+
+    /**
+     * Show rejection form
+     */
+    public function reject(PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        return view('hra.hot-works.reject', compact('permit', 'hraHotWork'));
+    }
+
+    /**
+     * Process approval
+     */
+    public function processApproval(PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        $token = request('token');
+        $comments = request('comments');
+        
+        if (!$hraHotWork->canBeApproved()) {
+            return redirect()->back()->with('error', 'This HRA cannot be approved at this time.');
+        }
+
+        // Update appropriate approval field
+        if ($token === 'area_owner') {
+            $hraHotWork->update([
+                'area_owner_approval' => 'approved',
+                'area_owner_approved_at' => now(),
+                'area_owner_comments' => $comments,
+            ]);
+        } elseif ($token === 'ehs') {
+            $hraHotWork->update([
+                'ehs_approval' => 'approved',
+                'ehs_approved_at' => now(),
+                'ehs_comments' => $comments,
+            ]);
+        }
+
+        // Check if fully approved
+        $hraHotWork->updateFinalApprovalStatus();
+
+        $approverType = $token === 'area_owner' ? 'Area Owner' : 'EHS Team';
+        
+        return redirect()->route('hra.hot-works.show', [$permit, $hraHotWork])
+            ->with('success', "HRA Hot Work approved by {$approverType} successfully!");
+    }
+
+    /**
+     * Process rejection
+     */
+    public function processRejection(PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        $token = request('token', 'general');
+        $comments = request('comments');
+        
+        if (!$hraHotWork->canBeApproved()) {
+            return redirect()->back()->with('error', 'This HRA cannot be rejected at this time.');
+        }
+
+        // Update appropriate rejection field
+        if ($token === 'area_owner') {
+            $hraHotWork->update([
+                'area_owner_approval' => 'rejected',
+                'area_owner_approved_at' => now(),
+                'area_owner_comments' => $comments,
+            ]);
+        } elseif ($token === 'ehs') {
+            $hraHotWork->update([
+                'ehs_approval' => 'rejected',
+                'ehs_approved_at' => now(),
+                'ehs_comments' => $comments,
+            ]);
+        }
+
+        // Update final status
+        $hraHotWork->updateFinalApprovalStatus();
+
+        $rejecterType = $token === 'area_owner' ? 'Area Owner' : ($token === 'ehs' ? 'EHS Team' : 'Approver');
+        
+        return redirect()->route('hra.hot-works.show', [$permit, $hraHotWork])
+            ->with('error', "HRA Hot Work rejected by {$rejecterType}. Please review and resubmit if necessary.");
+    }
 }
