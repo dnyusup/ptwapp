@@ -168,14 +168,14 @@
                         <div class="col-md-6 mb-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>1.</strong> Apakah alternatif pengganti pekerjaan panas (Hot work) sudah dipertimbangkan</span>
-                                <span class="badge {{ $hraHotWork->q1_alternative_considered === 1 ? 'badge-yes' : ($hraHotWork->q1_alternative_considered === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q1_alternative_considered === 1 ? 'YA' : ($hraHotWork->q1_alternative_considered === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q1_alternative_considered ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q1_alternative_considered ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>2.</strong> Apakah peralatan diperiksa dan apakah dalam kondisi baik?</span>
-                                <span class="badge {{ $hraHotWork->q2_equipment_checked === 1 ? 'badge-yes' : ($hraHotWork->q2_equipment_checked === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q2_equipment_checked === 1 ? 'YA' : ($hraHotWork->q2_equipment_checked === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q2_equipment_checked ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q2_equipment_checked ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -329,14 +329,14 @@
                             <h6 class="text-danger mb-3"><i class="fas fa-fire-extinguisher me-2"></i>APAR (Alat Pemadam Api Ringan)</h6>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>APAR Air</span>
-                                <span class="badge {{ $hraHotWork->apar_air === 1 ? 'badge-yes' : ($hraHotWork->apar_air === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->apar_air === 1 ? 'YA' : ($hraHotWork->apar_air === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->apar_air ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->apar_air ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>APAR Powder</span>
-                                <span class="badge {{ $hraHotWork->apar_powder === 1 ? 'badge-yes' : ($hraHotWork->apar_powder === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->apar_powder === 1 ? 'YA' : ($hraHotWork->apar_powder === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->apar_powder ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->apar_powder ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -347,8 +347,8 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>Fire Blanket</span>
-                                <span class="badge {{ $hraHotWork->fire_blanket === 1 ? 'badge-yes' : ($hraHotWork->fire_blanket === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->fire_blanket === 1 ? 'YA' : ($hraHotWork->fire_blanket === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->fire_blanket ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->fire_blanket ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-2">
@@ -358,8 +358,8 @@
                                         <div class="text-muted small">Nama: {{ $hraHotWork->fire_watch_name }}</div>
                                     @endif
                                 </div>
-                                <span class="badge {{ $hraHotWork->fire_watch_officer === 1 ? 'badge-yes' : ($hraHotWork->fire_watch_officer === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->fire_watch_officer === 1 ? 'YA' : ($hraHotWork->fire_watch_officer === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->fire_watch_officer ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->fire_watch_officer ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                         </div>
@@ -369,32 +369,32 @@
                             <h6 class="text-danger mb-3"><i class="fas fa-shield-alt me-2"></i>Monitoring & Safety</h6>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>Bangunan terpasang sprinkler</span>
-                                <span class="badge {{ $hraHotWork->monitoring_sprinkler === 1 ? 'badge-yes' : ($hraHotWork->monitoring_sprinkler === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->monitoring_sprinkler === 1 ? 'YA' : ($hraHotWork->monitoring_sprinkler === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->monitoring_sprinkler ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->monitoring_sprinkler ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <span style="flex: 1;">Tidak ada combustible material di konstruksi</span>
-                                <span class="badge {{ $hraHotWork->monitoring_combustible === 1 ? 'badge-yes' : ($hraHotWork->monitoring_combustible === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->monitoring_combustible === 1 ? 'YA' : ($hraHotWork->monitoring_combustible === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->monitoring_combustible ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->monitoring_combustible ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <span style="flex: 1;">Material combustible minimal 11m dari lokasi kerja</span>
-                                <span class="badge {{ $hraHotWork->monitoring_distance === 1 ? 'badge-yes' : ($hraHotWork->monitoring_distance === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->monitoring_distance === 1 ? 'YA' : ($hraHotWork->monitoring_distance === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->monitoring_distance ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->monitoring_distance ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>Cek kondisi sistem sprinkler</span>
-                                <span class="badge {{ $hraHotWork->sprinkler_check === 1 ? 'badge-yes' : ($hraHotWork->sprinkler_check === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->sprinkler_check === 1 ? 'YA' : ($hraHotWork->sprinkler_check === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->sprinkler_check ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->sprinkler_check ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>Gas monitoring selama bekerja dibutuhkan</span>
-                                <span class="badge {{ $hraHotWork->gas_monitoring_required === 1 ? 'badge-yes' : ($hraHotWork->gas_monitoring_required === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->gas_monitoring_required === 1 ? 'YA' : ($hraHotWork->gas_monitoring_required === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->gas_monitoring_required ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->gas_monitoring_required ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                         </div>
@@ -410,8 +410,8 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span><strong>Mematikan peralatan detektor api?</strong></span>
-                                        <span class="badge {{ $hraHotWork->detector_shutdown === 1 ? 'badge-yes' : ($hraHotWork->detector_shutdown === 0 ? 'badge-no' : 'badge-na') }}">
-                                            {{ $hraHotWork->detector_shutdown === 1 ? 'YA' : ($hraHotWork->detector_shutdown === 0 ? 'TIDAK' : 'N/A') }}
+                                        <span class="badge {{ $hraHotWork->detector_shutdown ? 'badge-yes' : 'badge-no' }}">
+                                            {{ $hraHotWork->detector_shutdown ? 'YA' : 'TIDAK' }}
                                         </span>
                                     </div>
                                 </div>
@@ -427,8 +427,8 @@
                                     <div class="col-md-6 mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span>Pemberitahuan ke SHE & Security dibutuhkan?</span>
-                                            <span class="badge {{ $hraHotWork->notification_required === 1 ? 'badge-yes' : ($hraHotWork->notification_required === 0 ? 'badge-no' : 'badge-na') }}">
-                                                {{ $hraHotWork->notification_required === 1 ? 'YA' : ($hraHotWork->notification_required === 0 ? 'TIDAK' : 'N/A') }}
+                                            <span class="badge {{ $hraHotWork->notification_required ? 'badge-yes' : 'badge-no' }}">
+                                                {{ $hraHotWork->notification_required ? 'YA' : 'TIDAK' }}
                                             </span>
                                         </div>
                                         @if($hraHotWork->notification_required === 1)
@@ -441,16 +441,16 @@
                                     <div class="col-md-6 mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span>Pemberitahuan ke Asuransi dibutuhkan?</span>
-                                            <span class="badge {{ $hraHotWork->insurance_notification === 1 ? 'badge-yes' : ($hraHotWork->insurance_notification === 0 ? 'badge-no' : 'badge-na') }}">
-                                                {{ $hraHotWork->insurance_notification === 1 ? 'YA' : ($hraHotWork->insurance_notification === 0 ? 'TIDAK' : 'N/A') }}
+                                            <span class="badge {{ $hraHotWork->insurance_notification ? 'badge-yes' : 'badge-no' }}">
+                                                {{ $hraHotWork->insurance_notification ? 'YA' : 'TIDAK' }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <span><strong>Memastikan detektor sudah mati?</strong></span>
-                                            <span class="badge {{ $hraHotWork->detector_confirmed_off === 1 ? 'badge-yes' : ($hraHotWork->detector_confirmed_off === 0 ? 'badge-no' : 'badge-na') }}">
-                                                {{ $hraHotWork->detector_confirmed_off === 1 ? 'YA' : ($hraHotWork->detector_confirmed_off === 0 ? 'TIDAK' : 'N/A') }}
+                                            <span class="badge {{ $hraHotWork->detector_confirmed_off ? 'badge-yes' : 'badge-no' }}">
+                                                {{ $hraHotWork->detector_confirmed_off ? 'YA' : 'TIDAK' }}
                                             </span>
                                         </div>
                                     </div>
