@@ -183,26 +183,26 @@
                                     <span><strong>3.</strong> Benda mudah terbakar (flammable) & dapat terbakar (combustible) dipindah?</span>
                                     <div class="text-muted small">Jarak: {{ $hraHotWork->q3_distance ?? '-' }}m (min 12m)</div>
                                 </div>
-                                <span class="badge {{ $hraHotWork->q3_flammable_moved === 1 ? 'badge-yes' : ($hraHotWork->q3_flammable_moved === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q3_flammable_moved === 1 ? 'YA' : ($hraHotWork->q3_flammable_moved === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q3_flammable_moved ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q3_flammable_moved ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>4.</strong> Jika tidak bisa dipindah: flammable atau combustible dilindungi oleh lembar logam dan/atau cover tahan api</span>
-                                <span class="badge {{ $hraHotWork->q4_protected_cover === 1 ? 'badge-yes' : ($hraHotWork->q4_protected_cover === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q4_protected_cover === 1 ? 'YA' : ($hraHotWork->q4_protected_cover === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q4_protected_cover ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q4_protected_cover ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>5.</strong> Kotoran atau debu dibersihkan?</span>
-                                <span class="badge {{ $hraHotWork->q5_debris_cleaned === 1 ? 'badge-yes' : ($hraHotWork->q5_debris_cleaned === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q5_debris_cleaned === 1 ? 'YA' : ($hraHotWork->q5_debris_cleaned === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q5_debris_cleaned ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q5_debris_cleaned ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>6.</strong> Area sekitar termasuk tangki, pipa, dinding, dll diperiksa sebagai antisipasi jika flammable/combustible material tersembunyi?</span>
-                                <span class="badge {{ $hraHotWork->q6_area_inspected === 1 ? 'badge-yes' : ($hraHotWork->q6_area_inspected === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q6_area_inspected === 1 ? 'YA' : ($hraHotWork->q6_area_inspected === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q6_area_inspected ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q6_area_inspected ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                         </div>
@@ -216,32 +216,32 @@
                                         <div class="text-muted small mt-1">Tindakan: {{ $hraHotWork->q7_actions_taken }}</div>
                                     @endif
                                 </div>
-                                <span class="badge {{ $hraHotWork->q7_flammable_structures === 1 ? 'badge-yes' : ($hraHotWork->q7_flammable_structures === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q7_flammable_structures === 1 ? 'YA' : ($hraHotWork->q7_flammable_structures === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q7_flammable_structures ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q7_flammable_structures ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>8.</strong> Selimut/blanket tahan api atau screen dipasang untuk membatasi bunga api?</span>
-                                <span class="badge {{ $hraHotWork->q8_fire_blanket === 1 ? 'badge-yes' : ($hraHotWork->q8_fire_blanket === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q8_fire_blanket === 1 ? 'YA' : ($hraHotWork->q8_fire_blanket === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q8_fire_blanket ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q8_fire_blanket ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>9.</strong> Tutup valve otomatis, saluran pembuangan (drain), cover, dll?</span>
-                                <span class="badge {{ $hraHotWork->q9_valve_drain_covered === 1 ? 'badge-yes' : ($hraHotWork->q9_valve_drain_covered === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q9_valve_drain_covered === 1 ? 'YA' : ($hraHotWork->q9_valve_drain_covered === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q9_valve_drain_covered ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q9_valve_drain_covered ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>10.</strong> Isolasi ducting/conveyor/exhaust yang mungkin kemasukan bunga api atau material terbakar?</span>
-                                <span class="badge {{ $hraHotWork->q10_isolation_ducting === 1 ? 'badge-yes' : ($hraHotWork->q10_isolation_ducting === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q10_isolation_ducting === 1 ? 'YA' : ($hraHotWork->q10_isolation_ducting === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q10_isolation_ducting ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q10_isolation_ducting ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <span><strong>11.</strong> Lubang dan lubang pembuangan tertutup (sealing pada joint, chinks, bukaan, ducting, dll)?</span>
-                                <span class="badge {{ $hraHotWork->q11_holes_sealed === 1 ? 'badge-yes' : ($hraHotWork->q11_holes_sealed === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q11_holes_sealed === 1 ? 'YA' : ($hraHotWork->q11_holes_sealed === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q11_holes_sealed ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q11_holes_sealed ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -256,8 +256,8 @@
                                         @endif
                                     </div>
                                 </div>
-                                <span class="badge {{ $hraHotWork->q12_ventilation_adequate === 1 ? 'badge-yes' : ($hraHotWork->q12_ventilation_adequate === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->q12_ventilation_adequate === 1 ? 'YA' : ($hraHotWork->q12_ventilation_adequate === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->q12_ventilation_adequate ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->q12_ventilation_adequate ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                         </div>
@@ -269,32 +269,32 @@
                                 <div class="col-12 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <span><strong>13.</strong> Peralatan listrik dan kabel terlindungi?</span>
-                                        <span class="badge {{ $hraHotWork->q13_electrical_protected === 1 ? 'badge-yes' : ($hraHotWork->q13_electrical_protected === 0 ? 'badge-no' : 'badge-na') }}">
-                                            {{ $hraHotWork->q13_electrical_protected === 1 ? 'YA' : ($hraHotWork->q13_electrical_protected === 0 ? 'TIDAK' : 'N/A') }}
+                                        <span class="badge {{ $hraHotWork->q13_electrical_protected ? 'badge-yes' : 'badge-no' }}">
+                                            {{ $hraHotWork->q13_electrical_protected ? 'YA' : 'TIDAK' }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <span><strong>14.</strong> Peralatan/mesin disekitarnya, pipa dan material terlindungi?</span>
-                                        <span class="badge {{ $hraHotWork->q14_equipment_protected === 1 ? 'badge-yes' : ($hraHotWork->q14_equipment_protected === 0 ? 'badge-no' : 'badge-na') }}">
-                                            {{ $hraHotWork->q14_equipment_protected === 1 ? 'YA' : ($hraHotWork->q14_equipment_protected === 0 ? 'TIDAK' : 'N/A') }}
+                                        <span class="badge {{ $hraHotWork->q14_equipment_protected ? 'badge-yes' : 'badge-no' }}">
+                                            {{ $hraHotWork->q14_equipment_protected ? 'YA' : 'TIDAK' }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <span><strong>15.</strong> Pekerjaan panas yang berada di atas, tambahan perlindungan disediakan di bawah?</span>
-                                        <span class="badge {{ $hraHotWork->q15_overhead_protection === 1 ? 'badge-yes' : ($hraHotWork->q15_overhead_protection === 0 ? 'badge-no' : 'badge-na') }}">
-                                            {{ $hraHotWork->q15_overhead_protection === 1 ? 'YA' : ($hraHotWork->q15_overhead_protection === 0 ? 'TIDAK' : 'N/A') }}
+                                        <span class="badge {{ $hraHotWork->q15_overhead_protection ? 'badge-yes' : 'badge-no' }}">
+                                            {{ $hraHotWork->q15_overhead_protection ? 'YA' : 'TIDAK' }}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <span><strong>16.</strong> Lokasi kerja diberi tanda/barikade yang memadai?</span>
-                                        <span class="badge {{ $hraHotWork->q16_area_marked === 1 ? 'badge-yes' : ($hraHotWork->q16_area_marked === 0 ? 'badge-no' : 'badge-na') }}">
-                                            {{ $hraHotWork->q16_area_marked === 1 ? 'YA' : ($hraHotWork->q16_area_marked === 0 ? 'TIDAK' : 'N/A') }}
+                                        <span class="badge {{ $hraHotWork->q16_area_marked ? 'badge-yes' : 'badge-no' }}">
+                                            {{ $hraHotWork->q16_area_marked ? 'YA' : 'TIDAK' }}
                                         </span>
                                     </div>
                                 </div>
@@ -304,8 +304,8 @@
                                             <span><strong>17.</strong> Gas monitoring untuk kemungkinan adanya gas flammable harus dilakukan sebelum pekerjaan dilakukan</span>
                                             <div class="text-muted small">Jika "Ya" formulir H-Exposures harus diisi</div>
                                         </div>
-                                        <span class="badge {{ $hraHotWork->q17_gas_monitoring === 1 ? 'badge-yes' : ($hraHotWork->q17_gas_monitoring === 0 ? 'badge-no' : 'badge-na') }}">
-                                            {{ $hraHotWork->q17_gas_monitoring === 1 ? 'YA' : ($hraHotWork->q17_gas_monitoring === 0 ? 'TIDAK' : 'N/A') }}
+                                        <span class="badge {{ $hraHotWork->q17_gas_monitoring ? 'badge-yes' : 'badge-no' }}">
+                                            {{ $hraHotWork->q17_gas_monitoring ? 'YA' : 'TIDAK' }}
                                         </span>
                                     </div>
                                 </div>
@@ -341,8 +341,8 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span>APAR CO2</span>
-                                <span class="badge {{ $hraHotWork->apar_co2 === 1 ? 'badge-yes' : ($hraHotWork->apar_co2 === 0 ? 'badge-no' : 'badge-na') }}">
-                                    {{ $hraHotWork->apar_co2 === 1 ? 'YA' : ($hraHotWork->apar_co2 === 0 ? 'TIDAK' : 'N/A') }}
+                                <span class="badge {{ $hraHotWork->apar_co2 ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraHotWork->apar_co2 ? 'YA' : 'TIDAK' }}
                                 </span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
