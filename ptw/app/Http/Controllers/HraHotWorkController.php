@@ -144,7 +144,19 @@ class HraHotWorkController extends Controller
      */
     public function edit(PermitToWork $permit, HraHotWork $hraHotWork)
     {
-        return view('hra.hot-works.edit', compact('permit', 'hraHotWork'));
+        // Load permit with receiver relationship
+        $permit->load('receiver');
+        
+        // Get users from the same company as permit receiver
+        $users = collect();
+        if ($permit->receiver_company_name) {
+            // Get users from the same company as receiver
+            $users = User::whereHas('company', function($query) use ($permit) {
+                $query->where('company_name', $permit->receiver_company_name);
+            })->select('id', 'name', 'email', 'phone')->orderBy('name')->get();
+        }
+        
+        return view('hra.hot-works.edit', compact('permit', 'hraHotWork', 'users'));
     }
 
     /**
