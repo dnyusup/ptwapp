@@ -115,6 +115,13 @@
                     <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
                 </a>
                 
+                <!-- Download PDF Button - only visible when approved -->
+                @if($hraHotWork->approval_status === 'approved')
+                <a href="{{ route('hra.hot-works.download-pdf', [$permit, $hraHotWork]) }}" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Download PDF
+                </a>
+                @endif
+                
                 <!-- Action Buttons -->
                 @if(($hraHotWork->approval_status ?? 'draft') === 'draft')
                     @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')

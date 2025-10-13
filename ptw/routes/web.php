@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/approve', [HraHotWorkController::class, 'approve'])->name('hra.hot-works.approve');
     Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/reject', [HraHotWorkController::class, 'reject'])->name('hra.hot-works.reject');
     Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/process', [HraHotWorkController::class, 'processApproval'])->name('hra.hot-works.process-approval');
+    Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/download-pdf', [HraHotWorkController::class, 'downloadPdf'])->name('hra.hot-works.download-pdf');
     
     // HRA LOTO/Isolation routes
     Route::get('/permits/{permit}/hra/loto-isolations', [HraLotoIsolationController::class, 'index'])->name('hra.loto-isolations.index');

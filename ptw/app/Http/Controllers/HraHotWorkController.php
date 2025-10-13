@@ -468,4 +468,47 @@ class HraHotWorkController extends Controller
 
         return redirect()->back()->with('error', 'Invalid action.');
     }
+
+    /**
+     * Download HRA Hot Work as PDF
+     */
+    public function downloadPdf(PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        // Only allow download for approved HRA
+        if ($hraHotWork->approval_status !== 'approved') {
+            return redirect()->back()->with('error', 'PDF can only be downloaded for approved HRA Hot Work.');
+        }
+
+        // Load relationships
+        $permit->load([
+            'permitIssuer', 
+            'authorizer', 
+            'receiver', 
+            'locationOwner'
+        ]);
+        
+        $hraHotWork->load(['user', 'areaOwnerApprovedBy', 'ehsApprovedBy']);
+
+        // Generate QR Code for HRA
+        $qrUrl = url('/permits/' . $permit->id . '/hra/hot-works/' . $hraHotWork->id);
+        $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(80),
+            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+        );
+        $writer = new \BaconQrCode\Writer($renderer);
+        $qrCode = base64_encode($writer->writeString($qrUrl));
+
+        // Generate QR Code for Main Permit
+        $permitUrl = route('permits.show', $permit->id);
+        $permitRenderer = new \BaconQrCode\Renderer\ImageRenderer(
+            new \BaconQrCode\Renderer\RendererStyle\RendererStyle(70),
+            new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+        );
+        $permitWriter = new \BaconQrCode\Writer($permitRenderer);
+        $permitQrCode = base64_encode($permitWriter->writeString($permitUrl));
+
+        $pdf = \PDF::loadView('hra.hot-works.pdf', compact('permit', 'hraHotWork', 'qrCode', 'permitQrCode'));
+        
+        return $pdf->download('hra-hot-work-' . $hraHotWork->hra_permit_number . '.pdf');
+    }
 }
