@@ -242,8 +242,8 @@ class HraHotWorkController extends Controller
         $permit->load('locationOwner');
         
         // Check if already requested approval
-        if ($hraHotWork->approval_status !== 'draft') {
-            return redirect()->back()->with('error', 'Approval has already been requested for this HRA.');
+        if (!in_array($hraHotWork->approval_status, ['draft', 'rejected'])) {
+            return redirect()->back()->with('error', 'Approval can only be requested for draft or rejected HRA.');
         }
 
         // Update approval status
