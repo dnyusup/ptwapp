@@ -191,7 +191,7 @@
                                     <option value="">Pilih Pendamping...</option>
                                     @foreach($users as $user)
                                         <option value="{{ $user->name }}" 
-                                                {{ old('supervisor_name') == $user->name ? 'selected' : '' }}>
+                                                {{ old('supervisor_name', $hraHotWork->supervisor_name) == $user->name ? 'selected' : '' }}>
                                             {{ $user->name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
