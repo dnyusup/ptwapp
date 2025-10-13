@@ -100,6 +100,7 @@
                             <th>Work Location</th>
                             <th>Work Period</th>
                             <th>Fire Safety</th>
+                            <th>Approval Status</th>
                             <th>Created By</th>
                             <th>Created Date</th>
                             <th>Actions</th>
@@ -142,6 +143,45 @@
                                         <span class="badge bg-info">Gas Monitor</span>
                                     @endif
                                 </div>
+                            </td>
+                            <td>
+                                @if($hra->approval_status === 'draft')
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-edit me-1"></i>Draft
+                                    </span>
+                                @elseif($hra->approval_status === 'pending')
+                                    <div class="d-flex flex-column gap-1">
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>Waiting Approval
+                                        </span>
+                                        <div class="small">
+                                            @if($hra->area_owner_approval === 'approved')
+                                                <span class="badge badge-sm bg-success">Area Owner ✓</span>
+                                            @elseif($hra->area_owner_approval === 'pending')
+                                                <span class="badge badge-sm bg-warning">Area Owner ⏳</span>
+                                            @endif
+                                            
+                                            @if($hra->ehs_approval === 'approved')
+                                                <span class="badge badge-sm bg-success">EHS ✓</span>
+                                            @elseif($hra->ehs_approval === 'pending')
+                                                <span class="badge badge-sm bg-warning">EHS ⏳</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @elseif($hra->approval_status === 'approved')
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Approved
+                                    </span>
+                                    <div class="small text-muted mt-1">
+                                        {{ $hra->final_approved_at ? $hra->final_approved_at->format('d M Y H:i') : '' }}
+                                    </div>
+                                @elseif($hra->approval_status === 'rejected')
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times-circle me-1"></i>Rejected
+                                    </span>
+                                @else
+                                    <span class="badge bg-light text-dark">Unknown</span>
+                                @endif
                             </td>
                             <td>{{ $hra->user->name ?? 'N/A' }}</td>
                             <td>{{ $hra->created_at->format('d M Y H:i') }}</td>
@@ -203,6 +243,16 @@
 </div>
 
 @include('layouts.sidebar-scripts')
+
+@push('styles')
+<style>
+.badge-sm {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+    margin: 0.1rem;
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>

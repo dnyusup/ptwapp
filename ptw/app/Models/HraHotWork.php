@@ -70,13 +70,18 @@ class HraHotWork extends Model
         'approval_requested_at',
         'area_owner_approval',
         'area_owner_approved_at',
+        'area_owner_approved_by',
         'area_owner_comments',
         'ehs_approval',
         'ehs_approved_at',
+        'ehs_approved_by',
         'ehs_comments',
         'final_approved_at',
         'area_owner_notified',
         'ehs_notified',
+        'rejection_reason',
+        'rejected_at',
+        'rejected_by',
     ];
 
     protected $casts = [
@@ -86,6 +91,7 @@ class HraHotWork extends Model
         'area_owner_approved_at' => 'datetime',
         'ehs_approved_at' => 'datetime',
         'final_approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
         'area_owner_notified' => 'boolean',
         'ehs_notified' => 'boolean',
     ];
@@ -116,6 +122,30 @@ class HraHotWork extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relationship with User who approved as area owner
+     */
+    public function areaOwnerApprovedBy()
+    {
+        return $this->belongsTo(User::class, 'area_owner_approved_by');
+    }
+
+    /**
+     * Relationship with User who approved as EHS
+     */
+    public function ehsApprovedBy()
+    {
+        return $this->belongsTo(User::class, 'ehs_approved_by');
+    }
+
+    /**
+     * Relationship with User who rejected the HRA
+     */
+    public function rejectedBy()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
     }
 
     /**

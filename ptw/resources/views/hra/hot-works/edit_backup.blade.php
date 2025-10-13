@@ -17,8 +17,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Fire blanket</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="fire_blanket" value="1" {{ old('fire_blanket', $hraHotWork->fire_blanket) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="fire_blanket" value="0" {{ old('fire_blanket', $hraHotWork->fire_blanket) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="fire_blanket" value="1" {{ old('fire_blanket') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="fire_blanket" value="0" {{ old('fire_blanket') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>r-bottom: none;
@@ -117,14 +117,14 @@
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h4 class="mb-1">Edit HRA - Hot Works</h4>
+                <h4 class="mb-1">Create HRA - Hot Works</h4>
                 <p class="text-muted mb-0">
-                    HRA Number: <strong>{{ $hraHotWork->hra_permit_number }}</strong>
+                    Main Permit: <strong>{{ $permit->permit_number }}</strong> - {{ $permit->work_title }}
                 </p>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('hra.hot-works.show', [$permit, $hraHotWork]) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to HRA
+                <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Permit
                 </a>
             </div>
         </div>
@@ -149,9 +149,8 @@
     @endif
 
     <!-- HRA Form -->
-    <form method="POST" action="{{ route('hra.hot-works.update', [$permit, $hraHotWork]) }}">
+    <form method="POST" action="{{ route('hra.hot-works.store', $permit) }}">
         @csrf
-        @method('PUT')
         
         <div class="row">
             <div class="col-lg-8">
@@ -172,7 +171,7 @@
                                     @foreach($users as $user)
                                         <option value="{{ $user->name }}" 
                                                 data-phone="{{ $user->phone ?? '' }}"
-                                                {{ old('worker_name', $hraHotWork->worker_name) == $user->name ? 'selected' : '' }}>
+                                                {{ old('worker_name') == $user->name ? 'selected' : '' }}>
                                             {{ $user->name }} ({{ $user->email }})
                                         </option>
                                     @endforeach
@@ -182,7 +181,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="worker_phone" class="form-label">No HP Pekerja</label>
                                 <input type="text" class="form-control" id="worker_phone" name="worker_phone" 
-                                       value="{{ old('worker_phone', $hraHotWork->worker_phone) }}" readonly>
+                                       value="{{ old('worker_phone') }}" readonly>
                                 <small class="text-muted">Otomatis terisi berdasarkan nama pekerja</small>
                             </div>
                             <div class="col-md-6 mb-3">
@@ -206,7 +205,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="start_datetime" class="form-label">Tanggal & Jam Mulai</label>
                                 <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime" 
-                                       value="{{ old('start_datetime', $hraHotWork->start_datetime ? $hraHotWork->start_datetime->format('Y-m-d\TH:i') : '') }}" 
+                                       value="{{ old('start_datetime') }}" 
                                        min="{{ $permit->start_date->format('Y-m-d\TH:i') }}"
                                        max="{{ $permit->end_date->format('Y-m-d\T23:59') }}" required>
                                 <small class="text-muted">Harus dalam rentang: {{ $permit->start_date->format('d M Y') }} - {{ $permit->end_date->format('d M Y') }}</small>
@@ -214,7 +213,7 @@
                             <div class="col-md-6 mb-3">
                                 <label for="end_datetime" class="form-label">Tanggal & Jam Selesai</label>
                                 <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime" 
-                                       value="{{ old('end_datetime', $hraHotWork->end_datetime ? $hraHotWork->end_datetime->format('Y-m-d\TH:i') : '') }}" 
+                                       value="{{ old('end_datetime') }}" 
                                        min="{{ $permit->start_date->format('Y-m-d\TH:i') }}"
                                        max="{{ $permit->end_date->format('Y-m-d\T23:59') }}" required>
                                 <small class="text-muted">Harus dalam rentang: {{ $permit->start_date->format('d M Y') }} - {{ $permit->end_date->format('d M Y') }}</small>
@@ -222,7 +221,7 @@
                             <div class="col-12 mb-3">
                                 <label for="work_description" class="form-label">Deskripsi Pekerjaan</label>
                                 <textarea class="form-control" id="work_description" name="work_description" 
-                                          rows="3" placeholder="Jelaskan detail pekerjaan yang akan dilakukan..." required>{{ old('work_description', $hraHotWork->work_description) }}</textarea>
+                                          rows="3" placeholder="Jelaskan detail pekerjaan yang akan dilakukan..." required>{{ old('work_description') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -242,8 +241,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Apakah alternatif pengganti pekerjaan panas (Hot work) sudah dipertimbangkan</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q1_alternative_considered" value="1" {{ old('q1_alternative_considered', $hraHotWork->q1_alternative_considered) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q1_alternative_considered" value="0" {{ old('q1_alternative_considered', $hraHotWork->q1_alternative_considered) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q1_alternative_considered" value="1" {{ old('q1_alternative_considered') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q1_alternative_considered" value="0" {{ old('q1_alternative_considered') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -253,8 +252,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Apakah peralatan diperiksa dan apakah dalam kondisi baik?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q2_equipment_checked" value="1" {{ old('q2_equipment_checked', $hraHotWork->q2_equipment_checked) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q2_equipment_checked" value="0" {{ old('q2_equipment_checked', $hraHotWork->q2_equipment_checked) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q2_equipment_checked" value="1" {{ old('q2_equipment_checked') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q2_equipment_checked" value="0" {{ old('q2_equipment_checked') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -264,10 +263,10 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Benda mudah terbakar (flammable) & dapat terbakar (combustible) dipindah?</span>
                                 <div class="checkbox-group">
-                                    <input type="number" class="form-control" id="q3_distance" name="q3_distance" placeholder="12" min="12" style="width: 80px; height: 32px; margin-right: 8px;" value="{{ old('q3_distance', $hraHotWork->q3_distance) }}" onchange="toggleQ3Checkbox()">
+                                    <input type="number" class="form-control" id="q3_distance" name="q3_distance" placeholder="12" min="12" style="width: 80px; height: 32px; margin-right: 8px;" value="{{ old('q3_distance') }}" onchange="toggleQ3Checkbox()">
                                     <span class="small">m (min 12m)</span>
-                                    <label><input type="radio" id="q3_flammable_moved_ya" name="q3_flammable_moved" value="1" {{ old('q3_flammable_moved', $hraHotWork->q3_flammable_moved) == '1' ? 'checked' : '' }} disabled> Ya</label>
-                                    <label><input type="radio" id="q3_flammable_moved_tidak" name="q3_flammable_moved" value="0" {{ old('q3_flammable_moved', $hraHotWork->q3_flammable_moved) == '0' ? 'checked' : '' }} disabled> Tidak</label>
+                                    <label><input type="radio" id="q3_flammable_moved_ya" name="q3_flammable_moved" value="1" {{ old('q3_flammable_moved') == '1' ? 'checked' : '' }} disabled> Ya</label>
+                                    <label><input type="radio" id="q3_flammable_moved_tidak" name="q3_flammable_moved" value="0" {{ old('q3_flammable_moved') == '0' ? 'checked' : '' }} disabled> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -277,8 +276,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Jika tidak bisa dipindah: flammable atau combustible dilindungi oleh lembar logam dan/atau cover tahan api</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q4_protected_cover" value="1" {{ old('q4_protected_cover', $hraHotWork->q4_protected_cover) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q4_protected_cover" value="0" {{ old('q4_protected_cover', $hraHotWork->q4_protected_cover) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q4_protected_cover" value="1" {{ old('q4_protected_cover') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q4_protected_cover" value="0" {{ old('q4_protected_cover') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -288,8 +287,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Kotoran atau debu dibersihkan?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q5_debris_cleaned" value="1" {{ old('q5_debris_cleaned', $hraHotWork->q5_debris_cleaned) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q5_debris_cleaned" value="0" {{ old('q5_debris_cleaned', $hraHotWork->q5_debris_cleaned) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q5_debris_cleaned" value="1" {{ old('q5_debris_cleaned') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q5_debris_cleaned" value="0" {{ old('q5_debris_cleaned') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -299,8 +298,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Area sekitar termasuk tangki, pipa, dinding, dll diperiksa sebagai antisipasi jika flammable/combustible material tersembunyi?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q6_area_inspected" value="1" {{ old('q6_area_inspected', $hraHotWork->q6_area_inspected) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q6_area_inspected" value="0" {{ old('q6_area_inspected', $hraHotWork->q6_area_inspected) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q6_area_inspected" value="1" {{ old('q6_area_inspected') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q6_area_inspected" value="0" {{ old('q6_area_inspected') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -310,13 +309,13 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Apakah dinding yang dapat terbakar, atap dan/atau struktur lainnya ada di lokasi?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q7_flammable_structures" value="1" {{ old('q7_flammable_structures', $hraHotWork->q7_flammable_structures) == '1' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Ya</label>
-                                    <label><input type="radio" name="q7_flammable_structures" value="0" {{ old('q7_flammable_structures', $hraHotWork->q7_flammable_structures) == '0' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Tidak</label>
+                                    <label><input type="radio" name="q7_flammable_structures" value="1" {{ old('q7_flammable_structures') == '1' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Ya</label>
+                                    <label><input type="radio" name="q7_flammable_structures" value="0" {{ old('q7_flammable_structures') == '0' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Tidak</label>
                                 </div>
                             </div>
                             <div id="q7_actions_field" class="mt-2" style="display: {{ old('q7_flammable_structures') == '1' ? 'block' : 'none' }};">
                                 <label class="form-label small text-muted">Jika "Ya" apa yang dilakukan (contoh: membasahi, menutup dengan lembar logam, dll):</label>
-                                <textarea class="form-control" name="q7_actions_taken" rows="2" placeholder="Jelaskan tindakan yang dilakukan...">{{ old('q7_actions_taken', $hraHotWork->q7_actions_taken) }}</textarea>
+                                <textarea class="form-control" name="q7_actions_taken" rows="2" placeholder="Jelaskan tindakan yang dilakukan...">{{ old('q7_actions_taken') }}</textarea>
                             </div>
                         </div>
 
@@ -325,8 +324,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Selimut/blanket tahan api atau screen dipasang untuk membatasi bunga api?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q8_fire_blanket" value="1" {{ old('q8_fire_blanket', $hraHotWork->q8_fire_blanket) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q8_fire_blanket" value="0" {{ old('q8_fire_blanket', $hraHotWork->q8_fire_blanket) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q8_fire_blanket" value="1" {{ old('q8_fire_blanket') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q8_fire_blanket" value="0" {{ old('q8_fire_blanket') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -336,8 +335,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Tutup valve otomatis, saluran pembuangan (drain), cover, dll?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q9_valve_drain_covered" value="1" {{ old('q9_valve_drain_covered', $hraHotWork->q9_valve_drain_covered) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q9_valve_drain_covered" value="0" {{ old('q9_valve_drain_covered', $hraHotWork->q9_valve_drain_covered) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q9_valve_drain_covered" value="1" {{ old('q9_valve_drain_covered') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q9_valve_drain_covered" value="0" {{ old('q9_valve_drain_covered') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -347,8 +346,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Isolasi ducting/conveyor/exhaust yang mungkin kemasukan bunga api atau material terbakar?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q10_isolation_ducting" value="1" {{ old('q10_isolation_ducting', $hraHotWork->q10_isolation_ducting) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q10_isolation_ducting" value="0" {{ old('q10_isolation_ducting', $hraHotWork->q10_isolation_ducting) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q10_isolation_ducting" value="1" {{ old('q10_isolation_ducting') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q10_isolation_ducting" value="0" {{ old('q10_isolation_ducting') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -358,8 +357,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Lubang dan lubang pembuangan tertutup (sealing pada joint, chinks, bukaan, ducting, dll)?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q11_holes_sealed" value="1" {{ old('q11_holes_sealed', $hraHotWork->q11_holes_sealed) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q11_holes_sealed" value="0" {{ old('q11_holes_sealed', $hraHotWork->q11_holes_sealed) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q11_holes_sealed" value="1" {{ old('q11_holes_sealed') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q11_holes_sealed" value="0" {{ old('q11_holes_sealed') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -373,8 +372,8 @@
                                     <label><input type="radio" name="q12_ventilation_type" value="alami" {{ old('q12_ventilation_type') == 'alami' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> alami</label>
                                     <label><input type="radio" name="q12_ventilation_type" value="buatan" {{ old('q12_ventilation_type') == 'buatan' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> buatan</label>
                                     <span class="small">)</span>
-                                    <label><input type="radio" id="q12_ventilation_adequate_ya" name="q12_ventilation_adequate" value="1" {{ old('q12_ventilation_adequate', $hraHotWork->q12_ventilation_adequate) == '1' ? 'checked' : '' }} disabled> Ya</label>
-                                    <label><input type="radio" id="q12_ventilation_adequate_tidak" name="q12_ventilation_adequate" value="0" {{ old('q12_ventilation_adequate', $hraHotWork->q12_ventilation_adequate) == '0' ? 'checked' : '' }} disabled> Tidak</label>
+                                    <label><input type="radio" id="q12_ventilation_adequate_ya" name="q12_ventilation_adequate" value="1" {{ old('q12_ventilation_adequate') == '1' ? 'checked' : '' }} disabled> Ya</label>
+                                    <label><input type="radio" id="q12_ventilation_adequate_tidak" name="q12_ventilation_adequate" value="0" {{ old('q12_ventilation_adequate') == '0' ? 'checked' : '' }} disabled> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -384,8 +383,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Peralatan listrik dan kabel terlindungi?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q13_electrical_protected" value="1" {{ old('q13_electrical_protected', $hraHotWork->q13_electrical_protected) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q13_electrical_protected" value="0" {{ old('q13_electrical_protected', $hraHotWork->q13_electrical_protected) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q13_electrical_protected" value="1" {{ old('q13_electrical_protected') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q13_electrical_protected" value="0" {{ old('q13_electrical_protected') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -395,8 +394,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Peralatan/mesin disekitarnya, pipa dan material terlindungi?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q14_equipment_protected" value="1" {{ old('q14_equipment_protected', $hraHotWork->q14_equipment_protected) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q14_equipment_protected" value="0" {{ old('q14_equipment_protected', $hraHotWork->q14_equipment_protected) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q14_equipment_protected" value="1" {{ old('q14_equipment_protected') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q14_equipment_protected" value="0" {{ old('q14_equipment_protected') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -406,8 +405,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Pekerjaan panas yang berada di atas, tambahan perlindungan disediakan di bawah?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q15_overhead_protection" value="1" {{ old('q15_overhead_protection', $hraHotWork->q15_overhead_protection) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q15_overhead_protection" value="0" {{ old('q15_overhead_protection', $hraHotWork->q15_overhead_protection) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q15_overhead_protection" value="1" {{ old('q15_overhead_protection') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q15_overhead_protection" value="0" {{ old('q15_overhead_protection') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -417,8 +416,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Lokasi kerja diberi tanda/barikade yang memadai?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q16_area_marked" value="1" {{ old('q16_area_marked', $hraHotWork->q16_area_marked) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q16_area_marked" value="0" {{ old('q16_area_marked', $hraHotWork->q16_area_marked) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q16_area_marked" value="1" {{ old('q16_area_marked') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q16_area_marked" value="0" {{ old('q16_area_marked') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -428,8 +427,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Gas monitoring untuk kemungkinan adanya gas flammable harus dilakukan <u>sebelum</u> pekerjaan dilakukan<br><small class="text-muted">Jika "Ya" formulir H-Exposures harus diisi.</small></span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q17_gas_monitoring" value="1" {{ old('q17_gas_monitoring', $hraHotWork->q17_gas_monitoring) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q17_gas_monitoring" value="0" {{ old('q17_gas_monitoring', $hraHotWork->q17_gas_monitoring) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="q17_gas_monitoring" value="1" {{ old('q17_gas_monitoring') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="q17_gas_monitoring" value="0" {{ old('q17_gas_monitoring') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -455,8 +454,8 @@
                                 <div class="condition-grid">
                                     <span class="sub-question">Air</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="apar_air" value="1" {{ old('apar_air', $hraHotWork->apar_air) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="apar_air" value="0" {{ old('apar_air', $hraHotWork->apar_air) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="apar_air" value="1" {{ old('apar_air') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="apar_air" value="0" {{ old('apar_air') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -466,8 +465,8 @@
                                 <div class="condition-grid">
                                     <span class="sub-question">Powder</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="apar_powder" value="1" {{ old('apar_powder', $hraHotWork->apar_powder) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="apar_powder" value="0" {{ old('apar_powder', $hraHotWork->apar_powder) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="apar_powder" value="1" {{ old('apar_powder') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="apar_powder" value="0" {{ old('apar_powder') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -477,8 +476,8 @@
                                 <div class="condition-grid">
                                     <span class="sub-question">CO2</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="apar_co2" value="1" {{ old('apar_co2', $hraHotWork->apar_co2) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="apar_co2" value="0" {{ old('apar_co2', $hraHotWork->apar_co2) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="apar_co2" value="1" {{ old('apar_co2') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="apar_co2" value="0" {{ old('apar_co2') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -489,8 +488,8 @@
                             <div class="condition-grid">
                                 <span class="sub-question fw-bold">Fire blanket</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="fire_blanket" value="1" {{ old('fire_blanket', $hraHotWork->fire_blanket) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="fire_blanket" value="0" {{ old('fire_blanket', $hraHotWork->fire_blanket) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="fire_blanket" value="1" {{ old('fire_blanket') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="fire_blanket" value="0" {{ old('fire_blanket') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -500,13 +499,13 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Petugas Fire Watch</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="fire_watch_officer" value="1" {{ old('fire_watch_officer', $hraHotWork->fire_watch_officer) == '1' ? 'checked' : '' }} onchange="toggleFireWatchField(this.checked)"> Ya</label>
-                                    <label><input type="radio" name="fire_watch_officer" value="0" {{ old('fire_watch_officer', $hraHotWork->fire_watch_officer) == '0' ? 'checked' : '' }} onchange="toggleFireWatchField(false)"> Tidak</label>
+                                    <label><input type="radio" name="fire_watch_officer" value="1" {{ old('fire_watch_officer') == '1' ? 'checked' : '' }} onchange="toggleFireWatchField(this.checked)"> Ya</label>
+                                    <label><input type="radio" name="fire_watch_officer" value="0" {{ old('fire_watch_officer') == '0' ? 'checked' : '' }} onchange="toggleFireWatchField(false)"> Tidak</label>
                                 </div>
                             </div>
                             <div id="fire_watch_name_field" class="mt-3" style="display: {{ old('fire_watch_officer') == '1' ? 'block' : 'none' }};">
                                 <label for="fire_watch_name" class="form-label small text-muted">Nama Petugas (jika Ya):</label>
-                                <input type="text" class="form-control" id="fire_watch_name" name="fire_watch_name" value="{{ old('fire_watch_name', $hraHotWork->fire_watch_name) }}" placeholder="Masukkan nama petugas fire watch">
+                                <input type="text" class="form-control" id="fire_watch_name" name="fire_watch_name" value="{{ old('fire_watch_name') }}" placeholder="Masukkan nama petugas fire watch">
                             </div>
                         </div>
 
@@ -519,8 +518,8 @@
                                 <div class="condition-grid">
                                     <span class="sub-question">1. Bangunan terpasang sprinkler</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="monitoring_sprinkler" value="1" {{ old('monitoring_sprinkler', $hraHotWork->monitoring_sprinkler) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="monitoring_sprinkler" value="0" {{ old('monitoring_sprinkler', $hraHotWork->monitoring_sprinkler) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="monitoring_sprinkler" value="1" {{ old('monitoring_sprinkler') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="monitoring_sprinkler" value="0" {{ old('monitoring_sprinkler') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -533,8 +532,8 @@
                                         <br><small class="text-muted">Tidak memberikan penilaian jika TIDAK YAKIN</small>
                                     </div>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="monitoring_combustible" value="1" {{ old('monitoring_combustible', $hraHotWork->monitoring_combustible) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="monitoring_combustible" value="0" {{ old('monitoring_combustible', $hraHotWork->monitoring_combustible) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="monitoring_combustible" value="1" {{ old('monitoring_combustible') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="monitoring_combustible" value="0" {{ old('monitoring_combustible') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -544,8 +543,8 @@
                                 <div class="condition-grid">
                                     <span class="sub-question">3. Semua combustible material, termasuk cairan flammable, debu combustible, debu mengandung oli, minimal sejauh 11 m dari lokasi kerja.</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="monitoring_distance" value="1" {{ old('monitoring_distance', $hraHotWork->monitoring_distance) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="monitoring_distance" value="0" {{ old('monitoring_distance', $hraHotWork->monitoring_distance) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="monitoring_distance" value="1" {{ old('monitoring_distance') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="monitoring_distance" value="0" {{ old('monitoring_distance') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -556,7 +555,7 @@
                             <div class="row">
                                 <div class="col-12">
                                     <label for="emergency_call" class="form-label fw-bold">Breakglass/emergency call terdekat</label>
-                                    <input type="text" class="form-control" id="emergency_call" name="emergency_call" value="{{ old('emergency_call', $hraHotWork->emergency_call) }}" placeholder="Lokasi emergency call terdekat">
+                                    <input type="text" class="form-control" id="emergency_call" name="emergency_call" value="{{ old('emergency_call') }}" placeholder="Lokasi emergency call terdekat">
                                     <small class="text-muted">Sebutkan lokasi emergency call terdekat dari area kerja</small>
                                 </div>
                             </div>
@@ -567,8 +566,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Cek kondisi sistem sprinkler (jika tersedia)</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="sprinkler_check" value="1" {{ old('sprinkler_check', $hraHotWork->sprinkler_check) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="sprinkler_check" value="0" {{ old('sprinkler_check', $hraHotWork->sprinkler_check) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="sprinkler_check" value="1" {{ old('sprinkler_check') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="sprinkler_check" value="0" {{ old('sprinkler_check') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -578,8 +577,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Mematikan peralatan detektor api?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="detector_shutdown" value="1" {{ old('detector_shutdown', $hraHotWork->detector_shutdown) == '1' ? 'checked' : '' }} onchange="toggleDetectorShutdownFields(this.checked)"> Ya</label>
-                                    <label><input type="radio" name="detector_shutdown" value="0" {{ old('detector_shutdown', $hraHotWork->detector_shutdown) == '0' ? 'checked' : '' }} onchange="toggleDetectorShutdownFields(false)"> Tidak</label>
+                                    <label><input type="radio" name="detector_shutdown" value="1" {{ old('detector_shutdown') == '1' ? 'checked' : '' }} onchange="toggleDetectorShutdownFields(this.checked)"> Ya</label>
+                                    <label><input type="radio" name="detector_shutdown" value="0" {{ old('detector_shutdown') == '0' ? 'checked' : '' }} onchange="toggleDetectorShutdownFields(false)"> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -591,8 +590,8 @@
                                 <div class="condition-grid">
                                     <span class="parent-question">Pemberitahuan ke SHE & Security dibutuhkan?</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="notification_required" value="1" {{ old('notification_required', $hraHotWork->notification_required) == '1' ? 'checked' : '' }} onchange="toggleNotificationFields(this.checked)"> Ya</label>
-                                        <label><input type="radio" name="notification_required" value="0" {{ old('notification_required', $hraHotWork->notification_required) == '0' ? 'checked' : '' }} onchange="toggleNotificationFields(false)"> Tidak</label>
+                                        <label><input type="radio" name="notification_required" value="1" {{ old('notification_required') == '1' ? 'checked' : '' }} onchange="toggleNotificationFields(this.checked)"> Ya</label>
+                                        <label><input type="radio" name="notification_required" value="0" {{ old('notification_required') == '0' ? 'checked' : '' }} onchange="toggleNotificationFields(false)"> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -602,11 +601,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="notification_phone" class="form-label">Telepon (jika diperlukan notifikasi)</label>
-                                        <input type="text" class="form-control" id="notification_phone" name="notification_phone" value="{{ old('notification_phone', $hraHotWork->notification_phone) }}" placeholder="Nomor telepon">
+                                        <input type="text" class="form-control" id="notification_phone" name="notification_phone" value="{{ old('notification_phone') }}" placeholder="Nomor telepon">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="notification_name" class="form-label">Nama (jika diperlukan notifikasi)</label>
-                                        <input type="text" class="form-control" id="notification_name" name="notification_name" value="{{ old('notification_name', $hraHotWork->notification_name) }}" placeholder="Nama penanggung jawab">
+                                        <input type="text" class="form-control" id="notification_name" name="notification_name" value="{{ old('notification_name') }}" placeholder="Nama penanggung jawab">
                                     </div>
                                 </div>
                             </div>
@@ -616,8 +615,8 @@
                                 <div class="condition-grid">
                                     <span class="parent-question">Pemberitahuan ke Asuransi dibutuhkan?</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="insurance_notification" value="1" {{ old('insurance_notification', $hraHotWork->insurance_notification) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="insurance_notification" value="0" {{ old('insurance_notification', $hraHotWork->insurance_notification) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="insurance_notification" value="1" {{ old('insurance_notification') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="insurance_notification" value="0" {{ old('insurance_notification') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -627,8 +626,8 @@
                                 <div class="condition-grid">
                                     <span class="parent-question">Memastikan detektor sudah mati?</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="detector_confirmed_off" value="1" {{ old('detector_confirmed_off', $hraHotWork->detector_confirmed_off) == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="detector_confirmed_off" value="0" {{ old('detector_confirmed_off', $hraHotWork->detector_confirmed_off) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="detector_confirmed_off" value="1" {{ old('detector_confirmed_off') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="detector_confirmed_off" value="0" {{ old('detector_confirmed_off') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -639,8 +638,8 @@
                             <div class="condition-grid">
                                 <span class="parent-question">Gas monitoring untuk kemungkinan gas flammable dibutuhkan selama bekerja?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="gas_monitoring_required" value="1" {{ old('gas_monitoring_required', $hraHotWork->gas_monitoring_required) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="gas_monitoring_required" value="0" {{ old('gas_monitoring_required', $hraHotWork->gas_monitoring_required) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="gas_monitoring_required" value="1" {{ old('gas_monitoring_required') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="gas_monitoring_required" value="0" {{ old('gas_monitoring_required') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -652,9 +651,9 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center">
                         <button type="submit" class="btn btn-danger btn-lg px-5">
-                            <i class="fas fa-save me-2"></i>Update HRA Hot Work
+                            <i class="fas fa-save me-2"></i>Create HRA Hot Work
                         </button>
-                        <a href="{{ route('hra.hot-works.show', [$permit, $hraHotWork]) }}" class="btn btn-secondary btn-lg px-5 ms-3">
+                        <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary btn-lg px-5 ms-3">
                             <i class="fas fa-times me-2"></i>Cancel
                         </a>
                     </div>

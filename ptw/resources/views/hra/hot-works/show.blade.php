@@ -40,6 +40,28 @@
         transition: all 0.2s ease;
     }
     
+    /* Custom button styles */
+    .btn-outline-warning {
+        border-color: #ffc107 !important;
+        color: #ffc107 !important;
+        background-color: transparent !important;
+        border-width: 2px !important;
+        font-weight: 600;
+    }
+    
+    .btn-outline-warning:hover {
+        background-color: #ffc107 !important;
+        color: #212529 !important;
+        border-color: #ffc107 !important;
+        box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3) !important;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-warning:focus {
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
+    }
+    
     .badge-info-custom {
         background: linear-gradient(135deg, #17a2b8, #138496) !important;
         color: white;
@@ -68,17 +90,12 @@
                     HRA Permit: <strong>{{ $hraHotWork->hra_permit_number }}</strong>
                 </p>
             </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
-                </a>
-                
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <!-- Status Badge - Moved to the leftmost position -->
                 @if(($hraHotWork->approval_status ?? 'draft') === 'draft')
-                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
-                    <button type="button" class="btn btn-info" onclick="requestApproval()">
-                        <i class="fas fa-paper-plane me-2"></i>Request Approval
-                    </button>
-                    @endif
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                        <i class="fas fa-file-alt me-2"></i>Draft
+                    </span>
                 @elseif($hraHotWork->approval_status === 'pending')
                     <span class="badge bg-warning text-dark fs-6 px-3 py-2">
                         <i class="fas fa-clock me-2"></i>Waiting for Approval
@@ -91,6 +108,21 @@
                     <span class="badge bg-danger fs-6 px-3 py-2">
                         <i class="fas fa-times-circle me-2"></i>Rejected
                     </span>
+                @endif
+                
+                <!-- Back Button -->
+                <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
+                </a>
+                
+                <!-- Action Buttons -->
+                @if(($hraHotWork->approval_status ?? 'draft') === 'draft')
+                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <button type="button" class="btn btn-info" onclick="requestApproval()">
+                        <i class="fas fa-paper-plane me-2"></i>Request Approval
+                    </button>
+                    @endif
+                @elseif($hraHotWork->approval_status === 'rejected')
                     @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                     <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
                         <i class="fas fa-redo me-2"></i>Re-request Approval
@@ -98,12 +130,49 @@
                     @endif
                 @endif
 
-                @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
-                <a href="{{ route('hra.hot-works.edit', [$permit, $hraHotWork]) }}" class="btn btn-warning">
+                <!-- Edit Button - only visible when not pending or approved -->
+                @if(($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator') && 
+                    !in_array($hraHotWork->approval_status, ['pending', 'approved']))
+                <a href="{{ route('hra.hot-works.edit', [$permit, $hraHotWork]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>
                 @endif
             </div>
+            
+            <!-- Approval Actions Section - Moved outside for better organization -->
+            @if($hraHotWork->approval_status === 'pending')
+                @php
+                    $canApproveAsLocationOwner = $permit->locationOwner && $permit->locationOwner->id === auth()->id() && $hraHotWork->area_owner_approval === 'pending';
+                    $canApproveAsEHS = auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS' && $hraHotWork->ehs_approval === 'pending';
+                @endphp
+                
+                @if($canApproveAsLocationOwner || $canApproveAsEHS)
+                <div class="mt-3 p-3 bg-light border rounded">
+                    @if($canApproveAsLocationOwner)
+                    <div class="alert alert-info mb-2">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Your approval is required as Location Owner</strong>
+                    </div>
+                    @endif
+                    
+                    @if($canApproveAsEHS)
+                    <div class="alert alert-info mb-2">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Your approval is required as EHS Team Member</strong>
+                    </div>
+                    @endif
+                    
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success" onclick="approveHRA()">
+                            <i class="fas fa-check me-2"></i>Approve
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="rejectHRA()">
+                            <i class="fas fa-times me-2"></i>Reject
+                        </button>
+                    </div>
+                </div>
+                @endif
+            @endif
         </div>
     </div>
 
@@ -111,6 +180,38 @@
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Rejection Information -->
+    @if($hraHotWork->approval_status === 'rejected' && $hraHotWork->rejection_reason)
+        <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5 class="alert-heading mb-2">
+                        <i class="fas fa-times-circle me-2"></i>HRA Hot Work Rejected
+                    </h5>
+                    <p class="mb-2">
+                        <strong>Rejected by:</strong> {{ $hraHotWork->rejectedBy->name ?? 'System' }} 
+                        <small class="text-muted">on {{ $hraHotWork->rejected_at->format('d M Y, H:i') }}</small>
+                    </p>
+                    <div class="rejection-reason bg-white p-3 rounded border-start border-danger border-3">
+                        <strong>Reason for Rejection:</strong><br>
+                        <span class="text-dark">{{ $hraHotWork->rejection_reason }}</span>
+                    </div>
+                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            You can edit this HRA to address the issues mentioned above and then resubmit for approval.
+                        </small>
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
     @endif
 
@@ -497,9 +598,77 @@
     </div>
 </div>
 
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveModalLabel">Approve HRA Hot Work</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve this HRA Hot Work?</p>
+                <p class="text-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    By approving, you confirm that all safety requirements have been reviewed and are acceptable.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('hra.hot-works.process-approval', [$permit, $hraHotWork]) }}" method="POST" style="display: inline;">
+                    @csrf
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Approve
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject HRA Hot Work</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectForm" action="{{ route('hra.hot-works.process-approval', [$permit, $hraHotWork]) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="action" value="reject">
+                    <div class="mb-3">
+                        <label for="rejection_reason" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="rejection_reason" id="rejection_reason" rows="4" required 
+                                  placeholder="Please provide a detailed reason for rejecting this HRA Hot Work..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="rejectForm" class="btn btn-danger">
+                    <i class="fas fa-times me-2"></i>Reject
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function requestApproval() {
     const modal = new bootstrap.Modal(document.getElementById('requestApprovalModal'));
+    modal.show();
+}
+
+function approveHRA() {
+    const modal = new bootstrap.Modal(document.getElementById('approveModal'));
+    modal.show();
+}
+
+function rejectHRA() {
+    const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
     modal.show();
 }
 </script>
