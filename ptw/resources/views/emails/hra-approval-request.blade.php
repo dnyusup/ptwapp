@@ -268,13 +268,13 @@
                 <h3>🏢 Main Permit Information</h3>
                 
                 <div class="info-row">
-                    <div class="info-label">Area Owner:</div>
-                    <div class="info-value">{{ $permit->area_owner_name ?? 'Not specified' }}</div>
+                    <div class="info-label">Location Owner:</div>
+                    <div class="info-value">{{ $permit->locationOwner ? $permit->locationOwner->name : 'Not specified' }}</div>
                 </div>
                 
                 <div class="info-row">
-                    <div class="info-label">Area Owner Email:</div>
-                    <div class="info-value">{{ $permit->area_owner_email ?? 'Not specified' }}</div>
+                    <div class="info-label">Location Owner Email:</div>
+                    <div class="info-value">{{ $permit->locationOwner ? $permit->locationOwner->email : 'Not specified' }}</div>
                 </div>
                 
                 <div class="info-row">

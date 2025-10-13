@@ -476,7 +476,7 @@
             <div class="modal-body">
                 <p>Anda akan mengirim permintaan approval untuk HRA Hot Work ini kepada:</p>
                 <ul>
-                    <li><strong>Pemilik Area:</strong> {{ $permit->area_owner_name ?? 'Belum ditentukan' }}</li>
+                    <li><strong>Pemilik Area:</strong> {{ $permit->locationOwner ? $permit->locationOwner->name : 'Belum ditentukan' }}</li>
                     <li><strong>Tim EHS</strong></li>
                 </ul>
                 <p class="text-warning">

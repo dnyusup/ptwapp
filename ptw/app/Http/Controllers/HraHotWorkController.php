@@ -133,6 +133,9 @@ class HraHotWorkController extends Controller
      */
     public function show(PermitToWork $permit, HraHotWork $hraHotWork)
     {
+        // Load the locationOwner relationship
+        $permit->load('locationOwner');
+        
         return view('hra.hot-works.show', compact('permit', 'hraHotWork'));
     }
 
@@ -223,6 +226,9 @@ class HraHotWorkController extends Controller
      */
     public function requestApproval(PermitToWork $permit, HraHotWork $hraHotWork)
     {
+        // Load the locationOwner relationship
+        $permit->load('locationOwner');
+        
         // Check if already requested approval
         if ($hraHotWork->approval_status !== 'draft') {
             return redirect()->back()->with('error', 'Approval has already been requested for this HRA.');
@@ -240,9 +246,10 @@ class HraHotWorkController extends Controller
 
         // Send email notification
         try {
-            // Get email addresses
-            $areaOwnerEmail = $permit->area_owner_email;
-            $ehsEmail = $permit->ehs_email ?? config('mail.ehs_default_email', 'ehs@company.com');
+            // Get email addresses from relationships
+            $locationOwner = $permit->locationOwner;
+            $areaOwnerEmail = $locationOwner ? $locationOwner->email : null;
+            $ehsEmail = config('mail.ehs_default_email', 'ehs@company.com');
             
             // Combine both emails for notification
             $recipients = array_filter([$areaOwnerEmail, $ehsEmail]);
