@@ -370,8 +370,8 @@
                                 <span class="parent-question">Ventilasi cukup di lokasi pekerjaan?</span>
                                 <div class="checkbox-group">
                                     <span class="small">(</span>
-                                    <label><input type="radio" name="q12_ventilation_type" value="alami" {{ old('q12_ventilation_type') == 'alami' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> alami</label>
-                                    <label><input type="radio" name="q12_ventilation_type" value="buatan" {{ old('q12_ventilation_type') == 'buatan' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> buatan</label>
+                                    <label><input type="radio" name="q12_ventilation_type" value="alami" {{ old('q12_ventilation_type', $hraHotWork->q12_ventilation_type) == 'alami' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> alami</label>
+                                    <label><input type="radio" name="q12_ventilation_type" value="buatan" {{ old('q12_ventilation_type', $hraHotWork->q12_ventilation_type) == 'buatan' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> buatan</label>
                                     <span class="small">)</span>
                                     <label><input type="radio" id="q12_ventilation_adequate_ya" name="q12_ventilation_adequate" value="1" {{ old('q12_ventilation_adequate', $hraHotWork->q12_ventilation_adequate) == '1' ? 'checked' : '' }} disabled> Ya</label>
                                     <label><input type="radio" id="q12_ventilation_adequate_tidak" name="q12_ventilation_adequate" value="0" {{ old('q12_ventilation_adequate', $hraHotWork->q12_ventilation_adequate) == '0' ? 'checked' : '' }} disabled> Tidak</label>
@@ -861,6 +861,32 @@ function toggleQ12Checkbox() {
     }
 }
 
+function initializeConditionalFields() {
+    // Initialize Q7 actions field
+    const q7RadioYa = document.querySelector('input[name="q7_flammable_structures"][value="1"]');
+    if (q7RadioYa && q7RadioYa.checked) {
+        toggleActionField('q7_actions_field', true);
+    }
+    
+    // Initialize fire watch name field
+    const fireWatchRadioYa = document.querySelector('input[name="fire_watch_officer"][value="1"]');
+    if (fireWatchRadioYa && fireWatchRadioYa.checked) {
+        toggleFireWatchField(true);
+    }
+    
+    // Initialize detector shutdown fields
+    const detectorShutdownRadioYa = document.querySelector('input[name="detector_shutdown"][value="1"]');
+    if (detectorShutdownRadioYa && detectorShutdownRadioYa.checked) {
+        toggleDetectorShutdownFields(true);
+        
+        // Check if notification is required and show contact fields
+        const notificationRadioYa = document.querySelector('input[name="notification_required"][value="1"]');
+        if (notificationRadioYa && notificationRadioYa.checked) {
+            toggleNotificationFields(true);
+        }
+    }
+}
+
 // Initialize on page load
 $(document).ready(function() {
     // Initialize Select2 for searchable selects
@@ -887,6 +913,9 @@ $(document).ready(function() {
     
     // Initialize Q12 checkbox state
     toggleQ12Checkbox();
+    
+    // Initialize conditional fields based on existing data
+    initializeConditionalFields();
 
     // Handle datetime validation
     $('#start_datetime').on('change', function() {
