@@ -261,21 +261,33 @@ input[type="radio"].is-invalid {
                                        value="{{ old('work_location', $permit->work_location) }}" readonly>
                                 <small class="text-muted">Otomatis dari data permit</small>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="start_datetime" class="form-label">Tanggal & Jam Mulai</label>
-                                <input type="datetime-local" class="form-control" id="start_datetime" name="start_datetime" 
-                                       value="{{ old('start_datetime') }}" 
-                                       min="{{ $permit->start_date->format('Y-m-d\TH:i') }}"
-                                       max="{{ $permit->end_date->format('Y-m-d\T23:59') }}" required>
-                                <small class="text-muted">Harus dalam rentang: {{ $permit->start_date->format('d M Y') }} - {{ $permit->end_date->format('d M Y') }}</small>
+                            <div class="col-md-3 mb-3">
+                                <label for="start_date" class="form-label">Tanggal Mulai</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" 
+                                       value="{{ old('start_date', date('Y-m-d')) }}" 
+                                       min="{{ $permit->start_date->format('Y-m-d') }}"
+                                       max="{{ $permit->end_date->format('Y-m-d') }}" required onchange="updateEndDate()">
+                                <small class="text-muted">Default: hari ini</small>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="end_datetime" class="form-label">Tanggal & Jam Selesai</label>
-                                <input type="datetime-local" class="form-control" id="end_datetime" name="end_datetime" 
-                                       value="{{ old('end_datetime') }}" 
-                                       min="{{ $permit->start_date->format('Y-m-d\TH:i') }}"
-                                       max="{{ $permit->end_date->format('Y-m-d\T23:59') }}" required>
-                                <small class="text-muted">Harus dalam rentang: {{ $permit->start_date->format('d M Y') }} - {{ $permit->end_date->format('d M Y') }}</small>
+                            <div class="col-md-3 mb-3">
+                                <label for="start_time" class="form-label">Jam Mulai</label>
+                                <input type="time" class="form-control" id="start_time" name="start_time" 
+                                       value="{{ old('start_time', '08:00') }}" required onchange="updateEndTime()">
+                                <small class="text-muted">Default: 08:00</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="end_date" class="form-label">Tanggal Selesai</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" 
+                                       value="{{ old('end_date', date('Y-m-d')) }}" 
+                                       min="{{ $permit->start_date->format('Y-m-d') }}"
+                                       max="{{ $permit->end_date->format('Y-m-d') }}" readonly required>
+                                <small class="text-muted">Otomatis sama dengan tanggal mulai</small>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="end_time" class="form-label">Jam Selesai</label>
+                                <input type="time" class="form-control" id="end_time" name="end_time" 
+                                       value="{{ old('end_time', '17:00') }}" required>
+                                <small class="text-muted">Otomatis +9 jam dari jam mulai</small>
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="work_description" class="form-label">Deskripsi Pekerjaan</label>
@@ -800,6 +812,10 @@ $(document).ready(function() {
     $('#worker_name').on('select2:clear', function(e) {
         $('#worker_phone').val('');
     });
+    
+    // Initialize end date and time on page load
+    updateEndDate();
+    updateEndTime();
 
     // Handle datetime validation
     $('#start_datetime').on('change', function() {
@@ -1066,6 +1082,31 @@ function updateWorkerPhone() {
         phoneInput.value = phone || '';
     } else {
         phoneInput.value = '';
+    }
+}
+
+function updateEndDate() {
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date');
+    
+    if (startDate) {
+        endDate.value = startDate;
+    }
+}
+
+function updateEndTime() {
+    const startTime = document.getElementById('start_time').value;
+    const endTime = document.getElementById('end_time');
+    
+    if (startTime) {
+        // Parse start time and add 9 hours
+        const [hours, minutes] = startTime.split(':');
+        const startHour = parseInt(hours);
+        const endHour = (startHour + 9) % 24; // Handle overflow to next day
+        
+        // Format end time
+        const formattedEndTime = String(endHour).padStart(2, '0') + ':' + minutes;
+        endTime.value = formattedEndTime;
     }
 }
 

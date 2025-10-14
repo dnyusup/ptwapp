@@ -68,8 +68,10 @@ class HraHotWorkController extends Controller
             'worker_phone' => 'nullable|string|max:20',
             'supervisor_name' => 'required|string|max:255',
             'work_location' => 'required|string|max:255',
-            'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime',
+            'start_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_date' => 'required|date',
+            'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
             // Hot Work Safety Checklist
             'q1_alternative_considered' => 'nullable|boolean',
@@ -113,6 +115,13 @@ class HraHotWorkController extends Controller
             'detector_confirmed_off' => 'nullable|boolean',
             'gas_monitoring_required' => 'nullable|boolean',
         ]);
+        
+        // Combine date and time fields into datetime
+        $validated['start_datetime'] = $validated['start_date'] . ' ' . $validated['start_time'];
+        $validated['end_datetime'] = $validated['end_date'] . ' ' . $validated['end_time'];
+        
+        // Remove the separate date and time fields as they're not needed in database
+        unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
         
         // Generate HRA permit number
         $hraPermitNumber = HraHotWork::generateHraPermitNumber($permit->permit_number);
@@ -170,8 +179,10 @@ class HraHotWorkController extends Controller
             'worker_phone' => 'nullable|string|max:20',
             'supervisor_name' => 'required|string|max:255',
             'work_location' => 'required|string|max:255',
-            'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime',
+            'start_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_date' => 'required|date',
+            'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
             // Hot Work Safety Checklist
             'q1_alternative_considered' => 'nullable|boolean',
@@ -215,6 +226,13 @@ class HraHotWorkController extends Controller
             'detector_confirmed_off' => 'nullable|boolean',
             'gas_monitoring_required' => 'nullable|boolean',
         ]);
+        
+        // Combine date and time fields into datetime
+        $validated['start_datetime'] = $validated['start_date'] . ' ' . $validated['start_time'];
+        $validated['end_datetime'] = $validated['end_date'] . ' ' . $validated['end_time'];
+        
+        // Remove the separate date and time fields as they're not needed in database
+        unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
         
         $hraHotWork->update($validated);
         
