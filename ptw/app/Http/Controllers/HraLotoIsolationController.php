@@ -225,12 +225,15 @@ class HraLotoIsolationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PermitToWork $permit, HraLotoIsolation $hraLotoIsolation)
+    public function show(PermitToWork $permit, $hraLotoIsolationId)
     {
-        // Ensure the HRA belongs to the permit
-        if ($hraLotoIsolation->permit_to_work_id !== $permit->id) {
-            abort(404);
-        }
+        // Find the HRA LOTO record explicitly
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
+
+        // Load relationships if needed
+        $hraLotoIsolation->load('user');
 
         return view('hra.loto-isolations.show', compact('permit', 'hraLotoIsolation'));
     }
@@ -238,12 +241,12 @@ class HraLotoIsolationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(PermitToWork $permit, HraLotoIsolation $hraLotoIsolation)
+    public function edit(PermitToWork $permit, $hraLotoIsolationId)
     {
-        // Ensure the HRA belongs to the permit
-        if ($hraLotoIsolation->permit_to_work_id !== $permit->id) {
-            abort(404);
-        }
+        // Find the HRA LOTO record explicitly
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
 
         return view('hra.loto-isolations.edit', compact('permit', 'hraLotoIsolation'));
     }
@@ -251,12 +254,12 @@ class HraLotoIsolationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PermitToWork $permit, HraLotoIsolation $hraLotoIsolation)
+    public function update(Request $request, PermitToWork $permit, $hraLotoIsolationId)
     {
-        // Ensure the HRA belongs to the permit
-        if ($hraLotoIsolation->permit_to_work_id !== $permit->id) {
-            abort(404);
-        }
+        // Find the HRA LOTO record explicitly
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
 
         $validated = $request->validate([
             'worker_name' => 'required|string|max:255',
@@ -403,12 +406,12 @@ class HraLotoIsolationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PermitToWork $permit, HraLotoIsolation $hraLotoIsolation)
+    public function destroy(PermitToWork $permit, $hraLotoIsolationId)
     {
-        // Ensure the HRA belongs to the permit
-        if ($hraLotoIsolation->permit_to_work_id !== $permit->id) {
-            abort(404);
-        }
+        // Find the HRA LOTO record explicitly
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
 
         $hraLotoIsolation->delete();
 
@@ -419,8 +422,13 @@ class HraLotoIsolationController extends Controller
     /**
      * Download HRA as PDF
      */
-    public function downloadPdf(PermitToWork $permit, HraLotoIsolation $hraLotoIsolation)
+    public function downloadPdf(PermitToWork $permit, $hraLotoIsolationId)
     {
+        // Find the HRA LOTO record explicitly
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
+
         // Load relationships
         $permit->load([
             'permitIssuer', 
