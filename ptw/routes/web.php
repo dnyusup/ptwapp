@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/edit', [HraLotoIsolationController::class, 'edit'])->name('hra.loto-isolations.edit');
     Route::put('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}', [HraLotoIsolationController::class, 'update'])->name('hra.loto-isolations.update');
     Route::delete('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}', [HraLotoIsolationController::class, 'destroy'])->name('hra.loto-isolations.destroy');
+    Route::get('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/download-pdf', [HraLotoIsolationController::class, 'downloadPdf'])->name('hra.loto-isolations.download-pdf');
     
     // HRA Line Breaking routes
     Route::get('/permits/{permit}/hra/line-breakings', [HraLineBreakingController::class, 'index'])->name('hra.line-breakings.index');
