@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\HraLotoIsolation;
 use App\Models\PermitToWork;
 use App\Models\User;
