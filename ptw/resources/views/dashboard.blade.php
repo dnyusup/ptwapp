@@ -78,7 +78,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card gray">
+            <div class="card summary-card gray" style="background: linear-gradient(135deg, #78909C 0%, #546E7A 100%) !important; color: white !important;">
                 <div class="card-body">
                     <div class="summary-content">
                         <div class="summary-number">{{ $stats['draft_permits'] ?? $stats['in_progress_permits'] }}</div>
