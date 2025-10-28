@@ -64,8 +64,8 @@
             <div class="card summary-card orange">
                 <div class="card-body">
                     <div class="summary-content">
-                        <div class="summary-number">{{ $stats['pending_permits'] }}</div>
-                        <div class="summary-label">Pending</div>
+                        <div class="summary-number">{{ $stats['waiting_approval_permits'] ?? $stats['pending_permits'] }}</div>
+                        <div class="summary-label">Waiting Approval</div>
                         <div class="summary-detail">Selengkapnya</div>
                     </div>
                     <div class="summary-icon">
@@ -81,8 +81,8 @@
             <div class="card summary-card red">
                 <div class="card-body">
                     <div class="summary-content">
-                        <div class="summary-number">{{ $stats['in_progress_permits'] }}</div>
-                        <div class="summary-label">In Progress</div>
+                        <div class="summary-number">{{ $stats['draft_permits'] ?? $stats['in_progress_permits'] }}</div>
+                        <div class="summary-label">Draft</div>
                         <div class="summary-detail">Selengkapnya</div>
                     </div>
                     <div class="summary-icon">
