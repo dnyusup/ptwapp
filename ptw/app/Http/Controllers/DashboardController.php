@@ -15,8 +15,11 @@ class DashboardController extends Controller
         
         $stats = [
             'total_permits' => PermitToWork::count(),
-            'pending_permits' => PermitToWork::where('status', 'pending_approval')->count(),
+            'waiting_approval_permits' => PermitToWork::where('status', 'pending_approval')->count(),
             'active_permits' => PermitToWork::where('status', 'active')->count(),
+            'draft_permits' => PermitToWork::where('status', 'draft')->count(),
+            // Keep old keys for backward compatibility
+            'pending_permits' => PermitToWork::where('status', 'pending_approval')->count(),
             'in_progress_permits' => PermitToWork::where('status', 'in_progress')->count(),
         ];
 

@@ -78,7 +78,7 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card red">
+            <div class="card summary-card gray">
                 <div class="card-body">
                     <div class="summary-content">
                         <div class="summary-number">{{ $stats['draft_permits'] ?? $stats['in_progress_permits'] }}</div>
@@ -86,7 +86,7 @@
                         <div class="summary-detail">Selengkapnya</div>
                     </div>
                     <div class="summary-icon">
-                        <i class="fas fa-cogs"></i>
+                        <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="summary-arrow">
                         <i class="fas fa-chevron-right"></i>
