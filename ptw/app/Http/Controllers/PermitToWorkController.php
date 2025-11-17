@@ -64,7 +64,7 @@ class PermitToWorkController extends Controller
             'authorizer_id' => 'nullable|exists:users,id',
         ]);
 
-        // Additional validation: end_date should not be more than 5 days after start_date
+        // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)
         $request->validate([
             'end_date' => [
                 'required',
@@ -72,10 +72,10 @@ class PermitToWorkController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     $startDate = \Carbon\Carbon::parse($request->start_date);
                     $endDate = \Carbon\Carbon::parse($value);
-                    $maxEndDate = $startDate->copy()->addDays(4);
+                    $maxEndDate = $startDate->copy()->addDays(4); // 4 days after = 5 days total including start date
                     
                     if ($endDate->gt($maxEndDate)) {
-                        $fail('Tanggal selesai tidak boleh lebih dari 5 hari setelah tanggal mulai.');
+                        $fail('Tanggal selesai maksimal 5 hari termasuk tanggal mulai.');
                     }
                 },
             ],

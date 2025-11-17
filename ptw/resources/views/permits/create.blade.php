@@ -392,7 +392,7 @@
                                         <i class="fas fa-calendar-minus me-2 text-danger"></i>End Date *
                                     </label>
                                     <div class="form-text">
-                                        <small class="text-muted">Maksimal 5 hari dari tanggal mulai</small>
+                                        <small class="text-muted">Maksimal 5 hari termasuk tanggal mulai</small>
                                     </div>
                                     @error('end_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -757,9 +757,9 @@ $(document).ready(function() {
             // Set minimum end_date to same as start_date
             endDateInput.setAttribute('min', startDateInput.value);
             
-            // Set maximum end_date to 5 days after start_date
+            // Set maximum end_date to 4 days after start_date (5 days total including start date)
             const maxEndDate = new Date(startDate);
-            maxEndDate.setDate(maxEndDate.getDate() + 5);
+            maxEndDate.setDate(maxEndDate.getDate() + 4);
             const maxEndDateString = maxEndDate.toISOString().split('T')[0];
             endDateInput.setAttribute('max', maxEndDateString);
 
@@ -774,7 +774,7 @@ $(document).ready(function() {
             // Update form text with specific dates
             const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
             if (endDateFormText) {
-                endDateFormText.textContent = `Maksimal ${maxEndDate.toLocaleDateString('id-ID')} (5 hari dari tanggal mulai)`;
+                endDateFormText.textContent = `Maksimal ${maxEndDate.toLocaleDateString('id-ID')} (5 hari termasuk tanggal mulai)`;
             }
         } else {
             // Reset end_date constraints if no start_date is selected
@@ -785,7 +785,7 @@ $(document).ready(function() {
             // Reset form text
             const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
             if (endDateFormText) {
-                endDateFormText.textContent = 'Maksimal 5 hari dari tanggal mulai';
+                endDateFormText.textContent = 'Maksimal 5 hari termasuk tanggal mulai';
             }
         }
     }
@@ -799,7 +799,7 @@ $(document).ready(function() {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
             const maxDate = new Date(startDate);
-            maxDate.setDate(maxDate.getDate() + 5);
+            maxDate.setDate(maxDate.getDate() + 4); // 4 days after = 5 days total
 
             if (endDate < startDate) {
                 alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
@@ -808,7 +808,7 @@ $(document).ready(function() {
             }
 
             if (endDate > maxDate) {
-                alert('Tanggal selesai maksimal 5 hari dari tanggal mulai!');
+                alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
                 endDateInput.value = '';
                 return;
             }
