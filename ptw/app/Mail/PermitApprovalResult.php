@@ -12,21 +12,30 @@ class PermitApprovalResult extends Mailable
     use Queueable, SerializesModels;
 
     public $permit;
-    public $result; // 'approved' or 'rejected'
+    public $result; // true for approved, false for rejected
     public $comment;
+    public $type; // 'permit' or 'extension'
 
-    public function __construct(PermitToWork $permit, $result, $comment = null)
+    public function __construct(PermitToWork $permit, $result, $type = 'permit', $comment = null)
     {
         $this->permit = $permit;
         $this->result = $result;
+        $this->type = $type;
         $this->comment = $comment;
     }
 
     public function build()
     {
-        $subject = $this->result === 'approved'
-            ? 'Permit Approved - ' . $this->permit->permit_number
-            : 'Permit Rejected - ' . $this->permit->permit_number;
+        if ($this->type === 'extension') {
+            $subject = $this->result 
+                ? 'Permit Extension Approved - ' . $this->permit->permit_number
+                : 'Permit Extension Rejected - ' . $this->permit->permit_number;
+        } else {
+            $subject = $this->result 
+                ? 'Permit Approved - ' . $this->permit->permit_number
+                : 'Permit Rejected - ' . $this->permit->permit_number;
+        }
+        
         return $this->subject($subject)
             ->view('emails.permit-approval-result');
     }

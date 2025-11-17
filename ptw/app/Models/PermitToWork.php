@@ -47,6 +47,9 @@ class PermitToWork extends Model
         'issued_at',
         'authorized_at',
         'received_at',
+        'extension_reason',
+        'extended_at',
+        'extended_by',
     ];
 
     protected $casts = [
@@ -64,6 +67,7 @@ class PermitToWork extends Model
         'authorized_at' => 'datetime',
         'received_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'extended_at' => 'datetime',
     ];
 
     public function user()
@@ -94,6 +98,11 @@ class PermitToWork extends Model
     public function rejectedBy()
     {
         return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    public function extendedBy()
+    {
+        return $this->belongsTo(User::class, 'extended_by');
     }
 
     public function methodStatement()
@@ -177,6 +186,49 @@ class PermitToWork extends Model
        // }
 
         return true;
+    }
+
+    /**
+     * Check if permit has expired based on end_date
+     */
+    public function isExpired()
+    {
+        if (!$this->end_date || $this->status !== 'active') {
+            return false;
+        }
+        
+        return now()->gt($this->end_date->endOfDay());
+    }
+
+    /**
+     * Update expired permits status from active to expired
+     */
+    public static function updateExpiredPermits()
+    {
+        return static::where('status', 'active')
+            ->where('end_date', '<', now()->startOfDay())
+            ->update(['status' => 'expired']);
+    }
+
+    /**
+     * Scope to get expired permits
+     */
+    public function scopeExpired($query)
+    {
+        return $query->where('status', 'expired')
+            ->orWhere(function($q) {
+                $q->where('status', 'active')
+                  ->where('end_date', '<', now()->startOfDay());
+            });
+    }
+
+    /**
+     * Scope to get active and non-expired permits
+     */
+    public function scopeActiveAndValid($query)
+    {
+        return $query->where('status', 'active')
+            ->where('end_date', '>=', now()->startOfDay());
     }
 
     protected static function boot()

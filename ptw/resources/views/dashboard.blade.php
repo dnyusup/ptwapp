@@ -96,6 +96,64 @@
         </div>
     </div>
 
+    <!-- Additional Stats Cards Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card summary-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
+                <div class="card-body">
+                    <div class="summary-content">
+                        <div class="summary-number">{{ $stats['expired_permits'] }}</div>
+                        <div class="summary-label">Expired</div>
+                        <div class="summary-detail">Selengkapnya</div>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="summary-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card summary-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white;">
+                <div class="card-body">
+                    <div class="summary-content">
+                        <div class="summary-number">{{ $stats['completed_permits'] }}</div>
+                        <div class="summary-label">Completed</div>
+                        <div class="summary-detail">Selengkapnya</div>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="summary-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card summary-card" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); color: white;">
+                <div class="card-body">
+                    <div class="summary-content">
+                        <div class="summary-number">{{ $stats['pending_extension_permits'] }}</div>
+                        <div class="summary-label">Pending Extension</div>
+                        <div class="summary-detail">Selengkapnya</div>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <div class="summary-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <!-- Empty placeholder for future stats -->
+        </div>
+    </div>
+
     <!-- Quick Actions & Recent Activity -->
     <div class="row">
         <!-- Quick Actions -->
@@ -166,6 +224,10 @@
                                             <span class="badge bg-success">Approved</span>
                                         @elseif($permit->status === 'active')
                                             <span class="badge bg-success">Active</span>
+                                        @elseif($permit->status === 'expired')
+                                            <span class="badge bg-danger">Expired</span>
+                                        @elseif($permit->status === 'pending_extension_approval')
+                                            <span class="badge bg-warning">Pending Extension</span>
                                         @elseif($permit->status === 'in_progress')
                                             <span class="badge bg-info">In Progress</span>
                                         @elseif($permit->status === 'completed')

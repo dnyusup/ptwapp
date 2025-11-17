@@ -280,6 +280,20 @@
                     </button>
                 @endif
 
+                {{-- Extension Approval Buttons for EHS --}}
+                @if($isEHS && $permit->status === 'pending_extension_approval')
+                    <form method="POST" action="{{ route('permits.approve-extension', $permit) }}" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success" 
+                                onclick="return confirm('Are you sure you want to approve this permit extension?')">
+                            <i class="fas fa-check me-2"></i>Approve Extension
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectExtensionModal">
+                        <i class="fas fa-times me-2"></i>Reject Extension
+                    </button>
+                @endif
+
                 @if(($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator') && 
                     in_array($permit->status, ['draft', 'rejected']))
                     <a href="{{ route('permits.edit', $permit) }}" class="btn btn-primary">
@@ -340,6 +354,16 @@
                                     @case('completed')
                                         <span class="badge bg-info px-3 py-2 fs-7 rounded-pill">
                                             <i class="fas fa-flag-checkered me-1"></i>Completed
+                                        </span>
+                                        @break
+                                    @case('expired')
+                                        <span class="badge bg-danger px-3 py-2 fs-7 rounded-pill">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Expired
+                                        </span>
+                                        @break
+                                    @case('pending_extension_approval')
+                                        <span class="badge bg-warning px-3 py-2 fs-7 rounded-pill">
+                                            <i class="fas fa-clock me-1"></i>Pending Extension Approval
                                         </span>
                                         @break
                                     @case('draft')
@@ -1074,14 +1098,23 @@
             </div>
             @endif
 
-            <!-- Mark as Complete -->
-            @if($permit->status === 'active' && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))
-            <div class="card border-0 shadow-sm">
+            <!-- Work Completion and Extension -->
+            @if(($permit->status === 'active' || $permit->status === 'expired' || $permit->status === 'pending_extension_approval') && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0">Work Completion</h5>
+                    <h5 class="mb-0">
+                        @if($permit->status === 'expired')
+                            <i class="fas fa-exclamation-triangle text-danger me-2"></i>Expired Permit Actions
+                        @elseif($permit->status === 'pending_extension_approval')
+                            <i class="fas fa-clock text-warning me-2"></i>Extension Pending Approval
+                        @else
+                            Work Completion
+                        @endif
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('permits.complete', $permit) }}">
+                    <!-- Mark as Complete -->
+                    <form method="POST" action="{{ route('permits.complete', $permit) }}" class="mb-3">
                         @csrf
                         @method('PATCH')
                         <div class="d-grid">
@@ -1091,6 +1124,27 @@
                             </button>
                         </div>
                     </form>
+
+                    @if($permit->status === 'expired')
+                    <!-- Extend Permit -->
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#extendPermitModal">
+                            <i class="fas fa-calendar-plus me-2"></i>Extend Permit
+                        </button>
+                    </div>
+                    @elseif($permit->status === 'pending_extension_approval')
+                    <!-- Extension Status Info -->
+                    <div class="alert alert-warning mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Extension request submitted. Waiting for EHS approval.
+                        @if($permit->extension_reason)
+                            <br><strong>Reason:</strong> {{ $permit->extension_reason }}
+                        @endif
+                        @if($permit->end_date)
+                            <br><strong>Requested End Date:</strong> {{ $permit->end_date->format('d M Y') }}
+                        @endif
+                    </div>
+                    @endif
                 </div>
             </div>
             @endif
@@ -1239,6 +1293,44 @@
                     </button>
                     <button type="submit" class="btn btn-danger">
                         <i class="fas fa-times-circle me-2"></i>Reject Permit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Extension Modal -->
+<div class="modal fade" id="rejectExtensionModal" tabindex="-1" aria-labelledby="rejectExtensionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('permits.reject-extension', $permit) }}">
+                @csrf
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="rejectExtensionModalLabel">
+                        <i class="fas fa-times-circle me-2"></i>Reject Extension Request
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Are you sure you want to reject this extension request? The permit will remain expired.
+                    </div>
+                    <div class="mb-3">
+                        <label for="extension_rejection_reason" class="form-label">
+                            <i class="fas fa-comment me-2"></i>Reason for Rejection <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="extension_rejection_reason" name="rejection_reason" 
+                                rows="3" placeholder="Please provide a reason for rejecting this extension request..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times-circle me-2"></i>Reject Extension
                     </button>
                 </div>
             </form>
@@ -1440,7 +1532,87 @@ document.getElementById('inspectionModal').addEventListener('show.bs.modal', fun
         field.classList.remove('is-invalid');
     });
 });
+
+// Extend Permit Modal functionality
+document.addEventListener('DOMContentLoaded', function() {
+    @if($permit->status === 'expired' && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))
+    // Calculate max extend date (5 days after current end date)
+    const endDate = new Date('{{ $permit->end_date->format('Y-m-d') }}');
+    const maxDate = new Date(endDate);
+    maxDate.setDate(maxDate.getDate() + 5);
+    
+    // Set min date to current end date + 1 day
+    const minDate = new Date(endDate);
+    minDate.setDate(minDate.getDate() + 1);
+    
+    const extendDateInput = document.getElementById('extend_end_date');
+    if (extendDateInput) {
+        extendDateInput.min = minDate.toISOString().split('T')[0];
+        extendDateInput.max = maxDate.toISOString().split('T')[0];
+        
+        // Set default value to max date
+        extendDateInput.value = maxDate.toISOString().split('T')[0];
+    }
+    @endif
+});
 </script>
+
+<!-- Extend Permit Modal -->
+@if($permit->status === 'expired' && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))
+<div class="modal fade" id="extendPermitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-calendar-plus me-2"></i>Extend Permit
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ route('permits.extend', $permit) }}">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Current End Date:</strong> {{ $permit->end_date->format('d M Y') }}<br>
+                        <small>You can extend this permit up to <strong>5 days</strong> from the original end date.</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="extend_end_date" class="form-label fw-bold">New End Date</label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="extend_end_date" 
+                               name="end_date" 
+                               required>
+                        <div class="form-text">
+                            Maximum date: {{ $permit->end_date->addDays(5)->format('d M Y') }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="extension_reason" class="form-label fw-bold">Reason for Extension</label>
+                        <textarea class="form-control" 
+                                  id="extension_reason" 
+                                  name="extension_reason" 
+                                  rows="3" 
+                                  placeholder="Please provide reason for extending this permit..."
+                                  required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-calendar-plus me-2"></i>Extend Permit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 
 @include('layouts.sidebar-scripts')
 @endsection

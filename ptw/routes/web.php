@@ -34,6 +34,39 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('permits', PermitToWorkController::class);
     
+    // Test route for expired permits functionality
+    Route::get('/test/expired-permits', function() {
+        $now = \Carbon\Carbon::now();
+        
+        // Get counts before update
+        $activeCount = \App\Models\PermitToWork::where('status', 'active')->count();
+        $expiredCount = \App\Models\PermitToWork::where('status', 'expired')->count();
+        
+        // Run the update
+        $updatedCount = \App\Models\PermitToWork::updateExpiredPermits();
+        
+        // Get counts after update
+        $activeCountAfter = \App\Models\PermitToWork::where('status', 'active')->count();
+        $expiredCountAfter = \App\Models\PermitToWork::where('status', 'expired')->count();
+        
+        return response()->json([
+            'current_date' => $now->format('Y-m-d H:i:s'),
+            'cutoff_date' => $now->startOfDay()->format('Y-m-d H:i:s'),
+            'before_update' => [
+                'active_permits' => $activeCount,
+                'expired_permits' => $expiredCount,
+            ],
+            'after_update' => [
+                'active_permits' => $activeCountAfter,
+                'expired_permits' => $expiredCountAfter,
+            ],
+            'permits_updated' => $updatedCount,
+            'message' => $updatedCount > 0 ? 
+                "{$updatedCount} permit(s) updated from active to expired" : 
+                "No permits needed to be updated"
+        ]);
+    })->name('test.expired');
+    
         // Additional permit actions
     Route::post('/permits/{permit}/submit', [PermitToWorkController::class, 'submit'])->name('permits.submit');
     Route::post('/permits/{permit}/approve', [PermitToWorkController::class, 'approve'])->name('permits.approve');
@@ -41,6 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/permits/{permit}/resubmit', [PermitToWorkController::class, 'resubmit'])->name('permits.resubmit');
     Route::post('/permits/{permit}/request-approval', [PermitToWorkController::class, 'requestApproval'])->name('permits.request-approval');
     Route::patch('/permits/{permit}/complete', [PermitToWorkController::class, 'complete'])->name('permits.complete');
+    Route::patch('/permits/{permit}/extend', [PermitToWorkController::class, 'extend'])->name('permits.extend');
+    Route::post('/permits/{permit}/approve-extension', [PermitToWorkController::class, 'approveExtension'])->name('permits.approve-extension');
+    Route::post('/permits/{permit}/reject-extension', [PermitToWorkController::class, 'rejectExtension'])->name('permits.reject-extension');
     Route::get('/permits/{permit}/download-pdf', [PermitToWorkController::class, 'downloadPdf'])->name('permits.download-pdf');
     
     // User management routes (Administrator only)

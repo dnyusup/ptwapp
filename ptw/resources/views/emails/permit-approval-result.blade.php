@@ -202,7 +202,23 @@
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
                 <td class="email-header">
-                    <h1>Permit Approval Notification</h1>
+                    @if($type === 'extension')
+                        <h1>
+                            @if($result)
+                                ✅ Permit Extension Approved
+                            @else
+                                ❌ Permit Extension Rejected
+                            @endif
+                        </h1>
+                    @else
+                        <h1>
+                            @if($result)
+                                ✅ Permit Approved
+                            @else
+                                ❌ Permit Rejected
+                            @endif
+                        </h1>
+                    @endif
                 </td>
             </tr>
         </table>
@@ -211,9 +227,23 @@
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
                 <td class="email-content">
-                    <p>Dear {{ $permit->created_by_name ?? 'User' }},</p>
+                    <p>Dear {{ $permit->permitIssuer->name ?? 'User' }},</p>
                     
-                    <p>Your permit request <strong>{{ $permit->permit_number }}</strong> has been <span class="status">{{ strtoupper($result) }}</span>.</p>
+                    @if($type === 'extension')
+                        @if($result)
+                            <p>Your permit extension request for <strong>{{ $permit->permit_number }}</strong> has been <span class="status" style="color: #28a745;">APPROVED</span>.</p>
+                            <p style="color: #28a745; background-color: #d4edda; padding: 10px; border-radius: 4px;">
+                                ✅ Your permit is now active until <strong>{{ $permit->end_date->format('d M Y') }}</strong>
+                            </p>
+                        @else
+                            <p>Your permit extension request for <strong>{{ $permit->permit_number }}</strong> has been <span class="status" style="color: #dc3545;">REJECTED</span>.</p>
+                            <p style="color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 4px;">
+                                ❌ Your permit remains expired. Please review the rejection reason below.
+                            </p>
+                        @endif
+                    @else
+                        <p>Your permit request <strong>{{ $permit->permit_number }}</strong> has been <span class="status">{{ $result ? 'APPROVED' : 'REJECTED' }}</span>.</p>
+                    @endif
                     
                     <!-- Info Table -->
                     <table class="info-table" role="presentation" cellspacing="0" cellpadding="0" border="0">

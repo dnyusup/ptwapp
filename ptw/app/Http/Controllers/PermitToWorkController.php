@@ -23,6 +23,9 @@ class PermitToWorkController extends Controller
      */
     public function index()
     {
+        // Update expired permits before displaying list
+        PermitToWork::updateExpiredPermits();
+        
         $permits = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver'])
             ->latest()
             ->paginate(15);
@@ -115,6 +118,11 @@ class PermitToWorkController extends Controller
      */
     public function show(PermitToWork $permit)
     {
+        // Check and update if permit has expired
+        if ($permit->isExpired()) {
+            $permit->update(['status' => 'expired']);
+        }
+        
         $permit->load(['permitIssuer', 'authorizer', 'receiver', 'locationOwner', 'methodStatement.creator', 'riskAssessments']);
         return view('permits.show', compact('permit'));
     }
@@ -528,10 +536,10 @@ class PermitToWorkController extends Controller
                 ->with('error', 'You do not have permission to complete this permit.');
         }
 
-        // Check if permit is in active status
-        if ($permit->status !== 'active') {
+        // Check if permit is in active or expired status
+        if (!in_array($permit->status, ['active', 'expired'])) {
             return redirect()->back()
-                ->with('error', 'Only active permits can be marked as completed.');
+                ->with('error', 'Only active or expired permits can be marked as completed.');
         }
 
         // Update permit status to completed
@@ -542,6 +550,159 @@ class PermitToWorkController extends Controller
 
         return redirect()->route('permits.show', $permit)
             ->with('success', 'Permit has been marked as completed successfully.');
+    }
+
+    /**
+     * Extend an expired permit
+     */
+    public function extend(Request $request, PermitToWork $permit)
+    {
+        // Check if user has permission (permit issuer or administrator)
+        if (auth()->id() !== $permit->permit_issuer_id && auth()->user()->role !== 'administrator') {
+            return redirect()->back()
+                ->with('error', 'You do not have permission to extend this permit.');
+        }
+
+        // Check if permit is expired
+        if ($permit->status !== 'expired') {
+            return redirect()->back()
+                ->with('error', 'Only expired permits can be extended.');
+        }
+
+        // Validate request
+        $validated = $request->validate([
+            'end_date' => [
+                'required', 
+                'date',
+                'after:' . $permit->end_date->format('Y-m-d'),
+                'before_or_equal:' . $permit->end_date->addDays(5)->format('Y-m-d')
+            ],
+            'extension_reason' => 'required|string|max:500'
+        ]);
+
+        try {
+            // Store original end date for email
+            $originalEndDate = $permit->end_date;
+            
+            // Update permit for extension request (similar to request approval process)
+            $permit->update([
+                'end_date' => $validated['end_date'], // Store the requested new end date
+                'status' => 'pending_extension_approval', // New status for extension approval
+                'extension_reason' => $validated['extension_reason'],
+                'extended_at' => now(),
+                'extended_by' => auth()->id()
+            ]);
+
+            // Send email to EHS team for extension approval (same as permit approval)
+            $ehsUsers = User::where('role', 'bekaert')
+                          ->where('department', 'EHS')
+                          ->get();
+            $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
+            
+            if (count($ehsEmails) > 0) {
+                \Mail::to($ehsEmails)->send(new \App\Mail\PermitExtensionRequest($permit, $originalEndDate, $validated['end_date']));
+            }
+
+            $ehsCount = $ehsUsers->count();
+            return redirect()->route('permits.show', $permit)
+                ->with('success', "Extension request submitted successfully! {$ehsCount} EHS member(s) have been notified via email for approval.");
+
+        } catch (\Exception $e) {
+            // Rollback status change if email failed
+            $permit->update(['status' => 'expired']);
+            
+            \Log::error('Extension request failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to submit extension request: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Approve extension request (EHS only)
+     */
+    public function approveExtension(PermitToWork $permit)
+    {
+        // Check if permit is in pending extension approval status
+        if ($permit->status !== 'pending_extension_approval') {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'Only permits with pending extension approval can be approved.');
+        }
+
+        // Only bekaert users with EHS department can approve extensions
+        if (auth()->user()->role !== 'bekaert' || auth()->user()->department !== 'EHS') {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'You do not have permission to approve extensions. Only EHS users can approve extensions.');
+        }
+
+        try {
+            // Approve the extension - change status back to active
+            $permit->update([
+                'status' => 'active',
+                'authorizer_id' => auth()->id(),
+                'authorized_at' => now(),
+            ]);
+
+            // Send notification email to permit creator
+            $creatorEmail = $permit->permitIssuer->email ?? null;
+            if ($creatorEmail) {
+                \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'extension'));
+            }
+
+            return redirect()->route('permits.show', $permit)
+                ->with('success', 'Extension has been approved successfully. Permit is now active until ' . 
+                       $permit->end_date->format('d M Y') . '.');
+
+        } catch (\Exception $e) {
+            \Log::error('Extension approval failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to approve extension: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject extension request (EHS only)
+     */
+    public function rejectExtension(Request $request, PermitToWork $permit)
+    {
+        // Check if permit is in pending extension approval status
+        if ($permit->status !== 'pending_extension_approval') {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'Only permits with pending extension approval can be rejected.');
+        }
+
+        // Only bekaert users with EHS department can reject extensions
+        if (auth()->user()->role !== 'bekaert' || auth()->user()->department !== 'EHS') {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'You do not have permission to reject extensions. Only EHS users can reject extensions.');
+        }
+
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|max:500'
+        ]);
+
+        try {
+            // Reject the extension - change status back to expired
+            $permit->update([
+                'status' => 'expired',
+                'rejection_reason' => $validated['rejection_reason'],
+                'rejected_at' => now(),
+                'rejected_by' => auth()->id(),
+            ]);
+
+            // Send notification email to permit creator
+            $creatorEmail = $permit->permitIssuer->email ?? null;
+            if ($creatorEmail) {
+                \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'extension'));
+            }
+
+            return redirect()->route('permits.show', $permit)
+                ->with('success', 'Extension has been rejected. Permit remains expired.');
+
+        } catch (\Exception $e) {
+            \Log::error('Extension rejection failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to reject extension: ' . $e->getMessage());
+        }
     }
 
     /**

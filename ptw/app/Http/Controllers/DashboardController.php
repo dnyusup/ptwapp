@@ -13,11 +13,17 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
+        // Update expired permits when dashboard is accessed
+        PermitToWork::updateExpiredPermits();
+        
         $stats = [
             'total_permits' => PermitToWork::count(),
             'waiting_approval_permits' => PermitToWork::where('status', 'pending_approval')->count(),
             'active_permits' => PermitToWork::where('status', 'active')->count(),
+            'expired_permits' => PermitToWork::where('status', 'expired')->count(),
+            'pending_extension_permits' => PermitToWork::where('status', 'pending_extension_approval')->count(),
             'draft_permits' => PermitToWork::where('status', 'draft')->count(),
+            'completed_permits' => PermitToWork::where('status', 'completed')->count(),
             // Keep old keys for backward compatibility
             'pending_permits' => PermitToWork::where('status', 'pending_approval')->count(),
             'in_progress_permits' => PermitToWork::where('status', 'in_progress')->count(),

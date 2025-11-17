@@ -36,7 +36,24 @@
                     </div>
                 </div>
                 <div class="col-md-4 text-end">
-                    <span class="badge bg-{{ $permit->status === 'active' ? 'success' : ($permit->status === 'pending_approval' ? 'warning' : 'secondary') }} mb-2">
+                    @php
+                        $statusColor = 'secondary';
+                        if ($permit->status === 'active') {
+                            $statusColor = 'success';
+                        } elseif ($permit->status === 'pending_approval') {
+                            $statusColor = 'warning';
+                        } elseif ($permit->status === 'expired') {
+                            $statusColor = 'danger';
+                        } elseif ($permit->status === 'completed') {
+                            $statusColor = 'primary';
+                        }
+                    @endphp
+                    <span class="badge bg-{{ $statusColor }} mb-2">
+                        @if($permit->status === 'expired')
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                        @elseif($permit->status === 'active')
+                            <i class="fas fa-play-circle me-1"></i>
+                        @endif
                         {{ ucfirst($permit->status) }}
                     </span>
                 </div>

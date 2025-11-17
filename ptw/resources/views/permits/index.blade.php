@@ -112,6 +112,10 @@
                                         <span class="badge bg-success">Approved</span>
                                     @elseif($permit->status === 'active')
                                         <span class="badge bg-success">Active</span>
+                                    @elseif($permit->status === 'expired')
+                                        <span class="badge bg-danger">Expired</span>
+                                    @elseif($permit->status === 'pending_extension_approval')
+                                        <span class="badge bg-warning">Pending Extension</span>
                                     @elseif($permit->status === 'in_progress')
                                         <span class="badge bg-info">In Progress</span>
                                     @elseif($permit->status === 'completed')
