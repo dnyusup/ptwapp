@@ -11,20 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class InspectionController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     public function store(Request $request, $permitNumber)
     {
-        // Simple test response first
-        return response()->json([
-            'success' => true,
-            'message' => 'Test response working',
-            'permitNumber' => $permitNumber,
-            'method' => $request->method()
-        ]);
-        
         try {
             Log::info('Inspection store attempt', [
                 'permitNumber' => $permitNumber,
