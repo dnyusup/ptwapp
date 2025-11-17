@@ -595,7 +595,11 @@
                     </h6>
                 </div>
                 <div class="card-body p-4">
-                    @if($permit->inspections && $permit->inspections->count() > 0)
+                    @php
+                        $hasInspections = method_exists($permit, 'inspections') && $permit->inspections && $permit->inspections->count() > 0;
+                    @endphp
+                    
+                    @if($hasInspections)
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
                                 <div class="icon-box bg-success bg-opacity-10 text-success me-3">
@@ -612,38 +616,30 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
-                                <a href="{{ route('inspections.index', $permit->id) }}" class="btn btn-outline-info btn-sm">
+                                <button type="button" class="btn btn-outline-info btn-sm" disabled>
                                     <i class="fas fa-eye me-1"></i>View
-                                </a>
-                                @if($permit->status === 'active')
-                                <a href="{{ route('inspections.create', $permit->id) }}" class="btn btn-primary btn-sm">
+                                </button>
+                                <button type="button" class="btn btn-primary btn-sm" disabled>
                                     <i class="fas fa-plus me-1"></i>Add Inspection
-                                </a>
-                                @endif
+                                </button>
                             </div>
                         </div>
                     @else
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
-                                <div class="icon-box bg-warning bg-opacity-10 text-warning me-3">
-                                    <i class="fas fa-exclamation-triangle"></i>
+                                <div class="icon-box bg-info bg-opacity-10 text-info me-3">
+                                    <i class="fas fa-info-circle"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1">No Inspection Yet</h6>
+                                    <h6 class="mb-1">Inspection Feature</h6>
                                     <p class="mb-0 text-muted small">
-                                        Belum ada inspection untuk permit ini.
+                                        Fitur inspection akan segera tersedia untuk melakukan pemeriksaan berkala pada permit ini.
                                     </p>
                                 </div>
                             </div>
-                            @if($permit->status === 'active')
-                            <a href="{{ route('inspections.create', $permit->id) }}" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus me-1"></i>Create Inspection
-                            </a>
-                            @else
-                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Inspection can only be created when permit status is Active">
-                                <i class="fas fa-lock me-1"></i>Create Inspection
+                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Inspection feature coming soon">
+                                <i class="fas fa-clock me-1"></i>Coming Soon
                             </button>
-                            @endif
                         </div>
                     @endif
                 </div>
