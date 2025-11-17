@@ -72,7 +72,7 @@
         /* Status styles */
         .status {
             font-weight: bold;
-            color: {{ $result === 'approved' ? '#28a745' : '#dc3545' }};
+            color: {{ $result ? '#28a745' : '#dc3545' }};
             font-size: 18px;
             margin: 20px 0;
         }

@@ -742,8 +742,30 @@ class PermitToWorkController extends Controller
 
             // Send notification email to permit creator
             $creatorEmail = $permit->permitIssuer->email ?? null;
+            \Log::info('Sending extension approval email', [
+                'permit_id' => $permit->id,
+                'creator_email' => $creatorEmail
+            ]);
+            
             if ($creatorEmail) {
-                \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'extension'));
+                try {
+                    \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'extension'));
+                    \Log::info('Extension approval email sent successfully', [
+                        'permit_id' => $permit->id,
+                        'to' => $creatorEmail
+                    ]);
+                } catch (\Exception $mailException) {
+                    \Log::error('Failed to send extension approval email', [
+                        'permit_id' => $permit->id,
+                        'to' => $creatorEmail,
+                        'error' => $mailException->getMessage()
+                    ]);
+                    // Don't fail the approval process due to email failure
+                }
+            } else {
+                \Log::warning('No creator email found for extension approval notification', [
+                    'permit_id' => $permit->id
+                ]);
             }
 
             return redirect()->route('permits.show', $permit)
@@ -789,8 +811,30 @@ class PermitToWorkController extends Controller
 
             // Send notification email to permit creator
             $creatorEmail = $permit->permitIssuer->email ?? null;
+            \Log::info('Sending extension rejection email', [
+                'permit_id' => $permit->id,
+                'creator_email' => $creatorEmail
+            ]);
+            
             if ($creatorEmail) {
-                \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'extension'));
+                try {
+                    \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'extension'));
+                    \Log::info('Extension rejection email sent successfully', [
+                        'permit_id' => $permit->id,
+                        'to' => $creatorEmail
+                    ]);
+                } catch (\Exception $mailException) {
+                    \Log::error('Failed to send extension rejection email', [
+                        'permit_id' => $permit->id,
+                        'to' => $creatorEmail,
+                        'error' => $mailException->getMessage()
+                    ]);
+                    // Don't fail the rejection process due to email failure
+                }
+            } else {
+                \Log::warning('No creator email found for extension rejection notification', [
+                    'permit_id' => $permit->id
+                ]);
             }
 
             return redirect()->route('permits.show', $permit)

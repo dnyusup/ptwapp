@@ -116,6 +116,48 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('test.complete.debug');
     
+    // Test route for extension approval email
+    Route::get('/test/extension-approval-email/{permit}', function(\App\Models\PermitToWork $permit) {
+        $user = auth()->user();
+        $creatorEmail = $permit->permitIssuer->email ?? null;
+        
+        if (!$creatorEmail) {
+            return response()->json([
+                'error' => 'No creator email found',
+                'permit_id' => $permit->id,
+                'permit_issuer' => $permit->permitIssuer ? $permit->permitIssuer->name : 'null'
+            ]);
+        }
+        
+        try {
+            // Test sending approval email
+            \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'extension'));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Extension approval email sent successfully',
+                'permit_id' => $permit->id,
+                'to_email' => $creatorEmail,
+                'permit_status' => $permit->status
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to send email',
+                'message' => $e->getMessage(),
+                'permit_id' => $permit->id,
+                'to_email' => $creatorEmail
+            ]);
+        }
+    })->name('test.extension.approval.email');
+    
+    // Test route for email preview
+    Route::get('/test/email-preview/{permit}/{type}/{result}', function(\App\Models\PermitToWork $permit, $type, $result) {
+        $resultBool = ($result === 'approved') ? true : false;
+        
+        $mailable = new \App\Mail\PermitApprovalResult($permit, $resultBool, $type);
+        return $mailable->render();
+    })->name('test.email.preview');
+    
         // Additional permit actions
     Route::post('/permits/{permit}/submit', [PermitToWorkController::class, 'submit'])->name('permits.submit');
     Route::post('/permits/{permit}/approve', [PermitToWorkController::class, 'approve'])->name('permits.approve');
