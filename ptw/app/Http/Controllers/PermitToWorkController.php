@@ -72,7 +72,7 @@ class PermitToWorkController extends Controller
                 function ($attribute, $value, $fail) use ($request) {
                     $startDate = \Carbon\Carbon::parse($request->start_date);
                     $endDate = \Carbon\Carbon::parse($value);
-                    $maxEndDate = $startDate->copy()->addDays(5);
+                    $maxEndDate = $startDate->copy()->addDays(4);
                     
                     if ($endDate->gt($maxEndDate)) {
                         $fail('Tanggal selesai tidak boleh lebih dari 5 hari setelah tanggal mulai.');
