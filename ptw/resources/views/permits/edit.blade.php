@@ -582,9 +582,16 @@ $(document).ready(function() {
         $('#receiver_contractor').siblings('label').addClass('active');
     }
 
-    // Date validation logic
+    // Date validation logic - Enhanced version with better browser support
     const startDateInput = document.getElementById('start_date');
     const endDateInput = document.getElementById('end_date');
+
+    if (!startDateInput || !endDateInput) {
+        console.error('Date inputs not found');
+        return;
+    }
+
+    console.log('Date validation initialized for edit page');
 
     // Set minimum date for start_date to today
     const today = new Date().toISOString().split('T')[0];
@@ -592,9 +599,11 @@ $(document).ready(function() {
 
     // Function to update end_date constraints based on start_date
     function updateEndDateConstraints() {
-        const startDate = new Date(startDateInput.value);
+        console.log('Updating constraints, start date:', startDateInput.value);
         
         if (startDateInput.value) {
+            const startDate = new Date(startDateInput.value);
+            
             // Set minimum end_date to same as start_date
             endDateInput.setAttribute('min', startDateInput.value);
             
@@ -602,12 +611,18 @@ $(document).ready(function() {
             const maxEndDate = new Date(startDate);
             maxEndDate.setDate(maxEndDate.getDate() + 4);
             const maxEndDateString = maxEndDate.toISOString().split('T')[0];
+            
+            console.log('Setting max date to:', maxEndDateString);
             endDateInput.setAttribute('max', maxEndDateString);
+            
+            // Double-check: force constraint by disabling invalid dates
+            endDateInput.style.maxDate = maxEndDateString;
 
             // Clear end_date if it's outside the allowed range
             if (endDateInput.value) {
                 const currentEndDate = new Date(endDateInput.value);
                 if (currentEndDate < startDate || currentEndDate > maxEndDate) {
+                    console.log('Clearing invalid end date:', endDateInput.value);
                     endDateInput.value = '';
                 }
             }
@@ -619,9 +634,9 @@ $(document).ready(function() {
             }
         } else {
             // Reset end_date constraints if no start_date is selected
+            console.log('Resetting constraints');
             endDateInput.removeAttribute('min');
             endDateInput.removeAttribute('max');
-            endDateInput.value = '';
             
             // Reset form text
             const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
@@ -632,15 +647,48 @@ $(document).ready(function() {
     }
 
     // Event listener for start_date changes
-    startDateInput.addEventListener('change', updateEndDateConstraints);
+    startDateInput.addEventListener('change', function() {
+        console.log('Start date changed to:', this.value);
+        updateEndDateConstraints();
+    });
+
+    // Event listener for start_date input (real-time)
+    startDateInput.addEventListener('input', function() {
+        console.log('Start date input:', this.value);
+        updateEndDateConstraints();
+    });
+
+    // Additional validation on end_date input to prevent manual typing of invalid dates
+    endDateInput.addEventListener('input', function() {
+        if (startDateInput.value && this.value) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(this.value);
+            const maxDate = new Date(startDate);
+            maxDate.setDate(maxDate.getDate() + 4);
+
+            if (endDate > maxDate) {
+                console.log('Invalid end date detected via input, clearing');
+                this.value = '';
+                alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
+            }
+        }
+    });
 
     // Validation on end_date change
     endDateInput.addEventListener('change', function() {
+        console.log('End date changed to:', this.value);
+        
         if (startDateInput.value && endDateInput.value) {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
             const maxDate = new Date(startDate);
             maxDate.setDate(maxDate.getDate() + 4); // 4 days after = 5 days total
+
+            console.log('Validating:', {
+                startDate: startDate.toISOString().split('T')[0],
+                endDate: endDate.toISOString().split('T')[0], 
+                maxDate: maxDate.toISOString().split('T')[0]
+            });
 
             if (endDate < startDate) {
                 alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
@@ -656,8 +704,37 @@ $(document).ready(function() {
         }
     });
 
-    // Initialize constraints on page load
-    updateEndDateConstraints();
+    // Force update constraints after DOM is fully ready
+    setTimeout(function() {
+        console.log('Initializing constraints on page load');
+        updateEndDateConstraints();
+        
+        // Force trigger constraint update if start_date has value
+        if (startDateInput.value) {
+            console.log('Existing start date found:', startDateInput.value);
+            updateEndDateConstraints();
+        }
+    }, 100);
+
+    // Additional backup validation on form submit
+    const form = startDateInput.closest('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (startDateInput.value && endDateInput.value) {
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+                const maxDate = new Date(startDate);
+                maxDate.setDate(maxDate.getDate() + 4);
+
+                if (endDate > maxDate) {
+                    e.preventDefault();
+                    alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
+                    endDateInput.focus();
+                    return false;
+                }
+            }
+        });
+    }
 });
 </script>
 
