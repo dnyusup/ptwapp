@@ -64,6 +64,23 @@ class PermitToWorkController extends Controller
             'authorizer_id' => 'nullable|exists:users,id',
         ]);
 
+        // Additional validation: end_date should not be more than 5 days after start_date
+        $request->validate([
+            'end_date' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) use ($request) {
+                    $startDate = \Carbon\Carbon::parse($request->start_date);
+                    $endDate = \Carbon\Carbon::parse($value);
+                    $maxEndDate = $startDate->copy()->addDays(5);
+                    
+                    if ($endDate->gt($maxEndDate)) {
+                        $fail('Tanggal selesai tidak boleh lebih dari 5 hari setelah tanggal mulai.');
+                    }
+                },
+            ],
+        ]);
+
         // Generate unique permit number
         $validated['permit_number'] = $this->generateUniquePermitNumber();
         
