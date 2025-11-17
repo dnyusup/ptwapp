@@ -595,11 +595,7 @@
                     </h6>
                 </div>
                 <div class="card-body p-4">
-                    @php
-                        $hasInspections = method_exists($permit, 'inspections') && $permit->inspections && $permit->inspections->count() > 0;
-                    @endphp
-                    
-                    @if($hasInspections)
+                    @if($permit->inspections && $permit->inspections->count() > 0)
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
                                 <div class="icon-box bg-success bg-opacity-10 text-success me-3">
@@ -616,30 +612,38 @@
                                 </div>
                             </div>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-info btn-sm" disabled>
+                                <a href="{{ route('inspections.index', $permit->permit_number) }}" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-eye me-1"></i>View
-                                </button>
-                                <button type="button" class="btn btn-primary btn-sm" disabled>
+                                </a>
+                                @if($permit->status === 'active')
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#inspectionModal">
                                     <i class="fas fa-plus me-1"></i>Add Inspection
                                 </button>
+                                @endif
                             </div>
                         </div>
                     @else
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
-                                <div class="icon-box bg-info bg-opacity-10 text-info me-3">
-                                    <i class="fas fa-info-circle"></i>
+                                <div class="icon-box bg-warning bg-opacity-10 text-warning me-3">
+                                    <i class="fas fa-exclamation-triangle"></i>
                                 </div>
                                 <div>
-                                    <h6 class="mb-1">Inspection Feature</h6>
+                                    <h6 class="mb-1">No Inspection Yet</h6>
                                     <p class="mb-0 text-muted small">
-                                        Fitur inspection akan segera tersedia untuk melakukan pemeriksaan berkala pada permit ini.
+                                        Belum ada inspection untuk permit ini.
                                     </p>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Inspection feature coming soon">
-                                <i class="fas fa-clock me-1"></i>Coming Soon
+                            @if($permit->status === 'active')
+                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#inspectionModal">
+                                <i class="fas fa-plus me-1"></i>Create Inspection
                             </button>
+                            @else
+                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Inspection can only be created when permit status is Active">
+                                <i class="fas fa-lock me-1"></i>Create Inspection
+                            </button>
+                            @endif
                         </div>
                     @endif
                 </div>
@@ -1242,6 +1246,63 @@
     </div>
 </div>
 
+<!-- Inspection Modal -->
+<div class="modal fade" id="inspectionModal" tabindex="-1" aria-labelledby="inspectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="inspectionModalLabel">
+                    <i class="fas fa-clipboard-check me-2"></i>Create Inspection
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="inspectionForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <strong>Permit Number:</strong> {{ $permit->permit_number }}<br>
+                        <strong>Work Title:</strong> {{ $permit->work_title }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inspector_name" class="form-label fw-semibold">Inspector Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="inspector_name" name="inspector_name" 
+                                   value="{{ auth()->user()->name }}" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="inspector_email" class="form-label fw-semibold">Inspector Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="inspector_email" name="inspector_email" 
+                                   value="{{ auth()->user()->email }}" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="findings" class="form-label fw-semibold">Inspection Findings <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="findings" name="findings" rows="6" 
+                                  placeholder="Masukkan hasil temuan inspeksi, kondisi keselamatan, observasi, dan rekomendasi..." required></textarea>
+                        <div class="form-text">
+                            Jelaskan hasil inspeksi secara detail termasuk kondisi keselamatan yang ditemukan, 
+                            kepatuhan terhadap prosedur, dan rekomendasi perbaikan jika ada.
+                        </div>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Save Inspection
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -1257,6 +1318,127 @@ document.addEventListener('click', function(event) {
         if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
             sidebar.classList.remove('show');
         }
+    }
+});
+
+// Inspection form submission
+document.getElementById('inspectionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    // Clear previous errors
+    form.querySelectorAll('.is-invalid').forEach(field => {
+        field.classList.remove('is-invalid');
+    });
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Saving...';
+    
+    fetch('{{ route("inspections.store", $permit->permit_number) }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers.get('content-type'));
+        
+        // Get response as text first to see what we're receiving
+        return response.text().then(text => {
+            console.log('Raw response:', text.substring(0, 200));
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${text.substring(0, 100)}`);
+            }
+            
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('JSON parse error:', e);
+                console.error('Response was:', text);
+                throw new Error('Invalid JSON response received');
+            }
+        });
+    })
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const toast = document.createElement('div');
+            toast.className = 'toast position-fixed top-0 end-0 m-3';
+            toast.style.zIndex = '9999';
+            toast.innerHTML = `
+                <div class="toast-header bg-success text-white">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong class="me-auto">Success</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${data.message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+            
+            // Hide modal and reload page
+            setTimeout(() => {
+                bootstrap.Modal.getInstance(document.getElementById('inspectionModal')).hide();
+                location.reload();
+            }, 2000);
+        } else {
+            throw new Error(data.message || 'Something went wrong');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        
+        // Show error message with detailed info
+        const toast = document.createElement('div');
+        toast.className = 'toast position-fixed top-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${error.message || 'Failed to save inspection. Please try again.'}
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    })
+    .finally(() => {
+        // Restore button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    });
+});
+
+// Reset form when modal is shown
+document.getElementById('inspectionModal').addEventListener('show.bs.modal', function() {
+    const form = document.getElementById('inspectionForm');
+    form.reset();
+    
+    // Set default values
+    document.getElementById('inspector_name').value = '{{ auth()->user()->name }}';
+    document.getElementById('inspector_email').value = '{{ auth()->user()->email }}';
+    
+    // Clear validation states
+    form.querySelectorAll('.is-invalid').forEach(field => {
+        field.classList.remove('is-invalid');
+    });
 });
 </script>
 

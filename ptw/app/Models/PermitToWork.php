@@ -141,6 +141,11 @@ class PermitToWork extends Model
         return $this->hasMany(HraExplosiveAtmosphere::class);
     }
 
+    public function inspections()
+    {
+        return $this->hasMany(Inspection::class, 'permit_number', 'permit_number');
+    }
+
     /**
      * Check if the current user is the permit creator
      */

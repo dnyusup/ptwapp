@@ -15,6 +15,7 @@ use App\Http\Controllers\HraLineBreakingController;
 use App\Http\Controllers\HraExcavationController;
 use App\Http\Controllers\HraConfinedSpaceController;
 use App\Http\Controllers\HraExplosiveAtmosphereController;
+use App\Http\Controllers\InspectionController;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -132,6 +133,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/permits/{permit}/hra/explosive-atmospheres/{hraExplosiveAtmosphere}', [HraExplosiveAtmosphereController::class, 'update'])->name('hra.explosive-atmospheres.update');
     Route::delete('/permits/{permit}/hra/explosive-atmospheres/{hraExplosiveAtmosphere}', [HraExplosiveAtmosphereController::class, 'destroy'])->name('hra.explosive-atmospheres.destroy');
     
+    // Inspection routes
+    Route::get('/permits/{permitNumber}/inspections', [InspectionController::class, 'index'])->name('inspections.index');
+    Route::post('/permits/{permitNumber}/inspections', [InspectionController::class, 'store'])->name('inspections.store');
+
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
