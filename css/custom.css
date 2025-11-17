@@ -160,6 +160,12 @@ body {
     color: white;
 }
 
+.summary-card.gray {
+    background: linear-gradient(135deg, #78909C 0%, #546E7A 100%) !important;
+    color: white !important;
+}
+
+
 .summary-card .card-body {
     padding: 24px 20px;
     position: relative;

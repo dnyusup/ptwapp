@@ -587,6 +587,68 @@
                 </div>
             </div>
 
+            <!-- Inspection Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="fas fa-clipboard-check me-2"></i>Inspection
+                    </h6>
+                </div>
+                <div class="card-body p-4">
+                    @if($permit->inspections && $permit->inspections->count() > 0)
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-success bg-opacity-10 text-success me-3">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Inspection Completed</h6>
+                                    <p class="mb-0 text-muted small">
+                                        Total Inspections: <span class="badge bg-primary">{{ $permit->inspections->count() }}</span>
+                                    </p>
+                                    <p class="mb-0 text-muted small">
+                                        Last Inspection: {{ $permit->inspections->last()->created_at->format('d M Y H:i') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('inspections.index', $permit->id) }}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                                @if($permit->status === 'active')
+                                <a href="{{ route('inspections.create', $permit->id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus me-1"></i>Add Inspection
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-warning bg-opacity-10 text-warning me-3">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">No Inspection Yet</h6>
+                                    <p class="mb-0 text-muted small">
+                                        Belum ada inspection untuk permit ini.
+                                    </p>
+                                </div>
+                            </div>
+                            @if($permit->status === 'active')
+                            <a href="{{ route('inspections.create', $permit->id) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Create Inspection
+                            </a>
+                            @else
+                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Inspection can only be created when permit status is Active">
+                                <i class="fas fa-lock me-1"></i>Create Inspection
+                            </button>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- Method Statement Card -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-gradient-info text-white">
