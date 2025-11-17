@@ -1118,7 +1118,8 @@
                         @csrf
                         @method('PATCH')
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-info" 
+                            <button type="submit" class="btn btn-info text-white fw-bold" 
+                                    style="background-color: #0dcaf0; border-color: #0dcaf0; color: #fff !important;"
                                     onclick="return confirm('Mark this permit as completed?')">
                                 <i class="fas fa-check-circle me-2"></i>Mark as Completed
                             </button>
@@ -1128,7 +1129,9 @@
                     @if($permit->status === 'expired')
                     <!-- Extend Permit -->
                     <div class="d-grid">
-                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#extendPermitModal">
+                        <button type="button" class="btn btn-warning text-dark fw-bold" 
+                                style="background-color: #ffc107; border-color: #ffc107; color: #000 !important;"
+                                data-bs-toggle="modal" data-bs-target="#extendPermitModal">
                             <i class="fas fa-calendar-plus me-2"></i>Extend Permit
                         </button>
                     </div>
@@ -1604,7 +1607,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancel
                     </button>
-                    <button type="submit" class="btn btn-warning">
+                    <button type="submit" class="btn btn-warning text-dark fw-bold" 
+                            style="background-color: #ffc107; border-color: #ffc107; color: #000 !important;">
                         <i class="fas fa-calendar-plus me-2"></i>Extend Permit
                     </button>
                 </div>

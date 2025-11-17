@@ -92,6 +92,30 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('test.extension.debug');
     
+    // Test route for complete debugging
+    Route::get('/test/complete-debug/{permit}', function(\App\Models\PermitToWork $permit) {
+        $user = auth()->user();
+        return response()->json([
+            'permit_info' => [
+                'id' => $permit->id,
+                'permit_number' => $permit->permit_number,
+                'status' => $permit->status,
+                'permit_issuer_id' => $permit->permit_issuer_id,
+            ],
+            'user_info' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'role' => $user->role,
+            ],
+            'permissions' => [
+                'is_permit_creator' => ($user->id == $permit->permit_issuer_id),
+                'is_admin' => ($user->role === 'administrator'),
+                'can_complete' => (($user->id == $permit->permit_issuer_id) || ($user->role === 'administrator')) && in_array($permit->status, ['active', 'expired']),
+            ],
+            'complete_route' => route('permits.complete', $permit),
+        ]);
+    })->name('test.complete.debug');
+    
         // Additional permit actions
     Route::post('/permits/{permit}/submit', [PermitToWorkController::class, 'submit'])->name('permits.submit');
     Route::post('/permits/{permit}/approve', [PermitToWorkController::class, 'approve'])->name('permits.approve');

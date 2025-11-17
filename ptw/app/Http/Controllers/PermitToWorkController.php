@@ -532,26 +532,82 @@ class PermitToWorkController extends Controller
      */
     public function complete(PermitToWork $permit)
     {
-        // Check if user has permission (permit issuer or administrator)
-        if (auth()->id() !== $permit->permit_issuer_id && auth()->user()->role !== 'administrator') {
-            return redirect()->back()
-                ->with('error', 'You do not have permission to complete this permit.');
-        }
-
-        // Check if permit is in active or expired status
-        if (!in_array($permit->status, ['active', 'expired'])) {
-            return redirect()->back()
-                ->with('error', 'Only active or expired permits can be marked as completed.');
-        }
-
-        // Update permit status to completed
-        $permit->update([
-            'status' => 'completed',
-            'completed_at' => now()
+        // Add logging for debugging
+        \Log::info('Complete request started', [
+            'permit_id' => $permit->id,
+            'permit_status' => $permit->status,
+            'user_id' => auth()->id(),
+            'permit_issuer_id' => $permit->permit_issuer_id,
+            'user_role' => auth()->user()->role ?? 'unknown'
         ]);
 
-        return redirect()->route('permits.show', $permit)
-            ->with('success', 'Permit has been marked as completed successfully.');
+        try {
+            // Simplified authorization check
+            $userId = auth()->id();
+            $userRole = auth()->user()->role ?? '';
+            $isPermitIssuer = ($userId == $permit->permit_issuer_id);
+            $isAdmin = ($userRole === 'administrator');
+            
+            \Log::info('Complete authorization check', [
+                'user_id' => $userId,
+                'permit_issuer_id' => $permit->permit_issuer_id,
+                'is_permit_issuer' => $isPermitIssuer,
+                'user_role' => $userRole,
+                'is_admin' => $isAdmin
+            ]);
+
+            if (!$isPermitIssuer && !$isAdmin) {
+                \Log::warning('Complete request unauthorized', [
+                    'user_id' => $userId,
+                    'permit_issuer_id' => $permit->permit_issuer_id,
+                    'user_role' => $userRole
+                ]);
+                
+                return redirect()->back()
+                    ->with('error', 'You do not have permission to complete this permit.');
+            }
+
+            // Check permit status
+            $validStatuses = ['active', 'expired'];
+            if (!in_array($permit->status, $validStatuses)) {
+                \Log::warning('Complete request invalid status', [
+                    'permit_status' => $permit->status,
+                    'valid_statuses' => $validStatuses
+                ]);
+                
+                return redirect()->back()
+                    ->with('error', 'Only active or expired permits can be marked as completed.');
+            }
+
+            \Log::info('Updating permit to completed', [
+                'permit_id' => $permit->id,
+                'current_status' => $permit->status
+            ]);
+
+            // Update permit status to completed
+            $permit->update([
+                'status' => 'completed',
+                'completed_at' => now()
+            ]);
+
+            \Log::info('Complete request successful', [
+                'permit_id' => $permit->id,
+                'new_status' => 'completed'
+            ]);
+
+            return redirect()->route('permits.show', $permit)
+                ->with('success', 'Permit has been marked as completed successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Complete request failed', [
+                'permit_id' => $permit->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Failed to complete permit. Please try again.');
+        }
     }
 
     /**
