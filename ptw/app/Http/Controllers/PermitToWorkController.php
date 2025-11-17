@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PermitApprovalRequest;
+use App\Mail\PermitApprovalResult;
+use App\Mail\PermitExtensionRequest;
 use PDF;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -557,64 +559,104 @@ class PermitToWorkController extends Controller
      */
     public function extend(Request $request, PermitToWork $permit)
     {
-        // Check if user has permission (permit issuer or administrator)
-        if (auth()->id() !== $permit->permit_issuer_id && auth()->user()->role !== 'administrator') {
+        // Add logging for debugging
+        \Log::info('Extension request started', [
+            'permit_id' => $permit->id,
+            'permit_status' => $permit->status,
+            'user_id' => auth()->id(),
+            'permit_issuer_id' => $permit->permit_issuer_id,
+            'user_role' => auth()->user()->role ?? 'unknown'
+        ]);
+
+        // Simplified permission check
+        $isPermitCreator = (auth()->id() == $permit->permit_issuer_id);
+        $isAdmin = (auth()->user()->role === 'administrator');
+        
+        if (!$isPermitCreator && !$isAdmin) {
+            \Log::warning('Extension denied - permission', [
+                'user_id' => auth()->id(),
+                'permit_issuer_id' => $permit->permit_issuer_id,
+                'user_role' => auth()->user()->role
+            ]);
             return redirect()->back()
                 ->with('error', 'You do not have permission to extend this permit.');
         }
 
         // Check if permit is expired
         if ($permit->status !== 'expired') {
+            \Log::warning('Extension denied - status', [
+                'permit_status' => $permit->status,
+                'required' => 'expired'
+            ]);
             return redirect()->back()
                 ->with('error', 'Only expired permits can be extended.');
         }
 
-        // Validate request
+        // Simplified validation - calculate max date properly
+        $originalEndDate = \Carbon\Carbon::parse($permit->end_date);
+        $maxExtensionDate = $originalEndDate->copy()->addDays(5);
+        
         $validated = $request->validate([
             'end_date' => [
                 'required', 
                 'date',
-                'after:' . $permit->end_date->format('Y-m-d'),
-                'before_or_equal:' . $permit->end_date->addDays(5)->format('Y-m-d')
+                'after:' . $originalEndDate->format('Y-m-d'),
+                'before_or_equal:' . $maxExtensionDate->format('Y-m-d')
             ],
             'extension_reason' => 'required|string|max:500'
         ]);
+        
+        \Log::info('Extension validation passed', $validated);
 
+        // Store original end date for email
+        $originalEndDate = $permit->end_date;
+        
+        \Log::info('Updating permit for extension', [
+            'permit_id' => $permit->id,
+            'new_end_date' => $validated['end_date'],
+            'original_end_date' => $originalEndDate->format('Y-m-d')
+        ]);
+        
+        // Update permit for extension request
+        $permit->update([
+            'end_date' => $validated['end_date'],
+            'status' => 'pending_extension_approval',
+            'extension_reason' => $validated['extension_reason'],
+            'extended_at' => now(),
+            'extended_by' => auth()->id()
+        ]);
+
+        \Log::info('Permit updated successfully', [
+            'permit_id' => $permit->id,
+            'new_status' => $permit->fresh()->status
+        ]);
+
+        // Try to send email notification, but don't fail if email fails
         try {
-            // Store original end date for email
-            $originalEndDate = $permit->end_date;
+            $ehsUsers = \App\Models\User::where('role', 'bekaert')
+                              ->where('department', 'EHS')
+                              ->get();
             
-            // Update permit for extension request (similar to request approval process)
-            $permit->update([
-                'end_date' => $validated['end_date'], // Store the requested new end date
-                'status' => 'pending_extension_approval', // New status for extension approval
-                'extension_reason' => $validated['extension_reason'],
-                'extended_at' => now(),
-                'extended_by' => auth()->id()
-            ]);
-
-            // Send email to EHS team for extension approval (same as permit approval)
-            $ehsUsers = User::where('role', 'bekaert')
-                          ->where('department', 'EHS')
-                          ->get();
             $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
             
             if (count($ehsEmails) > 0) {
                 \Mail::to($ehsEmails)->send(new \App\Mail\PermitExtensionRequest($permit, $originalEndDate, $validated['end_date']));
+                \Log::info('Extension request email sent successfully', ['to' => $ehsEmails]);
             }
-
-            $ehsCount = $ehsUsers->count();
-            return redirect()->route('permits.show', $permit)
-                ->with('success', "Extension request submitted successfully! {$ehsCount} EHS member(s) have been notified via email for approval.");
-
-        } catch (\Exception $e) {
-            // Rollback status change if email failed
-            $permit->update(['status' => 'expired']);
             
-            \Log::error('Extension request failed: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Failed to submit extension request: ' . $e->getMessage());
+            $ehsCount = $ehsUsers->count();
+            $message = "Extension request submitted successfully!";
+            if ($ehsCount > 0) {
+                $message .= " {$ehsCount} EHS member(s) have been notified via email for approval.";
+            }
+            
+        } catch (\Exception $emailError) {
+            \Log::error('Extension email failed but permit updated: ' . $emailError->getMessage());
+            $message = "Extension request submitted successfully! (Email notification failed but request is recorded)";
         }
+
+        return redirect()->route('permits.show', $permit)
+            ->with('success', $message);
     }
 
     /**
