@@ -1,151 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inspection Report</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
     <style>
+        /* Reset styles for email clients */
+        body, table, td, p, a, li, blockquote {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        /* Main styles */
         body {
-            font-family: Arial, sans-serif;
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f4f4f4 !important;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-size: 14px;
             line-height: 1.6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            color: #333333;
         }
         
+        /* Container table for Outlook */
         .email-container {
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .header {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: white;
-            padding: 30px 20px;
+        /* Header styles */
+        .email-header {
+            background-color: #dc3545;
+            color: #ffffff;
+            padding: 20px;
             text-align: center;
         }
         
-        .header h1 {
+        .email-header h1 {
             margin: 0;
+            padding: 0;
             font-size: 24px;
-            font-weight: 600;
+            font-weight: bold;
+            color: #ffffff;
         }
         
-        .header p {
-            margin: 5px 0 0 0;
-            opacity: 0.9;
+        /* Content area */
+        .email-content {
+            padding: 30px;
         }
         
-        .content {
-            padding: 30px 20px;
-        }
-        
-        .permit-info {
-            background-color: #f8f9fa;
-            border-left: 4px solid #007bff;
-            padding: 20px;
-            margin-bottom: 25px;
-            border-radius: 0 4px 4px 0;
-        }
-        
-        .permit-info h3 {
-            margin: 0 0 15px 0;
-            color: #007bff;
-            font-size: 18px;
-        }
-        
-        .info-grid {
-            display: table;
+        /* Info table styles */
+        .info-table {
             width: 100%;
             border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
         }
         
-        .info-row {
-            display: table-row;
-        }
-        
-        .info-label, .info-value {
-            display: table-cell;
-            padding: 8px 0;
+        .info-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
             vertical-align: top;
         }
         
         .info-label {
-            font-weight: 600;
-            color: #555;
+            font-weight: bold;
             width: 35%;
-            padding-right: 15px;
+            color: #495057;
+            background-color: #e9ecef;
         }
         
         .info-value {
-            color: #333;
+            width: 65%;
+            color: #212529;
         }
         
+        /* Status badge */
+        .status-badge {
+            background-color: #28a745;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .status-pending { background-color: #ffc107; color: #212529; }
+        .status-expired { background-color: #dc3545; color: #ffffff; }
+        .status-completed { background-color: #17a2b8; color: #ffffff; }
+        
+        /* Section headers */
+        .section-header {
+            background-color: #dc3545;
+            color: #ffffff;
+            padding: 10px 15px;
+            font-weight: bold;
+            margin: 20px 0 0 0;
+        }
+        
+        /* Inspection section */
         .inspection-section {
             background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .inspection-section h3 {
-            margin: 0 0 15px 0;
             color: #856404;
-            font-size: 18px;
+            padding: 10px 15px;
+            font-weight: bold;
+            margin: 20px 0 0 0;
         }
         
-        .findings-box {
-            background-color: #ffffff;
+        /* Description box */
+        .description-box {
+            background-color: #f8f9fa;
+            padding: 15px;
             border: 1px solid #dee2e6;
             border-radius: 4px;
-            padding: 15px;
-            margin-top: 10px;
+            margin: 10px 0;
             white-space: pre-wrap;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
         }
         
-        .status-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* Action section */
+        .action-section {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
         }
         
-        .status-active { background-color: #d4edda; color: #155724; }
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-expired { background-color: #f8d7da; color: #721c24; }
-        .status-completed { background-color: #d1ecf1; color: #0c5460; }
+        .action-text {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
         
-        .footer {
+        /* Footer */
+        .email-footer {
             background-color: #f8f9fa;
             padding: 20px;
             text-align: center;
             border-top: 1px solid #dee2e6;
-        }
-        
-        .footer p {
-            margin: 0;
-            color: #6c757d;
-            font-size: 14px;
-        }
-        
-        .risk-level {
-            font-weight: 600;
-            text-transform: uppercase;
             font-size: 12px;
+            color: #6c757d;
+        }
+        
+        /* Risk level badges */
+        .risk-level {
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
         }
         
         .risk-low { background-color: #d4edda; color: #155724; }
@@ -153,137 +177,145 @@
         .risk-high { background-color: #f8d7da; color: #721c24; }
         .risk-critical { background-color: #f5c6cb; color: #721c24; }
         
-        @media only screen and (max-width: 600px) {
-            .email-container {
-                margin: 0;
-                border-radius: 0;
-            }
-            
-            .content {
-                padding: 20px 15px;
-            }
-            
-            .info-grid {
-                display: block;
-            }
-            
-            .info-row {
-                display: block;
-                margin-bottom: 10px;
-            }
-            
-            .info-label, .info-value {
-                display: block;
-                width: 100%;
-                padding: 2px 0;
-            }
-            
-            .info-label {
-                font-weight: 600;
-                margin-bottom: 2px;
-            }
+        /* Outlook specific fixes */
+        .outlook-fix {
+            mso-line-height-rule: exactly;
         }
     </style>
 </head>
 <body>
-    <div class="email-container">
-        <div class="header">
-            <h1>🔍 Inspection Report</h1>
-            <p>New inspection has been conducted</p>
-        </div>
-        
-        <div class="content">
-            <div class="permit-info">
-                <h3>Permit Information</h3>
-                <div class="info-grid">
-                    <div class="info-row">
-                        <div class="info-label">Permit Number:</div>
-                        <div class="info-value"><strong>{{ $permit->permit_number }}</strong></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Work Title:</div>
-                        <div class="info-value">{{ $permit->work_title }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Location:</div>
-                        <div class="info-value">{{ $permit->work_location }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Department:</div>
-                        <div class="info-value">{{ $permit->department }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Work Period:</div>
-                        <div class="info-value">{{ $permit->start_date->format('d M Y H:i') }} - {{ $permit->end_date->format('d M Y H:i') }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Current Status:</div>
-                        <div class="info-value">
-                            <span class="status-badge status-{{ $permit->status }}">
-                                @if($permit->status === 'active')
-                                    Active
-                                @elseif($permit->status === 'pending_approval')
-                                    Pending Approval
-                                @elseif($permit->status === 'expired')
-                                    Expired
-                                @elseif($permit->status === 'completed')
-                                    Completed
-                                @else
-                                    {{ ucwords(str_replace('_', ' ', $permit->status)) }}
+    <!-- Wrapper table for Outlook -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f4;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <!-- Main email container -->
+                <table class="email-container" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-header">
+                            <h1>🔍 Inspection Report</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td class="email-content">
+                            <p>Dear EHS Team,</p>
+                            <p>A new inspection report has been submitted. Please review the details below:</p>
+                            
+                            <!-- Permit Details Section -->
+                            <div class="section-header">📋 Permit Details</div>
+                            <table class="info-table" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td class="info-label">Permit Number:</td>
+                                    <td class="info-value"><strong>{{ $permit->permit_number }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Work Title:</td>
+                                    <td class="info-value">{{ $permit->work_title }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Location:</td>
+                                    <td class="info-value">{{ $permit->work_location }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Department:</td>
+                                    <td class="info-value">{{ $permit->department }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Work Period:</td>
+                                    <td class="info-value">{{ $permit->start_date->format('d M Y') }} - {{ $permit->end_date->format('d M Y') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Current Status:</td>
+                                    <td class="info-value">
+                                        <span class="status-badge status-{{ $permit->status }}">
+                                            @if($permit->status === 'active')
+                                                ACTIVE
+                                            @elseif($permit->status === 'pending_approval')
+                                                PENDING APPROVAL
+                                            @elseif($permit->status === 'expired')
+                                                EXPIRED
+                                            @elseif($permit->status === 'completed')
+                                                COMPLETED
+                                            @else
+                                                {{ strtoupper(str_replace('_', ' ', $permit->status)) }}
+                                            @endif
+                                        </span>
+                                    </td>
+                                </tr>
+                                @if($permit->risk_level)
+                                <tr>
+                                    <td class="info-label">Risk Level:</td>
+                                    <td class="info-value">
+                                        <span class="risk-level risk-{{ $permit->risk_level }}">{{ ucfirst($permit->risk_level) }}</span>
+                                    </td>
+                                </tr>
                                 @endif
-                            </span>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Risk Level:</div>
-                        <div class="info-value">
-                            <span class="risk-level risk-{{ $permit->risk_level }}">{{ ucfirst($permit->risk_level) }}</span>
-                        </div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Permit Issuer:</div>
-                        <div class="info-value">{{ $permit->permitIssuer ? $permit->permitIssuer->name : 'N/A' }}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="inspection-section">
-                <h3>Inspection Details</h3>
-                <div class="info-grid">
-                    <div class="info-row">
-                        <div class="info-label">Inspector:</div>
-                        <div class="info-value"><strong>{{ $inspection->inspector_name }}</strong></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Inspector Email:</div>
-                        <div class="info-value">{{ $inspection->inspector_email }}</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">Inspection Date:</div>
-                        <div class="info-value">{{ $inspection->created_at->format('d M Y H:i') }}</div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 15px;">
-                    <div class="info-label">Findings:</div>
-                    <div class="findings-box">{{ $inspection->findings }}</div>
-                </div>
-            </div>
-            
-            <p style="margin-bottom: 10px; color: #6c757d;">
-                This inspection report has been automatically generated and sent to the EHS team for review. 
-                Please take appropriate actions based on the findings.
-            </p>
-            
-            <p style="margin-bottom: 0; color: #6c757d; font-size: 14px;">
-                <strong>Note:</strong> This email was sent to EHS team with CC to area owner and inspector.
-            </p>
-        </div>
-        
-        <div class="footer">
-            <p>&copy; {{ date('Y') }} Permit to Work System. All rights reserved.</p>
-            <p>This is an automated notification. Please do not reply to this email.</p>
-        </div>
-    </div>
+                                <tr>
+                                    <td class="info-label">Permit Issuer:</td>
+                                    <td class="info-value">{{ $permit->permitIssuer ? $permit->permitIssuer->name : 'N/A' }}</td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Inspection Details Section -->
+                            <div class="inspection-section">🔍 Inspection Details</div>
+                            <table class="info-table" role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td class="info-label">Inspector:</td>
+                                    <td class="info-value"><strong>{{ $inspection->inspector_name }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Inspector Email:</td>
+                                    <td class="info-value">{{ $inspection->inspector_email }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="info-label">Inspection Date:</td>
+                                    <td class="info-value">{{ $inspection->created_at->format('d M Y H:i') }}</td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Findings Section -->
+                            @if($inspection->findings)
+                            <div class="inspection-section">📝 Inspection Findings</div>
+                            <div class="description-box">
+                                {{ $inspection->findings }}
+                            </div>
+                            @endif
+                            
+                            <!-- Action Required -->
+                            <div class="action-section">
+                                <div class="action-text">⚠️ Review Required:</div>
+                                <p>Please review this inspection report and take appropriate actions based on the findings.</p>
+                                
+                                <!-- Action Button -->
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 20px auto;">
+                                    <tr>
+                                        <td style="text-align: center;">
+                                            <a href="{{ url('/permits/' . $permit->id) }}" 
+                                               style="background-color: #dc3545; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+                                                🔍 View Permit Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td class="email-footer">
+                            <p>This email was sent automatically from the PTW Portal System.<br>
+                            Please do not reply to this email.</p>
+                            <p><strong>Note:</strong> This email was sent to EHS team with CC to area owner and inspector.</p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
