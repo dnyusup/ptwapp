@@ -29,7 +29,7 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('permits.index') }}" class="row g-3">
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select">
                         <option value="">All Status</option>
@@ -43,44 +43,19 @@
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label for="risk_level" class="form-label">Risk Level</label>
-                    <select name="risk_level" id="risk_level" class="form-select">
-                        <option value="">All Risk Levels</option>
-                        <option value="low" {{ request('risk_level') == 'low' ? 'selected' : '' }}>Low</option>
-                        <option value="medium" {{ request('risk_level') == 'medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="high" {{ request('risk_level') == 'high' ? 'selected' : '' }}>High</option>
-                        <option value="critical" {{ request('risk_level') == 'critical' ? 'selected' : '' }}>Critical</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="start_date" class="form-label">Start Date From</label>
-                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
-                </div>
-                <div class="col-md-2">
-                    <label for="end_date" class="form-label">End Date To</label>
-                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
-                </div>
-                <div class="col-md-2">
-                    <label for="start_date" class="form-label">Start Date From</label>
-                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
-                </div>
-                <div class="col-md-2">
-                    <label for="end_date" class="form-label">End Date To</label>
-                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
-                </div>
                 <div class="col-md-3">
+                    <label for="work_date" class="form-label">Work Date</label>
+                    <input type="date" name="work_date" id="work_date" class="form-control" value="{{ request('work_date') }}">
+                </div>
+                <div class="col-md-4">
                     <label for="search" class="form-label">Search</label>
                     <input type="text" name="search" id="search" class="form-control" 
                            placeholder="Search by title, location, permit number..." value="{{ request('search') }}">
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label class="form-label">&nbsp;</label>
-                    <div class="d-grid gap-1">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-search"></i> Filter
-                        </button>
-                        <a href="{{ route('permits.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('permits.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-times"></i> Reset
                         </a>
                     </div>
@@ -97,15 +72,15 @@
                     <i class="fas fa-file-alt me-2"></i>Permits List
                 </h5>
                 <div class="d-flex align-items-center gap-3">
-                    @if(request()->hasAny(['status', 'risk_level', 'search', 'start_date', 'end_date']))
+                    @if(request()->hasAny(['status', 'work_date', 'search']))
                         <small class="text-muted">
                             <i class="fas fa-filter me-1"></i>
                             Filtered results: <strong>{{ $permits->total() }}</strong>
                             @if(request('status'))
                                 <span class="badge bg-primary ms-1">{{ ucfirst(str_replace('_', ' ', request('status'))) }}</span>
                             @endif
-                            @if(request('risk_level'))
-                                <span class="badge bg-warning ms-1">{{ ucfirst(request('risk_level')) }} Risk</span>
+                            @if(request('work_date'))
+                                <span class="badge bg-success ms-1">Date: {{ \Carbon\Carbon::parse(request('work_date'))->format('d M Y') }}</span>
                             @endif
                             @if(request('search'))
                                 <span class="badge bg-info ms-1">Search: "{{ request('search') }}"</span>
@@ -228,13 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get filter form elements
     const filterForm = document.querySelector('form[method="GET"]');
     const statusSelect = document.getElementById('status');
-    const riskLevelSelect = document.getElementById('risk_level');
+    const workDateInput = document.getElementById('work_date');
     const searchInput = document.getElementById('search');
-    const startDateInput = document.getElementById('start_date');
-    const endDateInput = document.getElementById('end_date');
     
-    // Auto-submit on status or risk level change
-    [statusSelect, riskLevelSelect, startDateInput, endDateInput].forEach(element => {
+    // Auto-submit on status or date change
+    [statusSelect, workDateInput].forEach(element => {
         if (element) {
             element.addEventListener('change', function() {
                 filterForm.submit();
@@ -254,36 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         });
     }
-    
-    // Show active filter count
-    function updateFilterCount() {
-        const filters = [];
-        if (statusSelect && statusSelect.value) filters.push('Status');
-        if (riskLevelSelect && riskLevelSelect.value) filters.push('Risk Level');
-        if (searchInput && searchInput.value) filters.push('Search');
-        if (startDateInput && startDateInput.value) filters.push('Start Date');
-        if (endDateInput && endDateInput.value) filters.push('End Date');
-        
-        const filterButton = document.querySelector('button[type="submit"]');
-        if (filterButton && filters.length > 0) {
-            filterButton.innerHTML = '<i class="fas fa-search"></i> Filter (' + filters.length + ')';
-            filterButton.classList.remove('btn-primary');
-            filterButton.classList.add('btn-success');
-        } else if (filterButton) {
-            filterButton.innerHTML = '<i class="fas fa-search"></i> Filter';
-            filterButton.classList.remove('btn-success');
-            filterButton.classList.add('btn-primary');
-        }
-    }
-    
-    // Update filter count on page load and changes
-    updateFilterCount();
-    [statusSelect, riskLevelSelect, searchInput, startDateInput, endDateInput].forEach(element => {
-        if (element) {
-            element.addEventListener('change', updateFilterCount);
-            element.addEventListener('input', updateFilterCount);
-        }
-    });
 });
 </script>
 
