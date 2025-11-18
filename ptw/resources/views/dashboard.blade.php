@@ -275,6 +275,115 @@
             </div>
         </div>
     </div>
+
+    <!-- Today's Work Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h5 class="mb-1">
+                                <i class="fas fa-calendar-day me-2 text-primary"></i>Pekerjaan Hari Ini
+                            </h5>
+                            <small class="text-muted">{{ now()->format('l, d F Y') }}</small>
+                        </div>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <div class="text-center">
+                                <div class="fw-bold text-primary">{{ $today_summary['total'] }}</div>
+                                <small class="text-muted">Total</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold text-success">{{ $today_summary['active'] }}</div>
+                                <small class="text-muted">Active</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold text-danger">{{ $today_summary['expired'] }}</div>
+                                <small class="text-muted">Expired</small>
+                            </div>
+                            <div class="text-center">
+                                <div class="fw-bold text-info">{{ $today_summary['completed'] }}</div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if($today_permits->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Permit Number</th>
+                                    <th>Work Title</th>
+                                    <th>Location</th>
+                                    <th>Contractor</th>
+                                    <th>Period</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($today_permits as $permit)
+                                <tr class="{{ $permit->status === 'expired' ? 'table-danger' : ($permit->status === 'completed' ? 'table-success' : '') }}">
+                                    <td>
+                                        <span class="fw-semibold">{{ $permit->permit_number }}</span>
+                                        @if($permit->status === 'expired')
+                                            <i class="fas fa-exclamation-triangle text-danger ms-1" title="Expired"></i>
+                                        @elseif($permit->status === 'completed')
+                                            <i class="fas fa-check-circle text-success ms-1" title="Completed"></i>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium">{{ Str::limit($permit->work_title, 40) }}</div>
+                                        <small class="text-muted">{{ $permit->permitIssuer->name ?? 'N/A' }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ Str::limit($permit->work_location, 30) }}</small>
+                                    </td>
+                                    <td>
+                                        <small>{{ Str::limit($permit->receiver_company_name, 25) }}</small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {{ $permit->start_date->format('d/m') }} - {{ $permit->end_date->format('d/m') }}
+                                            @if($permit->start_date->format('Y') !== now()->format('Y'))
+                                                {{ $permit->start_date->format('Y') }}
+                                            @endif
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if($permit->status === 'active')
+                                            <span class="badge bg-success">Active</span>
+                                        @elseif($permit->status === 'expired')
+                                            <span class="badge bg-danger">Expired</span>
+                                        @elseif($permit->status === 'completed')
+                                            <span class="badge bg-info">Completed</span>
+                                        @else
+                                            <span class="badge bg-secondary">{{ ucfirst($permit->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('permits.show', $permit) }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @else
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Tidak Ada Pekerjaan Hari Ini</h5>
+                        <p class="text-muted">Tidak ada permit yang dijadwalkan untuk hari ini.</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @include('layouts.sidebar-scripts')
