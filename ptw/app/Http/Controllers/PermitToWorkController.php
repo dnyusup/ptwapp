@@ -23,14 +23,52 @@ class PermitToWorkController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Update expired permits before displaying list
         PermitToWork::updateExpiredPermits();
         
-        $permits = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver'])
-            ->latest()
-            ->paginate(15);
+        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver']);
+        
+        // Filter by status
+        if ($request->filled('status')) {
+            $status = $request->get('status');
+            if ($status === 'pending') {
+                $query->where('status', 'pending_approval');
+            } else {
+                $query->where('status', $status);
+            }
+        }
+        
+        // Filter by risk level
+        if ($request->filled('risk_level')) {
+            $query->where('risk_level', $request->get('risk_level'));
+        }
+        
+        // Search by work title, location, permit number, or creator name
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('work_title', 'like', '%' . $search . '%')
+                  ->orWhere('work_location', 'like', '%' . $search . '%')
+                  ->orWhere('permit_number', 'like', '%' . $search . '%')
+                  ->orWhere('department', 'like', '%' . $search . '%')
+                  ->orWhereHas('permitIssuer', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        // Filter by date range
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->get('start_date'));
+        }
+        
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->get('end_date'));
+        }
+        
+        $permits = $query->latest()->paginate(15)->withQueryString();
 
         return view('permits.index', compact('permits'));
     }

@@ -29,18 +29,21 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('permits.index') }}" class="row g-3">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select">
                         <option value="">All Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                        <option value="pending_extension_approval" {{ request('status') == 'pending_extension_approval' ? 'selected' : '' }}>Pending Extension</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="risk_level" class="form-label">Risk Level</label>
                     <select name="risk_level" id="risk_level" class="form-select">
                         <option value="">All Risk Levels</option>
@@ -50,17 +53,36 @@
                         <option value="critical" {{ request('risk_level') == 'critical' ? 'selected' : '' }}>Critical</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label for="search" class="form-label">Search</label>
-                    <input type="text" name="search" id="search" class="form-control" 
-                           placeholder="Search by title or location..." value="{{ request('search') }}">
+                <div class="col-md-2">
+                    <label for="start_date" class="form-label">Start Date From</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
                 </div>
                 <div class="col-md-2">
+                    <label for="end_date" class="form-label">End Date To</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="start_date" class="form-label">Start Date From</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" value="{{ request('start_date') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="end_date" class="form-label">End Date To</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" value="{{ request('end_date') }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" name="search" id="search" class="form-control" 
+                           placeholder="Search by title, location, permit number..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-1">
                     <label class="form-label">&nbsp;</label>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-outline-primary">
+                    <div class="d-grid gap-1">
+                        <button type="submit" class="btn btn-primary btn-sm">
                             <i class="fas fa-search"></i> Filter
                         </button>
+                        <a href="{{ route('permits.index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times"></i> Reset
+                        </a>
                     </div>
                 </div>
             </form>
@@ -70,9 +92,32 @@
     <!-- Permits Table -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white">
-            <h5 class="mb-0">
-                <i class="fas fa-file-alt me-2"></i>Permits List
-            </h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt me-2"></i>Permits List
+                </h5>
+                <div class="d-flex align-items-center gap-3">
+                    @if(request()->hasAny(['status', 'risk_level', 'search', 'start_date', 'end_date']))
+                        <small class="text-muted">
+                            <i class="fas fa-filter me-1"></i>
+                            Filtered results: <strong>{{ $permits->total() }}</strong>
+                            @if(request('status'))
+                                <span class="badge bg-primary ms-1">{{ ucfirst(str_replace('_', ' ', request('status'))) }}</span>
+                            @endif
+                            @if(request('risk_level'))
+                                <span class="badge bg-warning ms-1">{{ ucfirst(request('risk_level')) }} Risk</span>
+                            @endif
+                            @if(request('search'))
+                                <span class="badge bg-info ms-1">Search: "{{ request('search') }}"</span>
+                            @endif
+                        </small>
+                    @else
+                        <small class="text-muted">
+                            Total permits: <strong>{{ $permits->total() }}</strong>
+                        </small>
+                    @endif
+                </div>
+            </div>
         </div>
         <div class="card-body p-0">
             @if($permits->count() > 0)
@@ -177,4 +222,69 @@
 
 @include('layouts.sidebar-styles')
 @include('layouts.sidebar-scripts')
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get filter form elements
+    const filterForm = document.querySelector('form[method="GET"]');
+    const statusSelect = document.getElementById('status');
+    const riskLevelSelect = document.getElementById('risk_level');
+    const searchInput = document.getElementById('search');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    
+    // Auto-submit on status or risk level change
+    [statusSelect, riskLevelSelect, startDateInput, endDateInput].forEach(element => {
+        if (element) {
+            element.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
+    });
+    
+    // Search with delay
+    let searchTimeout;
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value.length >= 3 || this.value.length === 0) {
+                    filterForm.submit();
+                }
+            }, 500);
+        });
+    }
+    
+    // Show active filter count
+    function updateFilterCount() {
+        const filters = [];
+        if (statusSelect && statusSelect.value) filters.push('Status');
+        if (riskLevelSelect && riskLevelSelect.value) filters.push('Risk Level');
+        if (searchInput && searchInput.value) filters.push('Search');
+        if (startDateInput && startDateInput.value) filters.push('Start Date');
+        if (endDateInput && endDateInput.value) filters.push('End Date');
+        
+        const filterButton = document.querySelector('button[type="submit"]');
+        if (filterButton && filters.length > 0) {
+            filterButton.innerHTML = '<i class="fas fa-search"></i> Filter (' + filters.length + ')';
+            filterButton.classList.remove('btn-primary');
+            filterButton.classList.add('btn-success');
+        } else if (filterButton) {
+            filterButton.innerHTML = '<i class="fas fa-search"></i> Filter';
+            filterButton.classList.remove('btn-success');
+            filterButton.classList.add('btn-primary');
+        }
+    }
+    
+    // Update filter count on page load and changes
+    updateFilterCount();
+    [statusSelect, riskLevelSelect, searchInput, startDateInput, endDateInput].forEach(element => {
+        if (element) {
+            element.addEventListener('change', updateFilterCount);
+            element.addEventListener('input', updateFilterCount);
+        }
+    });
+});
+</script>
+
 @endsection
