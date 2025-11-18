@@ -27,144 +27,160 @@
     <!-- Stats Cards -->
     <div class="row mb-3">
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card blue">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['total_permits'] }}</div>
-                        <div class="summary-label">Total Permits</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index') }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card blue">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['total_permits'] }}</div>
+                            <div class="summary-label">Total Permits</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card green">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['active_permits'] }}</div>
-                        <div class="summary-label">Active</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'active']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card green">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['active_permits'] }}</div>
+                            <div class="summary-label">Active</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card orange">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['waiting_approval_permits'] ?? $stats['pending_permits'] }}</div>
-                        <div class="summary-label">Waiting Approval</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'pending']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card orange">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['waiting_approval_permits'] ?? $stats['pending_permits'] }}</div>
+                            <div class="summary-label">Waiting Approval</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card gray" style="background: linear-gradient(135deg, #78909C 0%, #546E7A 100%) !important; color: white !important;">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['draft_permits'] ?? $stats['in_progress_permits'] }}</div>
-                        <div class="summary-label">Draft</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'draft']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card gray" style="background: linear-gradient(135deg, #78909C 0%, #546E7A 100%) !important; color: white !important;">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['draft_permits'] ?? $stats['in_progress_permits'] }}</div>
+                            <div class="summary-label">Draft</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
     <!-- Additional Stats Cards Row -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['expired_permits'] }}</div>
-                        <div class="summary-label">Expired</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'expired']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['expired_permits'] }}</div>
+                            <div class="summary-label">Expired</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white;">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['completed_permits'] }}</div>
-                        <div class="summary-label">Completed</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'completed']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white;">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['completed_permits'] }}</div>
+                            <div class="summary-label">Completed</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); color: white;">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['pending_extension_permits'] }}</div>
-                        <div class="summary-label">Pending Extension</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'pending_extension_approval']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); color: white;">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['pending_extension_permits'] }}</div>
+                            <div class="summary-label">Pending Extension</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card summary-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
-                <div class="card-body">
-                    <div class="summary-content">
-                        <div class="summary-number">{{ $stats['rejected_permits'] }}</div>
-                        <div class="summary-label">Rejected</div>
-                        <div class="summary-detail">Selengkapnya</div>
-                    </div>
-                    <div class="summary-icon">
-                        <i class="fas fa-times-circle"></i>
-                    </div>
-                    <div class="summary-arrow">
-                        <i class="fas fa-chevron-right"></i>
+            <a href="{{ route('permits.index', ['status' => 'rejected']) }}" class="text-decoration-none dashboard-card">
+                <div class="card summary-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
+                    <div class="card-body">
+                        <div class="summary-content">
+                            <div class="summary-number">{{ $stats['rejected_permits'] }}</div>
+                            <div class="summary-label">Rejected</div>
+                            <div class="summary-detail">Selengkapnya</div>
+                        </div>
+                        <div class="summary-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="summary-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 

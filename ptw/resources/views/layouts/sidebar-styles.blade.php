@@ -344,4 +344,45 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        /* Dashboard Card Hover Effects */
+        .dashboard-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            text-decoration: none;
+            display: block;
+            color: inherit;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dashboard-card .card-body {
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover .card-body {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.05) 0%, rgba(108, 117, 125, 0.05) 100%);
+        }
+
+        .dashboard-card .display-4 {
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover .display-4 {
+            transform: scale(1.1);
+        }
+
+        .dashboard-card .text-muted {
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover .text-muted {
+            color: #495057 !important;
+            font-weight: 600;
+        }
 </style>
