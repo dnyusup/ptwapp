@@ -44,33 +44,29 @@
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         /* Header styles */
         .email-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 30px 40px;
+            background-color: #ffc107;
+            color: #000000;
+            padding: 20px;
             text-align: center;
-            border-radius: 10px 10px 0 0;
         }
         
         .email-header h1 {
-            color: #ffffff !important;
-            font-size: 24px !important;
-            font-weight: bold !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000000;
         }
         
-        .email-header .subtitle {
-            color: #f0f0f0 !important;
-            font-size: 14px !important;
-            margin-top: 5px !important;
-        }
-        
-        /* Content styles */
+        /* Content area */
         .email-content {
-            padding: 40px;
+            padding: 30px;
         }
         
         .greeting {
@@ -79,217 +75,201 @@
             color: #333333;
         }
         
+        /* Info table styles */
         .info-table {
-            width: 100% !important;
-            border-collapse: collapse !important;
-            margin: 20px 0 !important;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
             background-color: #f8f9fa;
-            border-radius: 8px;
-            overflow: hidden;
+            border: 1px solid #dee2e6;
         }
         
-        .info-table th,
         .info-table td {
-            padding: 12px 15px !important;
-            text-align: left !important;
-            border-bottom: 1px solid #dee2e6 !important;
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
         }
         
-        .info-table th {
-            background-color: #e9ecef !important;
-            font-weight: bold !important;
-            color: #495057 !important;
+        .info-label {
+            font-weight: bold;
             width: 35%;
+            color: #495057;
+            background-color: #e9ecef;
         }
         
-        .info-table td {
-            color: #333333 !important;
+        .info-value {
+            width: 65%;
+            color: #212529;
         }
         
-        .info-table tr:last-child th,
-        .info-table tr:last-child td {
-            border-bottom: none !important;
-        }
-        
-        /* Extension specific styles */
-        .extension-highlight {
-            background-color: #fff3cd !important;
-            border: 2px solid #ffeaa7 !important;
-            border-radius: 8px;
-            padding: 20px;
+        /* Extension highlight box */
+        .extension-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 15px;
             margin: 20px 0;
         }
         
-        .extension-highlight h3 {
-            color: #856404 !important;
-            margin: 0 0 10px 0 !important;
-            font-size: 18px;
-        }
-        
-        .extension-highlight p {
-            color: #856404 !important;
-            margin: 0 !important;
+        .extension-label {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 8px;
         }
         
         /* Button styles */
-        .button-container {
+        .btn-container {
             text-align: center;
-            margin: 30px 0;
+            margin: 24px 0;
         }
         
-        .button {
-            display: inline-block !important;
-            padding: 12px 30px !important;
-            background-color: #28a745 !important;
-            color: #ffffff !important;
-            text-decoration: none !important;
-            border-radius: 5px !important;
-            font-weight: bold !important;
-            margin: 0 10px !important;
+        .btn-primary {
+            background-color: #ffc107;
+            color: #000000;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            border: none;
         }
         
-        .button.danger {
-            background-color: #dc3545 !important;
+        .btn-primary:hover {
+            background-color: #e0a800;
+            color: #000000;
+            text-decoration: none;
         }
         
-        .button:hover {
-            opacity: 0.8;
-        }
-        
-        /* Footer styles */
+        /* Footer */
         .email-footer {
-            background-color: #f8f9fa;
-            padding: 30px 40px;
+            font-size: 12px;
+            color: #6c757d;
             text-align: center;
-            border-radius: 0 0 10px 10px;
+            margin-top: 30px;
             border-top: 1px solid #dee2e6;
-        }
-        
-        .email-footer p {
-            margin: 0 !important;
-            font-size: 12px !important;
-            color: #6c757d !important;
+            padding-top: 20px;
         }
         
         /* Responsive styles */
         @media only screen and (max-width: 600px) {
             .email-container {
                 width: 100% !important;
+                max-width: 100% !important;
             }
             
-            .email-header,
-            .email-content,
-            .email-footer {
+            .email-content {
                 padding: 20px !important;
             }
             
-            .info-table th,
-            .info-table td {
-                padding: 8px 10px !important;
-                font-size: 12px !important;
+            .info-table {
+                width: 100% !important;
             }
             
-            .button {
+            .info-label,
+            .info-value {
                 display: block !important;
-                margin: 10px 0 !important;
+                width: 100% !important;
+                padding: 8px 10px !important;
+            }
+            
+            .info-label {
+                border-bottom: none !important;
+                padding-bottom: 4px !important;
+            }
+            
+            .info-value {
+                border-top: none !important;
+                padding-top: 4px !important;
             }
         }
     </style>
 </head>
 <body>
-    <table class="email-container" cellpadding="0" cellspacing="0" border="0">
+    <!-- Outer container for proper spacing -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f4; padding: 20px 0;">
         <tr>
-            <td>
-                <!-- Header -->
-                <div class="email-header">
-                    <h1>🔄 Permit Extension Request</h1>
-                    <p class="subtitle">A permit requires extension approval</p>
-                </div>
+            <td align="center">
+                <!--[if mso | IE]>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" class="email-container-outlook" style="width:600px;" width="600">
+                    <tr>
+                        <td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;">
+                <![endif]-->
                 
-                <!-- Content -->
-                <div class="email-content">
-                    <p class="greeting">Dear EHS Team,</p>
+                <div class="email-container">
+        <!-- Header -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+                <td class="email-header">
+                    <h1>🔄 Permit Extension Request</h1>
+                </td>
+            </tr>
+        </table>
+        
+        <!-- Content -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+                <td class="email-content">
+                    <p>Dear EHS Team,</p>
                     
                     <p>A permit that has expired requires an extension. Please review the details below and approve or reject the extension request.</p>
                     
                     <!-- Extension Information Highlight -->
-                    <div class="extension-highlight">
-                        <h3>⚠️ Extension Request Details</h3>
+                    <div class="extension-box">
+                        <div class="extension-label">⚠️ Extension Request Details</div>
                         <p><strong>Original End Date:</strong> {{ \Carbon\Carbon::parse($originalEndDate)->format('d M Y') }}</p>
                         <p><strong>Requested New End Date:</strong> {{ \Carbon\Carbon::parse($newEndDate)->format('d M Y') }}</p>
                         <p><strong>Extension Duration:</strong> {{ \Carbon\Carbon::parse($originalEndDate)->diffInDays(\Carbon\Carbon::parse($newEndDate)) }} day(s)</p>
+                        @if($permit->extension_reason)
+                        <p><strong>Reason:</strong> {{ $permit->extension_reason }}</p>
+                        @endif
                     </div>
                     
-                    <!-- Permit Information -->
-                    <table class="info-table">
+                    <!-- Info Table -->
+                    <table class="info-table" role="presentation" cellspacing="0" cellpadding="0" border="0">
                         <tr>
-                            <th>Permit Number</th>
-                            <td>{{ $permit->permit_number }}</td>
+                            <td class="info-label">Permit Number:</td>
+                            <td class="info-value">{{ $permit->permit_number }}</td>
                         </tr>
                         <tr>
-                            <th>Work Title</th>
-                            <td>{{ $permit->work_title }}</td>
+                            <td class="info-label">Work Title:</td>
+                            <td class="info-value">{{ $permit->work_title }}</td>
                         </tr>
                         <tr>
-                            <th>Work Location</th>
-                            <td>{{ $permit->work_location }}</td>
+                            <td class="info-label">Location:</td>
+                            <td class="info-value">{{ $permit->work_location }}</td>
                         </tr>
                         <tr>
-                            <th>Department</th>
-                            <td>{{ $permit->department }}</td>
+                            <td class="info-label">Work Period:</td>
+                            <td class="info-value">{{ \Carbon\Carbon::parse($permit->start_date)->format('d M Y') }} - {{ \Carbon\Carbon::parse($newEndDate)->format('d M Y') }}</td>
                         </tr>
                         <tr>
-                            <th>Permit Creator</th>
-                            <td>
-                                {{ $permit->permitIssuer->name ?? 'N/A' }}<br>
-                                <small style="color: #6c757d;">{{ $permit->permitIssuer->email ?? '' }}</small>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Responsible Person</th>
-                            <td>
-                                {{ $permit->responsible_person ?? 'N/A' }}<br>
-                                @if($permit->responsible_person_email)
-                                <small style="color: #6c757d;">{{ $permit->responsible_person_email }}</small>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Original Start Date</th>
-                            <td>{{ $permit->start_date ? $permit->start_date->format('d M Y') : 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Work Description</th>
-                            <td>{{ Str::limit($permit->work_description, 200) ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Current Status</th>
-                            <td>
-                                <span style="background-color: #ffc107; color: #000; padding: 2px 8px; border-radius: 3px; font-weight: bold;">
-                                    PENDING EXTENSION APPROVAL
-                                </span>
-                            </td>
+                            <td class="info-label">Contractor:</td>
+                            <td class="info-value">{{ $permit->receiver_company_name }}</td>
                         </tr>
                     </table>
                     
-                    <div class="button-container">
-                        <p style="margin-bottom: 20px; color: #666;">Click the link below to review and approve/reject this permit extension:</p>
-                        <a href="{{ route('permits.show', $permit->id) }}" class="button">
+                    <!-- Button -->
+                    <div class="btn-container">
+                        <a href="{{ route('permits.show', $permit->id) }}" class="btn-primary">
                             📋 Review Permit Extension
                         </a>
                     </div>
                     
-                    <p style="margin-top: 30px; padding: 15px; background-color: #e7f3ff; border-left: 4px solid #007bff; border-radius: 4px;">
-                        <strong>📝 Note:</strong> This permit was originally expired and the creator has requested an extension. Please review the work progress and safety conditions before approving the extension.
-                    </p>
+                    <!-- Footer -->
+                    <div class="email-footer">
+                        This email was sent automatically from the PTW Portal System.<br>
+                        Please do not reply to this email.
+                    </div>
+                </td>
+            </tr>
+        </table>
                 </div>
                 
-                <!-- Footer -->
-                <div class="email-footer">
-                    <p>This is an automated message from the Permit to Work System.</p>
-                    <p>Please do not reply to this email. For support, contact your system administrator.</p>
-                    <p style="margin-top: 15px;">&copy; {{ date('Y') }} Bekaert. All rights reserved.</p>
-                </div>
+                <!--[if mso | IE]>
+                        </td>
+                    </tr>
+                </table>
+                <![endif]-->
             </td>
         </tr>
     </table>
