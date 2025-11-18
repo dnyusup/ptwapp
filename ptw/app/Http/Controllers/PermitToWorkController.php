@@ -530,7 +530,7 @@ class PermitToWorkController extends Controller
     /**
      * Mark permit as completed
      */
-    public function complete(PermitToWork $permit)
+    public function complete(Request $request, PermitToWork $permit)
     {
         // Add logging for debugging
         \Log::info('Complete request started', [
@@ -579,15 +579,29 @@ class PermitToWorkController extends Controller
                     ->with('error', 'Only active or expired permits can be marked as completed.');
             }
 
-            \Log::info('Updating permit to completed', [
-                'permit_id' => $permit->id,
-                'current_status' => $permit->status
+            // Validate completion form data
+            $validated = $request->validate([
+                'work_status' => 'required|in:selesai,belum_selesai',
+                'work_status_detail' => 'nullable|string|max:1000',
+                'area_installation_status' => 'required|in:siap_dioperasikan,belum_siap',
+                'area_installation_detail' => 'nullable|string|max:1000',
             ]);
 
-            // Update permit status to completed
+            \Log::info('Updating permit to completed', [
+                'permit_id' => $permit->id,
+                'current_status' => $permit->status,
+                'completion_data' => $validated
+            ]);
+
+            // Update permit status to completed with completion details
             $permit->update([
                 'status' => 'completed',
-                'completed_at' => now()
+                'work_status' => $validated['work_status'],
+                'work_status_detail' => $validated['work_status_detail'],
+                'area_installation_status' => $validated['area_installation_status'],
+                'area_installation_detail' => $validated['area_installation_detail'],
+                'completed_at' => now(),
+                'completed_by' => auth()->id()
             ]);
 
             \Log::info('Complete request successful', [

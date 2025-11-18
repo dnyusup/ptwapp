@@ -98,6 +98,27 @@
 .badge.rounded-pill {
     padding: 8px 16px;
     font-weight: 600;
+}
+
+/* Completion card styles */
+.completion-info .status-box {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.completion-info .status-box:hover {
+    border-color: #dee2e6;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.detail-box {
+    background: #f8f9fa;
+    font-size: 0.9rem;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+}
     letter-spacing: 0.5px;
 }
 
@@ -386,6 +407,89 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Completion Information Card -->
+            @if($permit->status === 'completed' && $permit->completed_at)
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-gradient-success text-white">
+                    <h5 class="mb-0 text-white">
+                        <i class="fas fa-check-circle me-2"></i>Pekerjaan Selesai
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="completion-info">
+                                <h6 class="fw-bold text-success mb-3">
+                                    <i class="fas fa-clipboard-check me-2"></i>Status Pekerjaan
+                                </h6>
+                                <div class="status-box p-3 rounded-3 bg-light border">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-{{ $permit->work_status === 'selesai' ? 'success' : 'warning' }} me-2">
+                                            <i class="fas fa-{{ $permit->work_status === 'selesai' ? 'check' : 'clock' }} me-1"></i>
+                                            {{ $permit->work_status === 'selesai' ? 'Selesai' : 'Belum Selesai' }}
+                                        </span>
+                                    </div>
+                                    @if($permit->work_status_detail)
+                                        <div class="detail-box bg-white p-2 rounded border">
+                                            <small class="text-muted d-block mb-1">Detail:</small>
+                                            <span class="text-dark">{{ $permit->work_status_detail }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="completion-info">
+                                <h6 class="fw-bold text-info mb-3">
+                                    <i class="fas fa-cogs me-2"></i>Status Area/Instalasi/Peralatan
+                                </h6>
+                                <div class="status-box p-3 rounded-3 bg-light border">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-{{ $permit->area_installation_status === 'siap_dioperasikan' ? 'success' : 'warning' }} me-2">
+                                            <i class="fas fa-{{ $permit->area_installation_status === 'siap_dioperasikan' ? 'check' : 'exclamation-triangle' }} me-1"></i>
+                                            {{ $permit->area_installation_status === 'siap_dioperasikan' ? 'Siap Dioperasikan' : 'Belum Siap' }}
+                                        </span>
+                                    </div>
+                                    @if($permit->area_installation_detail)
+                                        <div class="detail-box bg-white p-2 rounded border">
+                                            <small class="text-muted d-block mb-1">Detail:</small>
+                                            <span class="text-dark">{{ $permit->area_installation_detail }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Completion Meta Info -->
+                    <div class="row g-4 mt-3 pt-3 border-top">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-success bg-opacity-10 text-success me-3">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Diselesaikan oleh:</small>
+                                    <span class="fw-semibold">{{ $permit->completedBy->name ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-info bg-opacity-10 text-info me-3">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Tanggal Selesai:</small>
+                                    <span class="fw-semibold">{{ $permit->completed_at->format('d M Y, H:i') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Main Information Card -->
             <div class="card border-0 shadow-sm mb-4">
@@ -1114,17 +1218,13 @@
                 </div>
                 <div class="card-body">
                     <!-- Mark as Complete -->
-                    <form method="POST" action="{{ route('permits.complete', $permit) }}" class="mb-3">
-                        @csrf
-                        @method('PATCH')
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-info text-white fw-bold" 
-                                    style="background-color: #0dcaf0; border-color: #0dcaf0; color: #fff !important;"
-                                    onclick="return confirm('Mark this permit as completed?')">
-                                <i class="fas fa-check-circle me-2"></i>Mark as Completed
-                            </button>
-                        </div>
-                    </form>
+                    <div class="d-grid mb-3">
+                        <button type="button" class="btn btn-info text-white fw-bold" 
+                                style="background-color: #0dcaf0; border-color: #0dcaf0; color: #fff !important;"
+                                data-bs-toggle="modal" data-bs-target="#completePermitModal">
+                            <i class="fas fa-check-circle me-2"></i>Mark as Completed
+                        </button>
+                    </div>
 
                     @if($permit->status === 'expired')
                     <!-- Extend Permit -->
@@ -1559,6 +1659,109 @@ document.addEventListener('DOMContentLoaded', function() {
     @endif
 });
 </script>
+
+<!-- Complete Permit Modal -->
+@if(($permit->status === 'active' || $permit->status === 'expired') && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))
+<div class="modal fade" id="completePermitModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle me-2"></i>Mark Permit as Completed
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ route('permits.complete', $permit) }}">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Permit:</strong> {{ $permit->permit_number }}<br>
+                        <strong>Work:</strong> {{ $permit->work_title }}
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Status Pekerjaan -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 fw-bold text-primary">
+                                        <i class="fas fa-clipboard-check me-2"></i>Status Pekerjaan
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="work_status" 
+                                               id="work_selesai" value="selesai" required>
+                                        <label class="form-check-label fw-semibold text-success" for="work_selesai">
+                                            <i class="fas fa-check-circle me-1"></i>Selesai
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="work_status" 
+                                               id="work_belum_selesai" value="belum_selesai" required>
+                                        <label class="form-check-label fw-semibold text-warning" for="work_belum_selesai">
+                                            <i class="fas fa-clock me-1"></i>Belum Selesai
+                                        </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="work_status_detail" class="form-label small">Detail (optional)</label>
+                                        <textarea class="form-control form-control-sm" id="work_status_detail" 
+                                                  name="work_status_detail" rows="3" 
+                                                  placeholder="Berikan detail tentang status pekerjaan..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Status Area/Instalasi/Peralatan -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0 fw-bold text-info">
+                                        <i class="fas fa-cogs me-2"></i>Status Area/Instalasi/Peralatan
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="area_installation_status" 
+                                               id="area_siap" value="siap_dioperasikan" required>
+                                        <label class="form-check-label fw-semibold text-success" for="area_siap">
+                                            <i class="fas fa-check-circle me-1"></i>Siap Dioperasikan
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="area_installation_status" 
+                                               id="area_belum_siap" value="belum_siap" required>
+                                        <label class="form-check-label fw-semibold text-warning" for="area_belum_siap">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Belum Siap
+                                        </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="area_installation_detail" class="form-label small">Detail (optional)</label>
+                                        <textarea class="form-control form-control-sm" id="area_installation_detail" 
+                                                  name="area_installation_detail" rows="3" 
+                                                  placeholder="Berikan detail tentang status area/instalasi/peralatan..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle me-2"></i>Mark as Completed
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
 
 <!-- Extend Permit Modal -->
 @if($permit->status === 'expired' && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))

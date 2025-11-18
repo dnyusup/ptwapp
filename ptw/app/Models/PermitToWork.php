@@ -50,6 +50,12 @@ class PermitToWork extends Model
         'extension_reason',
         'extended_at',
         'extended_by',
+        'work_status',
+        'work_status_detail',
+        'area_installation_status',
+        'area_installation_detail',
+        'completed_at',
+        'completed_by',
     ];
 
     protected $casts = [
@@ -68,6 +74,7 @@ class PermitToWork extends Model
         'received_at' => 'datetime',
         'rejected_at' => 'datetime',
         'extended_at' => 'datetime',
+        'completed_at' => 'datetime',
     ];
 
     public function user()
@@ -103,6 +110,11 @@ class PermitToWork extends Model
     public function extendedBy()
     {
         return $this->belongsTo(User::class, 'extended_by');
+    }
+
+    public function completedBy()
+    {
+        return $this->belongsTo(User::class, 'completed_by');
     }
 
     public function methodStatement()
