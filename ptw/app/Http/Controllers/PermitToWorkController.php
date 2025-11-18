@@ -582,9 +582,14 @@ class PermitToWorkController extends Controller
             // Validate completion form data
             $validated = $request->validate([
                 'work_status' => 'required|in:selesai,belum_selesai',
-                'work_status_detail' => 'nullable|string|max:1000',
+                'work_status_detail' => 'required|string|min:10|max:1000',
                 'area_installation_status' => 'required|in:siap_dioperasikan,belum_siap',
-                'area_installation_detail' => 'nullable|string|max:1000',
+                'area_installation_detail' => 'required|string|min:10|max:1000',
+            ], [
+                'work_status_detail.required' => 'Detail status pekerjaan wajib diisi.',
+                'work_status_detail.min' => 'Detail status pekerjaan minimal 10 karakter.',
+                'area_installation_detail.required' => 'Detail status area/instalasi/peralatan wajib diisi.',
+                'area_installation_detail.min' => 'Detail status area/instalasi/peralatan minimal 10 karakter.',
             ]);
 
             \Log::info('Updating permit to completed', [

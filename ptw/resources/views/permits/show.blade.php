@@ -1657,6 +1657,56 @@ document.addEventListener('DOMContentLoaded', function() {
         extendDateInput.value = maxDate.toISOString().split('T')[0];
     }
     @endif
+    
+    // Completion form validation
+    const completionForm = document.getElementById('completionForm');
+    if (completionForm) {
+        completionForm.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Clear previous validation states
+            this.querySelectorAll('.is-invalid').forEach(field => {
+                field.classList.remove('is-invalid');
+            });
+            
+            // Validate work status detail
+            const workStatusDetail = document.getElementById('work_status_detail');
+            if (workStatusDetail && workStatusDetail.value.trim().length < 10) {
+                workStatusDetail.classList.add('is-invalid');
+                workStatusDetail.nextElementSibling.textContent = 'Detail status pekerjaan minimal 10 karakter.';
+                isValid = false;
+            }
+            
+            // Validate area installation detail
+            const areaDetail = document.getElementById('area_installation_detail');
+            if (areaDetail && areaDetail.value.trim().length < 10) {
+                areaDetail.classList.add('is-invalid');
+                areaDetail.nextElementSibling.textContent = 'Detail status area/instalasi/peralatan minimal 10 karakter.';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                // Show error toast
+                const toast = document.createElement('div');
+                toast.className = 'toast position-fixed top-0 end-0 m-3';
+                toast.style.zIndex = '9999';
+                toast.innerHTML = `
+                    <div class="toast-header bg-danger text-white">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong class="me-auto">Validation Error</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
+                    <div class="toast-body">
+                        Mohon lengkapi semua field yang wajib diisi dengan minimal 10 karakter.
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+            }
+        });
+    }
 });
 </script>
 
@@ -1671,7 +1721,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="{{ route('permits.complete', $permit) }}">
+            <form id="completionForm" method="POST" action="{{ route('permits.complete', $permit) }}">
                 @csrf
                 @method('PATCH')
                 <div class="modal-body">
@@ -1706,10 +1756,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </label>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="work_status_detail" class="form-label small">Detail (optional)</label>
+                                        <label for="work_status_detail" class="form-label small">
+                                            Detail <span class="text-danger">*</span>
+                                        </label>
                                         <textarea class="form-control form-control-sm" id="work_status_detail" 
                                                   name="work_status_detail" rows="3" 
-                                                  placeholder="Berikan detail tentang status pekerjaan..."></textarea>
+                                                  placeholder="Berikan detail tentang status pekerjaan..."
+                                                  required></textarea>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
                             </div>
@@ -1739,10 +1793,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </label>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="area_installation_detail" class="form-label small">Detail (optional)</label>
+                                        <label for="area_installation_detail" class="form-label small">
+                                            Detail <span class="text-danger">*</span>
+                                        </label>
                                         <textarea class="form-control form-control-sm" id="area_installation_detail" 
                                                   name="area_installation_detail" rows="3" 
-                                                  placeholder="Berikan detail tentang status area/instalasi/peralatan..."></textarea>
+                                                  placeholder="Berikan detail tentang status area/instalasi/peralatan..."
+                                                  required></textarea>
+                                        <div class="invalid-feedback"></div>
                                     </div>
                                 </div>
                             </div>
