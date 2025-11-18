@@ -361,26 +361,24 @@
 
 <style>
 .dashboard-card {
-    cursor: pointer;
-    transition: all 0.2s ease;
     text-decoration: none !important;
     color: inherit !important;
+    display: block;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     text-decoration: none !important;
     color: inherit !important;
 }
 
-.dashboard-card .card {
+.dashboard-card .summary-card {
+    transition: all 0.2s ease;
     border: none;
-    border-radius: 15px;
 }
 
-.dashboard-card:hover .card {
-    border: none;
+.dashboard-card:hover .summary-card {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 </style>
 
