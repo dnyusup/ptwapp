@@ -207,10 +207,6 @@
                                 <small class="text-muted" style="font-size: 0.7rem;">Active</small>
                             </div>
                             <div class="text-center">
-                                <div class="fw-bold text-danger small">{{ $today_summary['expired'] }}</div>
-                                <small class="text-muted" style="font-size: 0.7rem;">Expired</small>
-                            </div>
-                            <div class="text-center">
                                 <div class="fw-bold text-info small">{{ $today_summary['completed'] }}</div>
                                 <small class="text-muted" style="font-size: 0.7rem;">Done</small>
                             </div>
