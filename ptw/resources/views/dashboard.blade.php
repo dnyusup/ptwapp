@@ -358,4 +358,30 @@
 </div>
 
 @include('layouts.sidebar-scripts')
+
+<style>
+.dashboard-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.dashboard-card .card {
+    border: none;
+    border-radius: 15px;
+}
+
+.dashboard-card:hover .card {
+    border: none;
+}
+</style>
+
 @endsection
