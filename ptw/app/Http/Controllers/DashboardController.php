@@ -22,6 +22,7 @@ class DashboardController extends Controller
             'active_permits' => PermitToWork::where('status', 'active')->count(),
             'expired_permits' => PermitToWork::where('status', 'expired')->count(),
             'pending_extension_permits' => PermitToWork::where('status', 'pending_extension_approval')->count(),
+            'rejected_permits' => PermitToWork::where('status', 'rejected')->count(),
             'draft_permits' => PermitToWork::where('status', 'draft')->count(),
             'completed_permits' => PermitToWork::where('status', 'completed')->count(),
             // Keep old keys for backward compatibility

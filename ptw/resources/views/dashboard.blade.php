@@ -150,7 +150,21 @@
             </div>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <!-- Empty placeholder for future stats -->
+            <div class="card summary-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
+                <div class="card-body">
+                    <div class="summary-content">
+                        <div class="summary-number">{{ $stats['rejected_permits'] }}</div>
+                        <div class="summary-label">Rejected</div>
+                        <div class="summary-detail">Selengkapnya</div>
+                    </div>
+                    <div class="summary-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="summary-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
