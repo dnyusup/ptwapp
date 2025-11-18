@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | EHS Team Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for EHS team email notifications
+    |
+    */
+    'ehs_team' => [
+        'emails' => array_filter(explode(',', env('EHS_TEAM_EMAILS', 'ehs@company.com'))),
+        'name' => env('EHS_TEAM_NAME', 'EHS Team'),
+    ],
+
 ];

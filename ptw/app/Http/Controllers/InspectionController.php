@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Inspection;
 use App\Models\PermitToWork;
+use App\Models\User;
+use App\Mail\InspectionNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class InspectionController extends Controller
 {
@@ -38,6 +41,48 @@ class InspectionController extends Controller
             ]);
 
             Log::info('Inspection created successfully', ['inspection' => $inspection->toArray()]);
+
+            // Send email notification to EHS team
+            try {
+                $ehsUsers = \App\Models\User::where('role', 'bekaert')
+                    ->where('department', 'EHS')
+                    ->get();
+                $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
+                
+                if (count($ehsEmails) > 0) {
+                    // Get area/location owner email
+                    $ccEmails = [];
+                    if ($permit->locationOwner && $permit->locationOwner->email) {
+                        $ccEmails[] = $permit->locationOwner->email;
+                    }
+                    
+                    // Add inspector email to CC
+                    if ($request->inspector_email) {
+                        $ccEmails[] = $request->inspector_email;
+                    }
+                    
+                    // Remove duplicates from CC
+                    $ccEmails = array_unique($ccEmails);
+                    
+                    $mail = \Mail::to($ehsEmails);
+                    if (!empty($ccEmails)) {
+                        $mail->cc($ccEmails);
+                    }
+                    $mail->send(new \App\Mail\InspectionNotification($inspection));
+                    
+                    Log::info('Inspection notification sent', [
+                        'ehs_emails' => $ehsEmails,
+                        'cc_emails' => $ccEmails,
+                        'inspection_id' => $inspection->id
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to send inspection notification', [
+                    'error' => $e->getMessage(),
+                    'inspection_id' => $inspection->id
+                ]);
+                // Don't fail the inspection creation if email fails
+            }
 
             return response()->json([
                 'success' => true,
