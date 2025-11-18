@@ -479,8 +479,8 @@
                                         <div class="work-type-item">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="line_breaking" 
-                                                       name="line_breaking" value="1" {{ old('line_breaking') ? 'checked' : '' }}>
-                                                <label class="form-check-label fw-medium" for="line_breaking">
+                                                       name="line_breaking" value="1" {{ old('line_breaking') ? 'checked' : '' }} disabled>
+                                                <label class="form-check-label fw-medium text-muted" for="line_breaking">
                                                     <i class="fas fa-cut text-secondary me-2"></i>
                                                     Mematikan Line (Line breaking) (hidrolik line etc.)
                                                 </label>
@@ -492,8 +492,8 @@
                                         <div class="work-type-item">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="excavation" 
-                                                       name="excavation" value="1" {{ old('excavation') ? 'checked' : '' }}>
-                                                <label class="form-check-label fw-medium" for="excavation">
+                                                       name="excavation" value="1" {{ old('excavation') ? 'checked' : '' }} disabled>
+                                                <label class="form-check-label fw-medium text-muted" for="excavation">
                                                     <i class="fas fa-shovel text-brown me-2"></i>
                                                     Penggalian (Excavation)
                                                 </label>
@@ -505,8 +505,8 @@
                                         <div class="work-type-item">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="confined_spaces" 
-                                                       name="confined_spaces" value="1" {{ old('confined_spaces') ? 'checked' : '' }}>
-                                                <label class="form-check-label fw-medium" for="confined_spaces">
+                                                       name="confined_spaces" value="1" {{ old('confined_spaces') ? 'checked' : '' }} disabled>
+                                                <label class="form-check-label fw-medium text-muted" for="confined_spaces">
                                                     <i class="fas fa-cube text-dark me-2"></i>
                                                     Memasuki Ruang Terbatas (Entering Confined spaces)
                                                 </label>
@@ -518,8 +518,8 @@
                                         <div class="work-type-item">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="explosive_atmosphere" 
-                                                       name="explosive_atmosphere" value="1" {{ old('explosive_atmosphere') ? 'checked' : '' }}>
-                                                <label class="form-check-label fw-medium" for="explosive_atmosphere">
+                                                       name="explosive_atmosphere" value="1" {{ old('explosive_atmosphere') ? 'checked' : '' }} disabled>
+                                                <label class="form-check-label fw-medium text-muted" for="explosive_atmosphere">
                                                     <i class="fas fa-exclamation-triangle text-danger me-2"></i>
                                                     Atmosfer berbahaya (Explosive atmosphere)
                                                 </label>
