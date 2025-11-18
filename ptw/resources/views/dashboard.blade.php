@@ -278,7 +278,7 @@
 
     <!-- Today's Work Section -->
     <div class="row mb-4">
-        <div class="col-12">
+        <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -288,22 +288,22 @@
                             </h5>
                             <small class="text-muted">{{ now()->format('l, d F Y') }}</small>
                         </div>
-                        <div class="d-flex gap-3 flex-wrap">
+                        <div class="d-flex gap-2 flex-wrap">
                             <div class="text-center">
-                                <div class="fw-bold text-primary">{{ $today_summary['total'] }}</div>
-                                <small class="text-muted">Total</small>
+                                <div class="fw-bold text-primary small">{{ $today_summary['total'] }}</div>
+                                <small class="text-muted" style="font-size: 0.7rem;">Total</small>
                             </div>
                             <div class="text-center">
-                                <div class="fw-bold text-success">{{ $today_summary['active'] }}</div>
-                                <small class="text-muted">Active</small>
+                                <div class="fw-bold text-success small">{{ $today_summary['active'] }}</div>
+                                <small class="text-muted" style="font-size: 0.7rem;">Active</small>
                             </div>
                             <div class="text-center">
-                                <div class="fw-bold text-danger">{{ $today_summary['expired'] }}</div>
-                                <small class="text-muted">Expired</small>
+                                <div class="fw-bold text-danger small">{{ $today_summary['expired'] }}</div>
+                                <small class="text-muted" style="font-size: 0.7rem;">Expired</small>
                             </div>
                             <div class="text-center">
-                                <div class="fw-bold text-info">{{ $today_summary['completed'] }}</div>
-                                <small class="text-muted">Completed</small>
+                                <div class="fw-bold text-info small">{{ $today_summary['completed'] }}</div>
+                                <small class="text-muted" style="font-size: 0.7rem;">Done</small>
                             </div>
                         </div>
                     </div>
@@ -311,56 +311,37 @@
                 <div class="card-body p-0">
                     @if($today_permits->count() > 0)
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover table-sm mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Permit Number</th>
+                                    <th>Permit</th>
                                     <th>Work Title</th>
-                                    <th>Location</th>
-                                    <th>Contractor</th>
-                                    <th>Period</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($today_permits as $permit)
                                 <tr class="{{ $permit->status === 'expired' ? 'table-danger' : ($permit->status === 'completed' ? 'table-success' : '') }}">
                                     <td>
-                                        <span class="fw-semibold">{{ $permit->permit_number }}</span>
-                                        @if($permit->status === 'expired')
-                                            <i class="fas fa-exclamation-triangle text-danger ms-1" title="Expired"></i>
-                                        @elseif($permit->status === 'completed')
-                                            <i class="fas fa-check-circle text-success ms-1" title="Completed"></i>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="fw-medium">{{ Str::limit($permit->work_title, 40) }}</div>
-                                        <small class="text-muted">{{ $permit->permitIssuer->name ?? 'N/A' }}</small>
-                                    </td>
-                                    <td>
-                                        <small>{{ Str::limit($permit->work_location, 30) }}</small>
-                                    </td>
-                                    <td>
-                                        <small>{{ Str::limit($permit->receiver_company_name, 25) }}</small>
-                                    </td>
-                                    <td>
-                                        <small>
+                                        <div class="fw-semibold small">{{ $permit->permit_number }}</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">
                                             {{ $permit->start_date->format('d/m') }} - {{ $permit->end_date->format('d/m') }}
-                                            @if($permit->start_date->format('Y') !== now()->format('Y'))
-                                                {{ $permit->start_date->format('Y') }}
-                                            @endif
-                                        </small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-medium small">{{ Str::limit($permit->work_title, 25) }}</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">{{ Str::limit($permit->work_location, 20) }}</div>
                                     </td>
                                     <td>
                                         @if($permit->status === 'active')
-                                            <span class="badge bg-success">Active</span>
+                                            <span class="badge bg-success badge-sm">Active</span>
                                         @elseif($permit->status === 'expired')
-                                            <span class="badge bg-danger">Expired</span>
+                                            <span class="badge bg-danger badge-sm">Expired</span>
                                         @elseif($permit->status === 'completed')
-                                            <span class="badge bg-info">Completed</span>
+                                            <span class="badge bg-info badge-sm">Done</span>
                                         @else
-                                            <span class="badge bg-secondary">{{ ucfirst($permit->status) }}</span>
+                                            <span class="badge bg-secondary badge-sm">{{ ucfirst($permit->status) }}</span>
                                         @endif
                                     </td>
                                     <td>
@@ -382,6 +363,11 @@
                     @endif
                 </div>
             </div>
+        </div>
+        
+        <!-- Spacer for remaining columns -->
+        <div class="col-xl-8 col-lg-6 mb-4">
+            <!-- This space can be used for future dashboard widgets -->
         </div>
     </div>
 </div>
