@@ -27,7 +27,7 @@
     <!-- Stats Cards -->
     <div class="row mb-3">
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index') }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index') }}" class="text-decoration-none">
                 <div class="card summary-card blue">
                     <div class="card-body">
                         <div class="summary-content">
@@ -46,7 +46,7 @@
             </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'active']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'active']) }}" class="text-decoration-none">
                 <div class="card summary-card green">
                     <div class="card-body">
                         <div class="summary-content">
@@ -65,7 +65,7 @@
             </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'pending']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'pending']) }}" class="text-decoration-none">
                 <div class="card summary-card orange">
                     <div class="card-body">
                         <div class="summary-content">
@@ -84,7 +84,7 @@
             </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'draft']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'draft']) }}" class="text-decoration-none">
                 <div class="card summary-card gray" style="background: linear-gradient(135deg, #78909C 0%, #546E7A 100%) !important; color: white !important;">
                     <div class="card-body">
                         <div class="summary-content">
@@ -107,7 +107,7 @@
     <!-- Additional Stats Cards Row -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'expired']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'expired']) }}" class="text-decoration-none">
                 <div class="card summary-card" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white;">
                     <div class="card-body">
                         <div class="summary-content">
@@ -126,7 +126,7 @@
             </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'completed']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'completed']) }}" class="text-decoration-none">
                 <div class="card summary-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white;">
                     <div class="card-body">
                         <div class="summary-content">
@@ -145,7 +145,7 @@
             </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'pending_extension_approval']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'pending_extension_approval']) }}" class="text-decoration-none">
                 <div class="card summary-card" style="background: linear-gradient(135deg, #f39c12 0%, #d68910 100%); color: white;">
                     <div class="card-body">
                         <div class="summary-content">
@@ -164,7 +164,7 @@
             </a>
         </div>
         <div class="col-xl-3 col-md-6 mb-3">
-            <a href="{{ route('permits.index', ['status' => 'rejected']) }}" class="text-decoration-none dashboard-card">
+            <a href="{{ route('permits.index', ['status' => 'rejected']) }}" class="text-decoration-none">
                 <div class="card summary-card" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
                     <div class="card-body">
                         <div class="summary-content">
@@ -358,28 +358,4 @@
 </div>
 
 @include('layouts.sidebar-scripts')
-
-<style>
-.dashboard-card {
-    text-decoration: none !important;
-    color: inherit !important;
-    display: block;
-}
-
-.dashboard-card:hover {
-    text-decoration: none !important;
-    color: inherit !important;
-}
-
-.dashboard-card .summary-card {
-    transition: all 0.2s ease;
-    border: none;
-}
-
-.dashboard-card:hover .summary-card {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-</style>
-
 @endsection
