@@ -152,21 +152,21 @@
     <!-- Work Method Explanations -->
     <div class="card mb-4">
         <div class="card-header bg-secondary text-white">
-            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Work Method Explanations</h5>
+            <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Detail Langkah-Langkah Pekerjaan</h5>
         </div>
         <div class="card-body">
             @php
                 $explanations = [
-                    'work_access_explanation' => 'Cara menuju dan dari lokasi kerja',
-                    'safety_equipment_explanation' => 'APD dan peralatan safety',
-                    'training_competency_explanation' => 'Training/kompetensi/pengalaman',
-                    'route_identification_explanation' => 'Identifikasi rute',
-                    'work_area_preparation_explanation' => 'Lokasi peralatan dan penyimpanan',
-                    'work_sequence_explanation' => 'Urutan pekerjaan',
-                    'equipment_maintenance_explanation' => 'Peralatan yang dibutuhkan',
-                    'platform_explanation' => 'Platform sementara',
-                    'hand_washing_explanation' => 'Pengaruh cuaca',
-                    'work_area_cleanliness_explanation' => 'Kebersihan dan kerapian area kerja'
+                    'safe_access_explanation' => 'Tentukan akses aman ke dan dari lokasi kerja, termasuk platform permanen, scaffolds (pegangan tangan, papan kaki, dll.), dan menara seluler. Dan bagaimana akses tanpa izin akan dicegah.',
+                    'ppe_safety_equipment_explanation' => 'Tentukan APD dan peralatan keselamatan yang akan digunakan, dan kapan.',
+                    'qualifications_training_explanation' => 'Cantumkan kualifikasi/pelatihan/pengalaman mereka yang diizinkan untuk melaksanakan pekerjaan tersebut dan pelatihan khusus apa pun untuk pekerjaan spesifik ini.',
+                    'safe_routes_identification_explanation' => 'Mengidentifikasi rute akses aman untuk pejalan kaki, kendaraan, pabrik dan peralatan, dll.',
+                    'storage_security_explanation' => 'Lokasi untuk penyimpanan peralatan dan material di luar pekerjaan dan pengaturan penandaan, penanganan, dan keamanan di tempat kerja.',
+                    'equipment_checklist_explanation' => 'Buat daftar perlengkapan yang dibutuhkan, bagaimana perlengkapan tersebut akan disediakan, dan pemeriksaan apa saja yang perlu dilakukan, termasuk cranes, slings, dan lain-lain.',
+                    'work_order_explanation' => 'Tentukan urutan pekerjaan.',
+                    'temporary_work_explanation' => 'Jelaskan pekerjaan sementara yang akan disediakan dan tanggung jawab atas desain yang kompeten, misalnya scaffolding, trench supports, penyangga lantai sementara, dll.',
+                    'weather_conditions_explanation' => 'Pertimbangan tentang dampak cuaca dan keterbatasan dalam bekerja dalam kondisi buruk.',
+                    'area_maintenance_explanation' => 'Pengaturan untuk menjaga area kerja tetap bersih dan rapi, akomodasi sementara, dan area penyimpanan material.'
                 ];
             @endphp
             
@@ -204,8 +204,52 @@
                             <td>{{ $activity }}</td>
                             <td>
                                 @if(isset($methodStatement->risk_levels[$index]))
-                                    <span class="badge bg-{{ $methodStatement->risk_levels[$index] === 'High' ? 'danger' : ($methodStatement->risk_levels[$index] === 'Medium' ? 'warning' : 'success') }}">
-                                        {{ $methodStatement->risk_levels[$index] }}
+                                    @php
+                                        $riskLevel = $methodStatement->risk_levels[$index];
+                                        $badgeClass = '';
+                                        $riskText = '';
+                                        
+                                        switch($riskLevel) {
+                                            case 'P1':
+                                                $badgeClass = 'bg-danger text-white';
+                                                $riskText = 'Intolerable / Unacceptable Risk (P1)';
+                                                break;
+                                            case 'P2':
+                                                $badgeClass = 'bg-danger text-white';
+                                                $riskText = 'Intolerable / Unacceptable Risk (P2)';
+                                                break;
+                                            case 'P3':
+                                                $badgeClass = 'bg-danger text-white';
+                                                $riskText = 'Intolerable / Unacceptable Risk (P3)';
+                                                break;
+                                            case 'P4':
+                                                $badgeClass = 'bg-warning text-dark';
+                                                $riskText = 'Medium Risk - Look to reduce (P4)';
+                                                break;
+                                            case 'AR':
+                                                $badgeClass = 'bg-success text-white';
+                                                $riskText = 'Tolerable / Acceptable Risk (AR)';
+                                                break;
+                                            // Legacy support for old risk levels
+                                            case 'High':
+                                                $badgeClass = 'bg-danger text-white';
+                                                $riskText = 'High Risk';
+                                                break;
+                                            case 'Medium':
+                                                $badgeClass = 'bg-warning text-dark';
+                                                $riskText = 'Medium Risk';
+                                                break;
+                                            case 'Low':
+                                                $badgeClass = 'bg-success text-white';
+                                                $riskText = 'Low Risk';
+                                                break;
+                                            default:
+                                                $badgeClass = 'bg-secondary text-white';
+                                                $riskText = $riskLevel;
+                                        }
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }} fw-bold">
+                                        {{ $riskText }}
                                     </span>
                                 @endif
                             </td>
@@ -219,7 +263,7 @@
 
             <div class="alert alert-warning mt-4">
                 <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Peringatan:</strong> Tuliskan detail tindakan pengendalian untuk aktivitas berisiko Medium dan Tinggi
+                <strong>Peringatan:</strong> Aktivitas yang diidentifikasi sebagai <strong>P1, P2, P3 (Intolerable/Unacceptable Risk)</strong> dan <strong>P4 (Medium Risk)</strong> membutuhkan tindakan pengendalian dan kontrol yang ketat.
             </div>
         </div>
     </div>

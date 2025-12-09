@@ -196,62 +196,62 @@
                     Untuk <strong>Save as Draft</strong>, field dapat dikosongkan sementara.
                 </div>
                 <div class="mb-4">
-                    <label for="work_access_explanation" class="form-label fw-bold">Jelaskan cara untuk menuju dan dari lokasi kerja, termasuk platform permanen, scaffolding (hand rails, toe boards, dll) dan metode lainnya. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="work_access_explanation" name="work_access_explanation" rows="3" required>{{ old('work_access_explanation') }}</textarea>
+                    <label for="safe_access_explanation" class="form-label fw-bold">Tentukan akses aman ke dan dari lokasi kerja, termasuk platform permanen, scaffolds (pegangan tangan, papan kaki, dll.), dan menara seluler. Dan bagaimana akses tanpa izin akan dicegah. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="safe_access_explanation" name="safe_access_explanation" rows="3" required>{{ old('safe_access_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="safety_equipment_explanation" class="form-label fw-bold">Sebutkan APD dan peralatan safety lainnya yang digunakan. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="safety_equipment_explanation" name="safety_equipment_explanation" rows="3" required>{{ old('safety_equipment_explanation') }}</textarea>
+                    <label for="ppe_safety_equipment_explanation" class="form-label fw-bold">Tentukan APD dan peralatan keselamatan yang akan digunakan, dan kapan. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="ppe_safety_equipment_explanation" name="ppe_safety_equipment_explanation" rows="3" required>{{ old('ppe_safety_equipment_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="training_competency_explanation" class="form-label fw-bold">Tulis training/kompetensi/pengalaman yang melakukan pekerjaan dan training khusus untuk pekerjaan tertentu. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="training_competency_explanation" name="training_competency_explanation" rows="3" required>{{ old('training_competency_explanation') }}</textarea>
+                    <label for="qualifications_training_explanation" class="form-label fw-bold">Cantumkan kualifikasi/pelatihan/pengalaman mereka yang diizinkan untuk melaksanakan pekerjaan tersebut dan pelatihan khusus apa pun untuk pekerjaan spesifik ini. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="qualifications_training_explanation" name="qualifications_training_explanation" rows="3" required>{{ old('qualifications_training_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="route_identification_explanation" class="form-label fw-bold">Identifikasi rute untuk pejalan kaki, kendaraan, mesin dan peralatan. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="route_identification_explanation" name="route_identification_explanation" rows="3" required>{{ old('route_identification_explanation') }}</textarea>
+                    <label for="safe_routes_identification_explanation" class="form-label fw-bold">Mengidentifikasi rute akses aman untuk pejalan kaki, kendaraan, pabrik dan peralatan, dll. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="safe_routes_identification_explanation" name="safe_routes_identification_explanation" rows="3" required>{{ old('safe_routes_identification_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="work_area_preparation_explanation" class="form-label fw-bold">Lokasi untuk peralatan off-job dan penyimpanan material, dan tempat istirahat, dan pengaturan keamanan. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="work_area_preparation_explanation" name="work_area_preparation_explanation" rows="3" required>{{ old('work_area_preparation_explanation') }}</textarea>
+                    <label for="storage_security_explanation" class="form-label fw-bold">Lokasi untuk penyimpanan peralatan dan material di luar pekerjaan dan pengaturan penandaan, penanganan, dan keamanan di tempat kerja. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="storage_security_explanation" name="storage_security_explanation" rows="3" required>{{ old('storage_security_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="work_sequence_explanation" class="form-label fw-bold">Tuliskan urutan pekerjaan dilakukan dan kendala yang mungkin terjadi untuk menyelesaikan pekerjaan. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="work_sequence_explanation" name="work_sequence_explanation" rows="3" required>{{ old('work_sequence_explanation') }}</textarea>
+                    <label for="equipment_checklist_explanation" class="form-label fw-bold">Buat daftar perlengkapan yang dibutuhkan, bagaimana perlengkapan tersebut akan disediakan, dan pemeriksaan apa saja yang perlu dilakukan, termasuk cranes, slings, dan lain-lain. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="equipment_checklist_explanation" name="equipment_checklist_explanation" rows="3" required>{{ old('equipment_checklist_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="equipment_maintenance_explanation" class="form-label fw-bold">Tuliskan peralatan yang dibutuhkan, bagaimana diperiksa dan apa yang harus yang digunakan, termasuk membahas, fitting. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="equipment_maintenance_explanation" name="equipment_maintenance_explanation" rows="3" required>{{ old('equipment_maintenance_explanation') }}</textarea>
+                    <label for="work_order_explanation" class="form-label fw-bold">Tentukan urutan pekerjaan. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="work_order_explanation" name="work_order_explanation" rows="3" required>{{ old('work_order_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="platform_explanation" class="form-label fw-bold">Jelaskan platform sementara yang harus diperiksa dan siapa yang desain. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="platform_explanation" name="platform_explanation" rows="3" required>{{ old('platform_explanation') }}</textarea>
+                    <label for="temporary_work_explanation" class="form-label fw-bold">Jelaskan pekerjaan sementara yang akan disediakan dan tanggung jawab atas desain yang kompeten, misalnya scaffolding, trench supports, penyangga lantai sementara, dll. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="temporary_work_explanation" name="temporary_work_explanation" rows="3" required>{{ old('temporary_work_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="hand_washing_explanation" class="form-label fw-bold">Jelaskan apa pengaruh cuaca dan kemungkinannya menyebabkan pekerjaan tidak dapat dilakukan. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="hand_washing_explanation" name="hand_washing_explanation" rows="3" required>{{ old('hand_washing_explanation') }}</textarea>
+                    <label for="weather_conditions_explanation" class="form-label fw-bold">Pertimbangan tentang dampak cuaca dan keterbatasan dalam bekerja dalam kondisi buruk. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="weather_conditions_explanation" name="weather_conditions_explanation" rows="3" required>{{ old('weather_conditions_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="work_area_cleanliness_explanation" class="form-label fw-bold">Jelaskan cara menjaga kebersihan dan kerapian area kerja, kantor/bedeng/akomodasi sementara dan material yang disimpan dan disebrang. <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="work_area_cleanliness_explanation" name="work_area_cleanliness_explanation" rows="3" required>{{ old('work_area_cleanliness_explanation') }}</textarea>
+                    <label for="area_maintenance_explanation" class="form-label fw-bold">Pengaturan untuk menjaga area kerja tetap bersih dan rapi, akomodasi sementara, dan area penyimpanan material. <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="area_maintenance_explanation" name="area_maintenance_explanation" rows="3" required>{{ old('area_maintenance_explanation') }}</textarea>
                     <div class="invalid-feedback">Field ini wajib diisi.</div>
                 </div>
             </div>
@@ -282,9 +282,11 @@
                                     <td>
                                         <select class="form-select" name="risk_levels[]">
                                             <option value="">Select Risk Level</option>
-                                            <option value="High" class="text-danger">High</option>
-                                            <option value="Medium" class="text-warning">Medium</option>
-                                            <option value="Low" class="text-success">Low</option>
+                                            <option value="P1" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P1)</option>
+                                            <option value="P2" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P2)</option>
+                                            <option value="P3" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P3)</option>
+                                            <option value="P4" style="background-color: #ffc107; color: #000; font-weight: bold;">Medium Risk - Look to reduce (P4)</option>
+                                            <option value="AR" style="background-color: #198754; color: white; font-weight: bold;">Tolerable / Acceptable Risk (AR)</option>
                                         </select>
                                     </td>
                                     <td><input type="text" class="form-control" name="control_measures[]" placeholder="Tindakan pengendalian..."></td>
@@ -343,9 +345,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>
                 <select class="form-select" name="risk_levels[]">
                     <option value="">Select Risk Level</option>
-                    <option value="High" class="text-danger">High</option>
-                    <option value="Medium" class="text-warning">Medium</option>
-                    <option value="Low" class="text-success">Low</option>
+                    <option value="P1" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P1)</option>
+                    <option value="P2" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P2)</option>
+                    <option value="P3" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P3)</option>
+                    <option value="P4" style="background-color: #ffc107; color: #000; font-weight: bold;">Medium Risk - Look to reduce (P4)</option>
+                    <option value="AR" style="background-color: #198754; color: white; font-weight: bold;">Tolerable / Acceptable Risk (AR)</option>
                 </select>
             </td>
             <td><input type="text" class="form-control" name="control_measures[]" placeholder="Tindakan pengendalian..."></td>

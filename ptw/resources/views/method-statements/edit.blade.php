@@ -185,57 +185,57 @@
         <!-- Work Method Explanations -->
         <div class="card mb-4">
             <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Work Method Explanations</h5>
+                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Detail Langkah-Langkah Pekerjaan</h5>
             </div>
             <div class="card-body">
                 <div class="mb-4">
-                    <label for="work_access_explanation" class="form-label fw-bold">Jelaskan cara untuk menuju dan dari lokasi kerja, termasuk platform permanen, scaffolding (hand rails, toe boards, dll) dan metode lainnya.</label>
-                    <textarea class="form-control" id="work_access_explanation" name="work_access_explanation" rows="3">{{ old('work_access_explanation', $methodStatement->work_access_explanation) }}</textarea>
+                    <label for="safe_access_explanation" class="form-label fw-bold">Tentukan akses aman ke dan dari lokasi kerja, termasuk platform permanen, scaffolds (pegangan tangan, papan kaki, dll.), dan menara seluler. Dan bagaimana akses tanpa izin akan dicegah.</label>
+                    <textarea class="form-control" id="safe_access_explanation" name="safe_access_explanation" rows="3">{{ old('safe_access_explanation', $methodStatement->safe_access_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="safety_equipment_explanation" class="form-label fw-bold">Sebutkan APD dan peralatan safety lainnya yang digunakan.</label>
-                    <textarea class="form-control" id="safety_equipment_explanation" name="safety_equipment_explanation" rows="3">{{ old('safety_equipment_explanation', $methodStatement->safety_equipment_explanation) }}</textarea>
+                    <label for="ppe_safety_equipment_explanation" class="form-label fw-bold">Tentukan APD dan peralatan keselamatan yang akan digunakan, dan kapan.</label>
+                    <textarea class="form-control" id="ppe_safety_equipment_explanation" name="ppe_safety_equipment_explanation" rows="3">{{ old('ppe_safety_equipment_explanation', $methodStatement->ppe_safety_equipment_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="training_competency_explanation" class="form-label fw-bold">Tulis training/kompetensi/pengalaman yang melakukan pekerjaan dan training khusus untuk pekerjaan tertentu.</label>
-                    <textarea class="form-control" id="training_competency_explanation" name="training_competency_explanation" rows="3">{{ old('training_competency_explanation', $methodStatement->training_competency_explanation) }}</textarea>
+                    <label for="qualifications_training_explanation" class="form-label fw-bold">Cantumkan kualifikasi/pelatihan/pengalaman mereka yang diizinkan untuk melaksanakan pekerjaan tersebut dan pelatihan khusus apa pun untuk pekerjaan spesifik ini.</label>
+                    <textarea class="form-control" id="qualifications_training_explanation" name="qualifications_training_explanation" rows="3">{{ old('qualifications_training_explanation', $methodStatement->qualifications_training_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="route_identification_explanation" class="form-label fw-bold">Identifikasi rute untuk pejalan kaki, kendaraan, mesin dan peralatan.</label>
-                    <textarea class="form-control" id="route_identification_explanation" name="route_identification_explanation" rows="3">{{ old('route_identification_explanation', $methodStatement->route_identification_explanation) }}</textarea>
+                    <label for="safe_routes_identification_explanation" class="form-label fw-bold">Mengidentifikasi rute akses aman untuk pejalan kaki, kendaraan, pabrik dan peralatan, dll.</label>
+                    <textarea class="form-control" id="safe_routes_identification_explanation" name="safe_routes_identification_explanation" rows="3">{{ old('safe_routes_identification_explanation', $methodStatement->safe_routes_identification_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="work_area_preparation_explanation" class="form-label fw-bold">Lokasi untuk peralatan off-job dan penyimpanan material, dan tempat istirahat, dan pengaturan keamanan.</label>
-                    <textarea class="form-control" id="work_area_preparation_explanation" name="work_area_preparation_explanation" rows="3">{{ old('work_area_preparation_explanation', $methodStatement->work_area_preparation_explanation) }}</textarea>
+                    <label for="storage_security_explanation" class="form-label fw-bold">Lokasi untuk penyimpanan peralatan dan material di luar pekerjaan dan pengaturan penandaan, penanganan, dan keamanan di tempat kerja.</label>
+                    <textarea class="form-control" id="storage_security_explanation" name="storage_security_explanation" rows="3">{{ old('storage_security_explanation', $methodStatement->storage_security_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="work_sequence_explanation" class="form-label fw-bold">Tuliskan urutan pekerjaan dilakukan dan kendala yang mungkin terjadi untuk menyelesaikan pekerjaan.</label>
-                    <textarea class="form-control" id="work_sequence_explanation" name="work_sequence_explanation" rows="3">{{ old('work_sequence_explanation', $methodStatement->work_sequence_explanation) }}</textarea>
+                    <label for="equipment_checklist_explanation" class="form-label fw-bold">Buat daftar perlengkapan yang dibutuhkan, bagaimana perlengkapan tersebut akan disediakan, dan pemeriksaan apa saja yang perlu dilakukan, termasuk cranes, slings, dan lain-lain.</label>
+                    <textarea class="form-control" id="equipment_checklist_explanation" name="equipment_checklist_explanation" rows="3">{{ old('equipment_checklist_explanation', $methodStatement->equipment_checklist_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="equipment_maintenance_explanation" class="form-label fw-bold">Tuliskan peralatan yang dibutuhkan, bagaimana diperiksa dan apa yang harus yang digunakan, termasuk membahas, fitting.</label>
-                    <textarea class="form-control" id="equipment_maintenance_explanation" name="equipment_maintenance_explanation" rows="3">{{ old('equipment_maintenance_explanation', $methodStatement->equipment_maintenance_explanation) }}</textarea>
+                    <label for="work_order_explanation" class="form-label fw-bold">Tentukan urutan pekerjaan.</label>
+                    <textarea class="form-control" id="work_order_explanation" name="work_order_explanation" rows="3">{{ old('work_order_explanation', $methodStatement->work_order_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="platform_explanation" class="form-label fw-bold">Jelaskan platform sementara yang harus diperiksa dan siapa yang desain.</label>
-                    <textarea class="form-control" id="platform_explanation" name="platform_explanation" rows="3">{{ old('platform_explanation', $methodStatement->platform_explanation) }}</textarea>
+                    <label for="temporary_work_explanation" class="form-label fw-bold">Jelaskan pekerjaan sementara yang akan disediakan dan tanggung jawab atas desain yang kompeten, misalnya scaffolding, trench supports, penyangga lantai sementara, dll.</label>
+                    <textarea class="form-control" id="temporary_work_explanation" name="temporary_work_explanation" rows="3">{{ old('temporary_work_explanation', $methodStatement->temporary_work_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="hand_washing_explanation" class="form-label fw-bold">Jelaskan apa pengaruh cuaca dan kemungkinannya menyebabkan pekerjaan tidak dapat dilakukan.</label>
-                    <textarea class="form-control" id="hand_washing_explanation" name="hand_washing_explanation" rows="3">{{ old('hand_washing_explanation', $methodStatement->hand_washing_explanation) }}</textarea>
+                    <label for="weather_conditions_explanation" class="form-label fw-bold">Pertimbangan tentang dampak cuaca dan keterbatasan dalam bekerja dalam kondisi buruk.</label>
+                    <textarea class="form-control" id="weather_conditions_explanation" name="weather_conditions_explanation" rows="3">{{ old('weather_conditions_explanation', $methodStatement->weather_conditions_explanation) }}</textarea>
                 </div>
 
                 <div class="mb-4">
-                    <label for="work_area_cleanliness_explanation" class="form-label fw-bold">Jelaskan cara menjaga kebersihan dan kerapian area kerja, kantor/bedeng/akomodasi sementara dan material yang disimpan dan disebrang.</label>
-                    <textarea class="form-control" id="work_area_cleanliness_explanation" name="work_area_cleanliness_explanation" rows="3">{{ old('work_area_cleanliness_explanation', $methodStatement->work_area_cleanliness_explanation) }}</textarea>
+                    <label for="area_maintenance_explanation" class="form-label fw-bold">Pengaturan untuk menjaga area kerja tetap bersih dan rapi, akomodasi sementara, dan area penyimpanan material.</label>
+                    <textarea class="form-control" id="area_maintenance_explanation" name="area_maintenance_explanation" rows="3">{{ old('area_maintenance_explanation', $methodStatement->area_maintenance_explanation) }}</textarea>
                 </div>
             </div>
         </div>
@@ -268,9 +268,11 @@
                                             <td>
                                                 <select class="form-select" name="risk_levels[]">
                                                     <option value="">Select Risk Level</option>
-                                                    <option value="High" class="text-danger" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'High' ? 'selected' : '' }}>High</option>
-                                                    <option value="Medium" class="text-warning" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'Medium' ? 'selected' : '' }}>Medium</option>
-                                                    <option value="Low" class="text-success" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'Low' ? 'selected' : '' }}>Low</option>
+                                                    <option value="P1" style="background-color: #dc3545; color: white; font-weight: bold;" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'P1' ? 'selected' : '' }}>Intolerable / Unacceptable Risk (P1)</option>
+                                                    <option value="P2" style="background-color: #dc3545; color: white; font-weight: bold;" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'P2' ? 'selected' : '' }}>Intolerable / Unacceptable Risk (P2)</option>
+                                                    <option value="P3" style="background-color: #dc3545; color: white; font-weight: bold;" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'P3' ? 'selected' : '' }}>Intolerable / Unacceptable Risk (P3)</option>
+                                                    <option value="P4" style="background-color: #ffc107; color: #000; font-weight: bold;" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'P4' ? 'selected' : '' }}>Medium Risk - Look to reduce (P4)</option>
+                                                    <option value="AR" style="background-color: #198754; color: white; font-weight: bold;" {{ old('risk_levels.'.$index, $methodStatement->risk_levels[$index] ?? '') === 'AR' ? 'selected' : '' }}>Tolerable / Acceptable Risk (AR)</option>
                                                 </select>
                                             </td>
                                             <td><input type="text" class="form-control" name="control_measures[]" value="{{ old('control_measures.'.$index, $methodStatement->control_measures[$index] ?? '') }}" placeholder="Tindakan pengendalian..."></td>
@@ -288,9 +290,11 @@
                                     <td>
                                         <select class="form-select" name="risk_levels[]">
                                             <option value="">Select Risk Level</option>
-                                            <option value="High" class="text-danger">High</option>
-                                            <option value="Medium" class="text-warning">Medium</option>
-                                            <option value="Low" class="text-success">Low</option>
+                                            <option value="P1" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P1)</option>
+                                            <option value="P2" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P2)</option>
+                                            <option value="P3" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P3)</option>
+                                            <option value="P4" style="background-color: #ffc107; color: #000; font-weight: bold;">Medium Risk - Look to reduce (P4)</option>
+                                            <option value="AR" style="background-color: #198754; color: white; font-weight: bold;">Tolerable / Acceptable Risk (AR)</option>
                                         </select>
                                     </td>
                                     <td><input type="text" class="form-control" name="control_measures[]" placeholder="Tindakan pengendalian..."></td>
@@ -349,9 +353,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <td>
                 <select class="form-select" name="risk_levels[]">
                     <option value="">Select Risk Level</option>
-                    <option value="High" class="text-danger">High</option>
-                    <option value="Medium" class="text-warning">Medium</option>
-                    <option value="Low" class="text-success">Low</option>
+                    <option value="P1" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P1)</option>
+                    <option value="P2" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P2)</option>
+                    <option value="P3" style="background-color: #dc3545; color: white; font-weight: bold;">Intolerable / Unacceptable Risk (P3)</option>
+                    <option value="P4" style="background-color: #ffc107; color: #000; font-weight: bold;">Medium Risk - Look to reduce (P4)</option>
+                    <option value="AR" style="background-color: #198754; color: white; font-weight: bold;">Tolerable / Acceptable Risk (AR)</option>
                 </select>
             </td>
             <td><input type="text" class="form-control" name="control_measures[]" placeholder="Tindakan pengendalian..."></td>

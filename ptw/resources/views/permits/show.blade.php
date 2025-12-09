@@ -1151,6 +1151,139 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Risk Assessment & Method Statement Section -->
+            <div class="card border-0 shadow-lg mb-4">
+                <div class="card-header bg-danger text-white py-3">
+                    <h5 class="mb-0 text-white fw-bold">
+                        <i class="fas fa-shield-alt me-2"></i>Penilaian Risiko & Pernyataan Metode
+                    </h5>
+                    <small class="text-white-50">Status evaluasi keamanan dan risiko pekerjaan</small>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Risk Method Assessment -->
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-3 border-2 {{ $permit->risk_method_assessment === 'ya' ? 'border-success' : 'border-danger' }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box {{ $permit->risk_method_assessment === 'ya' ? 'bg-success text-white' : 'bg-danger text-white' }} me-3">
+                                        <i class="fas {{ $permit->risk_method_assessment === 'ya' ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark mb-1">
+                                            Penilaian Risiko & Pernyataan Metode
+                                        </div>
+                                        <div class="small text-secondary mb-1">Ditinjau dan Disetujui?</div>
+                                        <div class="fw-bold {{ $permit->risk_method_assessment === 'ya' ? 'text-success' : 'text-danger' }}">
+                                            {{ strtoupper($permit->risk_method_assessment) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chemical Usage Storage -->
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-3 border-2 {{ $permit->chemical_usage_storage === 'ya' ? 'border-success' : 'border-danger' }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box {{ $permit->chemical_usage_storage === 'ya' ? 'bg-success text-white' : 'bg-danger text-white' }} me-3">
+                                        <i class="fas {{ $permit->chemical_usage_storage === 'ya' ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark mb-1">
+                                            Penggunaan & Penyimpanan Bahan Kimia
+                                        </div>
+                                        <div class="small text-secondary mb-1">Ditinjau dan Disetujui?</div>
+                                        <div class="fw-bold {{ $permit->chemical_usage_storage === 'ya' ? 'text-success' : 'text-danger' }}">
+                                            {{ strtoupper($permit->chemical_usage_storage) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Equipment Condition -->
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-3 border-2 {{ $permit->equipment_condition === 'ya' ? 'border-success' : 'border-danger' }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box {{ $permit->equipment_condition === 'ya' ? 'bg-success text-white' : 'bg-danger text-white' }} me-3">
+                                        <i class="fas {{ $permit->equipment_condition === 'ya' ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark mb-1">
+                                            Kondisi Peralatan
+                                        </div>
+                                        <div class="small text-secondary mb-1">Ditinjau dan Disetujui?</div>
+                                        <div class="fw-bold {{ $permit->equipment_condition === 'ya' ? 'text-success' : 'text-danger' }}">
+                                            {{ strtoupper($permit->equipment_condition) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asbestos Presence -->
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-3 border-2 {{ $permit->asbestos_presence === 'tidak' ? 'border-success' : 'border-warning' }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box {{ $permit->asbestos_presence === 'tidak' ? 'bg-success text-white' : 'bg-warning text-dark' }} me-3">
+                                        <i class="fas {{ $permit->asbestos_presence === 'tidak' ? 'fa-check-circle' : 'fa-exclamation-triangle' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark mb-1">
+                                            Keberadaan Asbes
+                                        </div>
+                                        <div class="small text-secondary mb-1">Apakah Asbes Ada di Area/Peralatan/Infrastruktur?</div>
+                                        <div class="fw-bold {{ $permit->asbestos_presence === 'tidak' ? 'text-success' : 'text-warning' }}">
+                                            {{ strtoupper($permit->asbestos_presence) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ATEX Area -->
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-3 border-2 {{ $permit->atex_area === 'tidak' ? 'border-success' : 'border-warning' }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box {{ $permit->atex_area === 'tidak' ? 'bg-success text-white' : 'bg-warning text-dark' }} me-3">
+                                        <i class="fas {{ $permit->atex_area === 'tidak' ? 'fa-check-circle' : 'fa-exclamation-triangle' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark mb-1">
+                                            Area ATEX
+                                        </div>
+                                        <div class="small text-secondary mb-1">Pekerjaan dalam area ATEX? (Mandatory Authoriser)</div>
+                                        <div class="fw-bold {{ $permit->atex_area === 'tidak' ? 'text-success' : 'text-warning' }}">
+                                            {{ strtoupper($permit->atex_area) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gas Storage Area -->
+                        <div class="col-md-6">
+                            <div class="p-4 bg-light rounded-3 border-2 {{ $permit->gas_storage_area === 'tidak' ? 'border-success' : 'border-warning' }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box {{ $permit->gas_storage_area === 'tidak' ? 'bg-success text-white' : 'bg-warning text-dark' }} me-3">
+                                        <i class="fas {{ $permit->gas_storage_area === 'tidak' ? 'fa-check-circle' : 'fa-exclamation-triangle' }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold text-dark mb-1">
+                                            Area Penyimpanan Gas
+                                        </div>
+                                        <div class="small text-secondary mb-1">Pekerjaan di area penyimpanan gas/cairan mudah terbakar? (Mandatory Authoriser)</div>
+                                        <div class="fw-bold {{ $permit->gas_storage_area === 'tidak' ? 'text-success' : 'text-warning' }}">
+                                            {{ strtoupper($permit->gas_storage_area) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar -->

@@ -98,6 +98,12 @@ class PermitToWorkController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'authorizer_id' => 'nullable|exists:users,id',
+            'risk_method_assessment' => 'required|in:ya,tidak',
+            'chemical_usage_storage' => 'required|in:ya,tidak',
+            'equipment_condition' => 'required|in:ya,tidak',
+            'asbestos_presence' => 'required|in:ya,tidak',
+            'atex_area' => 'required|in:ya,tidak',
+            'gas_storage_area' => 'required|in:ya,tidak',
         ]);
 
         // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)
@@ -240,6 +246,12 @@ class PermitToWorkController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'authorizer_id' => 'nullable|exists:users,id',
+            'risk_method_assessment' => 'required|in:ya,tidak',
+            'chemical_usage_storage' => 'required|in:ya,tidak',
+            'equipment_condition' => 'required|in:ya,tidak',
+            'asbestos_presence' => 'required|in:ya,tidak',
+            'atex_area' => 'required|in:ya,tidak',
+            'gas_storage_area' => 'required|in:ya,tidak',
         ]);
 
         // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)

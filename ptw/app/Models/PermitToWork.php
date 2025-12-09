@@ -56,6 +56,12 @@ class PermitToWork extends Model
         'area_installation_detail',
         'completed_at',
         'completed_by',
+        'risk_method_assessment',
+        'chemical_usage_storage',
+        'equipment_condition',
+        'asbestos_presence',
+        'atex_area',
+        'gas_storage_area',
     ];
 
     protected $casts = [
