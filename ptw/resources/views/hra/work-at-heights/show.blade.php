@@ -143,6 +143,27 @@
         </div>
         <div class="card-body">
             <div class="row">
+                <!-- Overhead Hazards -->
+                <div class="col-md-6 mb-4">
+                    <h6 class="text-primary mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Layanan overhead/bahaya?</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Layanan overhead/bahaya?</strong>
+                        <span class="badge {{ $hraWorkAtHeight->overhead_hazards_checked ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->overhead_hazards_checked ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    @if($hraWorkAtHeight->overhead_hazards_checked)
+                        <div class="sub-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Tutup benturan, minimal, digunakan</span>
+                                <span class="badge {{ $hraWorkAtHeight->overhead_hazards_minimal_guards ? 'badge-yes' : 'badge-no' }}">
+                                    {{ $hraWorkAtHeight->overhead_hazards_minimal_guards ? 'Ya' : 'Tidak' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                
                 <!-- Fixed Scaffolding -->
                 <div class="col-md-6 mb-4">
                     <h6 class="text-primary mb-3"><i class="fas fa-building me-2"></i>Fixed Scaffolding</h6>
@@ -181,32 +202,44 @@
                     @endif
                 </div>
 
-                <!-- Mobile Elevation Platform -->
+                <!-- Mobile Elevated Working Platform (MEWP) -->
                 <div class="col-md-6 mb-4">
-                    <h6 class="text-primary mb-3"><i class="fas fa-arrow-up me-2"></i>Mobile Elevation Platform</h6>
+                    <h6 class="text-primary mb-3"><i class="fas fa-arrow-up me-2"></i>Mobile Elevated Working Platform (MEWP)</h6>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>Mobile elevation platform</strong>
+                        <strong>Mobile Elevated Working Platform (MEWP)</strong>
                         <span class="badge {{ $hraWorkAtHeight->mobile_elevation_checked ? 'badge-yes' : 'badge-no' }}">
                             {{ $hraWorkAtHeight->mobile_elevation_checked ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     @if($hraWorkAtHeight->mobile_elevation_checked)
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Operator terlatih?</span>
-                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_training_provided ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->mobile_elevation_training_provided ? 'YES' : 'NO' }}
+                        <span>Operator terlatih</span>
+                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_operator_trained ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->mobile_elevation_operator_trained ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Penggunaannya tertulis?</span>
-                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_used_before ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->mobile_elevation_used_before ? 'YES' : 'NO' }}
+                        <span>Orang yang berkompeten untuk melakukan penyelamatan</span>
+                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_rescue_person ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->mobile_elevation_rescue_person ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Pemantau di tempat untuk semua pergerakan MEWP</span>
+                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_monitor_in_place ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->mobile_elevation_monitor_in_place ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Catatan pemeriksaan hukum valid</span>
+                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_legal_inspection ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->mobile_elevation_legal_inspection ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>Menggunakan Alat Pelindung Jatuh?</span>
-                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_location_marked ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->mobile_elevation_location_marked ? 'YES' : 'NO' }}
+                        <span>Pemeriksaan pra-penggunaan yang terdokumentasi telah selesai</span>
+                        <span class="badge {{ $hraWorkAtHeight->mobile_elevation_pre_use_inspection ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->mobile_elevation_pre_use_inspection ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     @endif
@@ -239,18 +272,36 @@
 
                 <!-- Fall Arrest -->
                 <div class="col-md-6 mb-4">
-                    <h6 class="text-primary mb-3"><i class="fas fa-life-ring me-2"></i>Fall Arrest</h6>
+                    <h6 class="text-primary mb-3"><i class="fas fa-life-ring me-2"></i>APD WAH</h6>
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>Fall arrest seperti FBH digunakan?</strong>
+                        <strong>APD WAH diperlukan? (peralatan penangkap dan penahan jatuh)</strong>
                         <span class="badge {{ $hraWorkAtHeight->fall_arrest_used ? 'badge-yes' : 'badge-no' }}">
                             {{ $hraWorkAtHeight->fall_arrest_used ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     @if($hraWorkAtHeight->fall_arrest_used)
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Pekerja yang terlatih dalam penggunaan</span>
+                        <span class="badge {{ $hraWorkAtHeight->fall_arrest_worker_trained ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->fall_arrest_worker_trained ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Catatan pemeriksaan hukum valid</span>
+                        <span class="badge {{ $hraWorkAtHeight->fall_arrest_legal_inspection ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->fall_arrest_legal_inspection ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Pemeriksaan pra-penggunaan</span>
+                        <span class="badge {{ $hraWorkAtHeight->fall_arrest_pre_use_inspection ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->fall_arrest_pre_use_inspection ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>Diperiksa sebelum digunakan</span>
-                        <span class="badge {{ $hraWorkAtHeight->area_closed_from_below ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->area_closed_from_below ? 'YES' : 'NO' }}
+                        <span>Sarana pengikatan yang ditentukan oleh personel yang berkualifikasi</span>
+                        <span class="badge {{ $hraWorkAtHeight->fall_arrest_qualified_personnel ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->fall_arrest_qualified_personnel ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     @endif
@@ -267,15 +318,27 @@
                     </div>
                     @if($hraWorkAtHeight->roof_work_checked)
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Apakah ada atap yang rawan?</span>
-                        <span class="badge {{ $hraWorkAtHeight->roof_fragile_areas ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->roof_fragile_areas ? 'YES' : 'NO' }}
+                        <span>Kapasitas menahan beban atap cukup</span>
+                        <span class="badge {{ $hraWorkAtHeight->roof_load_capacity_adequate ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->roof_load_capacity_adequate ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Penggunaan perlindungan tepi</span>
+                        <span class="badge {{ $hraWorkAtHeight->roof_edge_protection ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->roof_edge_protection ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Penggunaan sistem perlindungan jatuh/ WaH PPE</span>
+                        <span class="badge {{ $hraWorkAtHeight->roof_fall_protection_system ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->roof_fall_protection_system ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>Pelindung jatuh/pelindung disisi tersedia?</span>
-                        <span class="badge {{ $hraWorkAtHeight->roof_fall_protection ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->roof_fall_protection ? 'YES' : 'NO' }}
+                        <span>Metode komunikasi yang disepakati</span>
+                        <span class="badge {{ $hraWorkAtHeight->roof_communication_method ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->roof_communication_method ? 'YES' : 'NO' }}
                         </span>
                     </div>
                     @endif
@@ -295,57 +358,81 @@
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Area di bawah pekerjaan berlangsung ditutup dari lalu lintas/pejalan kaki</span>
-                        <span class="badge {{ $hraWorkAtHeight->area_below_closed ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->area_below_closed ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah mereka yang terlibat memiliki bukti Pelatihan Bekerja di Ketinggian</span>
+                        <span class="badge {{ $hraWorkAtHeight->workers_have_training_proof ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->workers_have_training_proof ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Gangguan pada atau sekitar lokasi pekerjaan</span>
-                        <span class="badge {{ $hraWorkAtHeight->work_area_disturbances ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->work_area_disturbances ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah area di bawah tempat kerja telah diblokir</span>
+                        <span class="badge {{ $hraWorkAtHeight->area_below_blocked ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->area_below_blocked ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Ventilasi, cerobong, bukaan yang mengeluarkan udara/air yang panas/berbau/berbahaya</span>
-                        <span class="badge {{ $hraWorkAtHeight->ventilation_hazards ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->ventilation_hazards ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah ada yang bekerja di bawah mereka yang bekerja di ketinggian</span>
+                        <span class="badge {{ $hraWorkAtHeight->workers_below_present ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->workers_below_present ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Bagian dari mesin/peralatan harus dilindungi</span>
-                        <span class="badge {{ $hraWorkAtHeight->equipment_protection ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->equipment_protection ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah lantai/tanah cocok untuk digunakannya peralatan akses</span>
+                        <span class="badge {{ $hraWorkAtHeight->floor_suitable_for_access_equipment ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->floor_suitable_for_access_equipment ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Terdapat titik untuk keluar dalam kondisi darurat</span>
-                        <span class="badge {{ $hraWorkAtHeight->emergency_exit_available ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->emergency_exit_available ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah ada kendala di atau dekat lokasi kerja</span>
+                        <span class="badge {{ $hraWorkAtHeight->obstacles_near_work_location ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->obstacles_near_work_location ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Material/alat yang perlu dinaik/turunkan</span>
-                        <span class="badge {{ $hraWorkAtHeight->material_handling ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->material_handling ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah ada ventilasi, cerobong asapyang dapat mengeluarkan media panas/berbau/berbahaya</span>
+                        <span class="badge {{ $hraWorkAtHeight->ventilation_hazardous_emissions ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->ventilation_hazardous_emissions ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>
                 <div class="col-md-6 mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="fw-semibold">Personnel Safety atau Petugas lain yang diperlukan</span>
-                        <span class="badge {{ $hraWorkAtHeight->safety_personnel_needed ? 'badge-yes' : 'badge-no' }}">
-                            {{ $hraWorkAtHeight->safety_personnel_needed ? 'YES' : 'NO' }}
+                        <span class="fw-semibold">Apakah perlindungan dibutuhkan untuk peralatan akses WaH</span>
+                        <span class="badge {{ $hraWorkAtHeight->protection_needed_for_equipment ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->protection_needed_for_equipment ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold">Apakah ada metode akses & keluar yang aman</span>
+                        <span class="badge {{ $hraWorkAtHeight->safe_access_exit_method ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->safe_access_exit_method ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold">Apakah cara yang aman untuk menaik turunkan material dan peralatan telah ditentukan</span>
+                        <span class="badge {{ $hraWorkAtHeight->safe_material_handling_method ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->safe_material_handling_method ? 'YES' : 'NO' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="fw-semibold">Apakah diperlukan rencana darurat & pelarian</span>
+                        <span class="badge {{ $hraWorkAtHeight->emergency_escape_plan_needed ? 'badge-yes' : 'badge-no' }}">
+                            {{ $hraWorkAtHeight->emergency_escape_plan_needed ? 'YES' : 'NO' }}
                         </span>
                     </div>
                 </div>

@@ -307,6 +307,29 @@ input[type="radio"].is-invalid {
                     </div>
                     <div class="card-body" style="background: #f8f9fa; padding: 25px;">
                     
+                    <!-- Layanan overhead/bahaya? -->
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span class="parent-question">Layanan overhead/bahaya?</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="overhead_hazards_checked" value="1" {{ old('overhead_hazards_checked') == '1' ? 'checked' : '' }} onchange="toggleSubQuestions('overhead_hazards_sub', this.value == '1')"> Ya</label>
+                                <label><input type="radio" name="overhead_hazards_checked" value="0" {{ old('overhead_hazards_checked') == '0' ? 'checked' : '' }} onchange="toggleSubQuestions('overhead_hazards_sub', this.value == '1')"> Tidak</label>
+                            </div>
+                        </div>
+                        
+                        <div id="overhead_hazards_sub" class="sub-questions {{ old('overhead_hazards_checked') == '1' ? 'show' : '' }}">
+                            <div class="sub-question-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">Tutup benturan, minimal, digunakan</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="overhead_hazards_minimal_guards" value="1" {{ old('overhead_hazards_minimal_guards') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="overhead_hazards_minimal_guards" value="0" {{ old('overhead_hazards_minimal_guards') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Fixed Scaffolding -->
                     <div class="checklist-item">
                         <div class="condition-grid">
@@ -353,10 +376,10 @@ input[type="radio"].is-invalid {
                         </div>
                     </div>
 
-                    <!-- Mobile Elevation Platform -->
+                    <!-- Mobile Elevated Working Platform (MEWP) -->
                     <div class="checklist-item">
                         <div class="condition-grid">
-                            <span class="parent-question">Mobile elevation platform</span>
+                            <span class="parent-question">Mobile Elevated Working Platform (MEWP)</span>
                             <div class="radio-group">
                                 <label><input type="radio" name="mobile_elevation_checked" value="1" {{ old('mobile_elevation_checked') == '1' ? 'checked' : '' }} onchange="toggleSubQuestions('mobile_elevation_sub', this.value == '1')"> Ya</label>
                                 <label><input type="radio" name="mobile_elevation_checked" value="0" {{ old('mobile_elevation_checked') == '0' ? 'checked' : '' }} onchange="toggleSubQuestions('mobile_elevation_sub', this.value == '1')"> Tidak</label>
@@ -364,30 +387,48 @@ input[type="radio"].is-invalid {
                         </div>
                         
                         <div id="mobile_elevation_sub" class="sub-questions {{ old('mobile_elevation_checked') == '1' ? 'show' : '' }}">
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Operator terlatih?</span>
+                                    <span class="sub-question">Operator terlatih</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="mobile_elevation_training_provided" value="1" {{ old('mobile_elevation_training_provided') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="mobile_elevation_training_provided" value="0" {{ old('mobile_elevation_training_provided') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="mobile_elevation_operator_trained" value="1" {{ old('mobile_elevation_operator_trained') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="mobile_elevation_operator_trained" value="0" {{ old('mobile_elevation_operator_trained') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Penggunaannya tertulis?</span>
+                                    <span class="sub-question">Orang yang berkompeten untuk melakukan penyelamatan</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="mobile_elevation_used_before" value="1" {{ old('mobile_elevation_used_before') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="mobile_elevation_used_before" value="0" {{ old('mobile_elevation_used_before') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="mobile_elevation_rescue_person" value="1" {{ old('mobile_elevation_rescue_person') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="mobile_elevation_rescue_person" value="0" {{ old('mobile_elevation_rescue_person') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Menggunakan Alat Pelindung Jatuh?</span>
+                                    <span class="sub-question">Pemantau di tempat untuk semua pergerakan MEWP</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="mobile_elevation_location_marked" value="1" {{ old('mobile_elevation_location_marked') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="mobile_elevation_location_marked" value="0" {{ old('mobile_elevation_location_marked') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="mobile_elevation_monitor_in_place" value="1" {{ old('mobile_elevation_monitor_in_place') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="mobile_elevation_monitor_in_place" value="0" {{ old('mobile_elevation_monitor_in_place') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sub-question-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">Catatan pemeriksaan hukum valid</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="mobile_elevation_legal_inspection" value="1" {{ old('mobile_elevation_legal_inspection') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="mobile_elevation_legal_inspection" value="0" {{ old('mobile_elevation_legal_inspection') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sub-question-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">Pemeriksaan pra-penggunaan yang terdokumentasi telah selesai</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="mobile_elevation_pre_use_inspection" value="1" {{ old('mobile_elevation_pre_use_inspection') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="mobile_elevation_pre_use_inspection" value="0" {{ old('mobile_elevation_pre_use_inspection') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -447,29 +488,47 @@ input[type="radio"].is-invalid {
                     <!-- Fall Arrest -->
                     <div class="checklist-item">
                         <div class="condition-grid">
-                            <span class="parent-question">Fall arrest seperti FBH digunakan?</span>
+                            <span class="parent-question">APD WAH diperlukan? (peralatan penangkap dan penahan jatuh)</span>
                             <div class="radio-group">
-                                <label><input type="radio" name="fall_arrest_used" value="1" onchange="toggleSubQuestions('fall_arrest_sub', this.value == '1')"> Ya</label>
-                                <label><input type="radio" name="fall_arrest_used" value="0" onchange="toggleSubQuestions('fall_arrest_sub', this.value == '1')"> Tidak</label>
+                                <label><input type="radio" name="fall_arrest_used" value="1" {{ old('fall_arrest_used') == '1' ? 'checked' : '' }} onchange="toggleSubQuestions('fall_arrest_sub', this.value == '1')"> Ya</label>
+                                <label><input type="radio" name="fall_arrest_used" value="0" {{ old('fall_arrest_used') == '0' ? 'checked' : '' }} onchange="toggleSubQuestions('fall_arrest_sub', this.value == '1')"> Tidak</label>
                             </div>
                         </div>
                         
-                        <div id="fall_arrest_sub" class="sub-questions">
-                            <div class="checklist-item">
+                        <div id="fall_arrest_sub" class="sub-questions {{ old('fall_arrest_used') == '1' ? 'show' : '' }}">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Diperiksa sebelum digunakan</span>
+                                    <span class="sub-question">Pekerja yang terlatih dalam penggunaan</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="area_closed_from_below" value="1"> Ya</label>
-                                        <label><input type="radio" name="area_closed_from_below" value="0"> Tidak</label>
+                                        <label><input type="radio" name="fall_arrest_worker_trained" value="1" {{ old('fall_arrest_worker_trained') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="fall_arrest_worker_trained" value="0" {{ old('fall_arrest_worker_trained') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Tim pat cantolan ditunjuk oleh SHE PTB atau orang lain dengan kualifikasi</span>
+                                    <span class="sub-question">Catatan pemeriksaan hukum valid</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="materials_secured" value="1"> Ya</label>
-                                        <label><input type="radio" name="materials_secured" value="0"> Tidak</label>
+                                        <label><input type="radio" name="fall_arrest_legal_inspection" value="1" {{ old('fall_arrest_legal_inspection') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="fall_arrest_legal_inspection" value="0" {{ old('fall_arrest_legal_inspection') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sub-question-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">Pemeriksaan pra-penggunaan</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="fall_arrest_pre_use_inspection" value="1" {{ old('fall_arrest_pre_use_inspection') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="fall_arrest_pre_use_inspection" value="0" {{ old('fall_arrest_pre_use_inspection') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sub-question-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">Sarana pengikatan yang ditentukan oleh personel yang berkualifikasi</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="fall_arrest_qualified_personnel" value="1" {{ old('fall_arrest_qualified_personnel') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="fall_arrest_qualified_personnel" value="0" {{ old('fall_arrest_qualified_personnel') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -481,45 +540,45 @@ input[type="radio"].is-invalid {
                         <div class="condition-grid">
                             <span class="parent-question">Pekerjaan di Atap (Roof Work)</span>
                             <div class="radio-group">
-                                <label><input type="radio" name="roof_work_checked" value="1" onchange="toggleSubQuestions('roof_work_sub', this.value == '1')"> Ya</label>
-                                <label><input type="radio" name="roof_work_checked" value="0" onchange="toggleSubQuestions('roof_work_sub', this.value == '1')"> Tidak</label>
+                                <label><input type="radio" name="roof_work_checked" value="1" {{ old('roof_work_checked') == '1' ? 'checked' : '' }} onchange="toggleSubQuestions('roof_work_sub', this.value == '1')"> Ya</label>
+                                <label><input type="radio" name="roof_work_checked" value="0" {{ old('roof_work_checked') == '0' ? 'checked' : '' }} onchange="toggleSubQuestions('roof_work_sub', this.value == '1')"> Tidak</label>
                             </div>
                         </div>
                         
-                        <div id="roof_work_sub" class="sub-questions">
-                            <div class="checklist-item">
+                        <div id="roof_work_sub" class="sub-questions {{ old('roof_work_checked') == '1' ? 'show' : '' }}">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Atap kuat menahan beban?</span>
+                                    <span class="sub-question">Kapasitas menahan beban atap cukup</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="roof_load_capacity" value="1"> Ya</label>
-                                        <label><input type="radio" name="roof_load_capacity" value="0"> Tidak</label>
+                                        <label><input type="radio" name="roof_load_capacity_adequate" value="1" {{ old('roof_load_capacity_adequate') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="roof_load_capacity_adequate" value="0" {{ old('roof_load_capacity_adequate') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Apakah ada atap yang rawan?</span>
+                                    <span class="sub-question">Penggunaan perlindungan tepi</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="roof_fragile_areas" value="1"> Ya</label>
-                                        <label><input type="radio" name="roof_fragile_areas" value="0"> Tidak</label>
+                                        <label><input type="radio" name="roof_edge_protection" value="1" {{ old('roof_edge_protection') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="roof_edge_protection" value="0" {{ old('roof_edge_protection') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Pelindung jatuh/pelindung disisi tersedia?</span>
+                                    <span class="sub-question">Penggunaan sistem perlindungan jatuh/ WaH PPE</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="roof_fall_protection" value="1"> Ya</label>
-                                        <label><input type="radio" name="roof_fall_protection" value="0"> Tidak</label>
+                                        <label><input type="radio" name="roof_fall_protection_system" value="1" {{ old('roof_fall_protection_system') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="roof_fall_protection_system" value="0" {{ old('roof_fall_protection_system') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                            <div class="checklist-item">
+                            <div class="sub-question-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">Area dibarikade pada sisi bawah</span>
+                                    <span class="sub-question">Metode komunikasi yang disepakati</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="emergency_exit_point" value="1"> Ya</label>
-                                        <label><input type="radio" name="emergency_exit_point" value="0"> Tidak</label>
+                                        <label><input type="radio" name="roof_communication_method" value="1" {{ old('roof_communication_method') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="roof_communication_method" value="0" {{ old('roof_communication_method') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -539,79 +598,112 @@ input[type="radio"].is-invalid {
                     <div class="card-body">
                         <div class="checklist-container">
                             
-                            <!-- Area di bawah pekerjaan berlangsung ditutup -->
+                            <!-- Apakah mereka yang terlibat memiliki bukti Pelatihan Bekerja di Ketinggian -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Area di bawah pekerjaan berlangsung ditutup dari lalu lintas/pejalan kaki</span>
+                                    <span class="parent-question">Apakah mereka yang terlibat memiliki bukti Pelatihan Bekerja di Ketinggian (termasuk penggunaan tangga bila diperlukan)?</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="area_below_closed" value="1" {{ old('area_below_closed') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="area_below_closed" value="0" {{ old('area_below_closed') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="workers_have_training_proof" value="1" {{ old('workers_have_training_proof') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="workers_have_training_proof" value="0" {{ old('workers_have_training_proof') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Gangguan pada atau sekitar lokasi pekerjaan -->
+                            <!-- Apakah area di bawah tempat kerja telah diblokir untuk kendaraan/lalu lintas/pejalan kaki -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Gangguan pada atau sekitar lokasi pekerjaan (cable ducts/tray, single cables, pipa, dll)</span>
+                                    <span class="parent-question">Apakah area di bawah tempat kerja telah diblokir untuk kendaraan/lalu lintas/pejalan kaki?</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="work_area_disturbances" value="1" {{ old('work_area_disturbances') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="work_area_disturbances" value="0" {{ old('work_area_disturbances') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="area_below_blocked" value="1" {{ old('area_below_blocked') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="area_below_blocked" value="0" {{ old('area_below_blocked') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Ventilasi, cerobong, bukaan -->
+                            <!-- Apakah ada yang bekerja di bawah mereka yang bekerja di ketinggian -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Ventilasi, cerobong, bukaan yang mengeluarkan udara/air yang panas/berbau/berbahaya</span>
+                                    <span class="parent-question">Apakah ada yang bekerja di bawah mereka yang bekerja di ketinggian? Jika ada, helm pengaman wajib dipakai.</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="ventilation_hazards" value="1" {{ old('ventilation_hazards') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="ventilation_hazards" value="0" {{ old('ventilation_hazards') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="workers_below_present" value="1" {{ old('workers_below_present') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="workers_below_present" value="0" {{ old('workers_below_present') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Bagian dari mesin/peralatan harus dilindungi -->
+                            <!-- Apakah lantai/tanah cocok untuk digunakannya peralatan akses -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Bagian dari mesin/peralatan harus dilindungi</span>
+                                    <span class="parent-question">Apakah lantai/tanah cocok untuk digunakannya peralatan akses?</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="equipment_protection" value="1" {{ old('equipment_protection') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="equipment_protection" value="0" {{ old('equipment_protection') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="floor_suitable_for_access_equipment" value="1" {{ old('floor_suitable_for_access_equipment') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="floor_suitable_for_access_equipment" value="0" {{ old('floor_suitable_for_access_equipment') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Terdapat titik untuk keluar dalam kondisi darurat -->
+                            <!-- Apakah ada kendala di atau dekat lokasi kerja -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Terdapat titik untuk keluar dalam kondisi darurat</span>
+                                    <span class="parent-question">Apakah ada kendala di atau dekat lokasi kerja (saluran kabel, kabel tunggal, pipa, dll.)?</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="emergency_exit_available" value="1" {{ old('emergency_exit_available') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="emergency_exit_available" value="0" {{ old('emergency_exit_available') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="obstacles_near_work_location" value="1" {{ old('obstacles_near_work_location') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="obstacles_near_work_location" value="0" {{ old('obstacles_near_work_location') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Material/alat yang perlu diamankan -->
+                            <!-- Apakah ada ventilasi, cerobong asapyang dapat mengeluarkan media panas/berbau/berbahaya -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Material/alat yang perlu diamankan/diturunkan</span>
+                                    <span class="parent-question">Apakah ada ventilasi, cerobong asapyang dapat mengeluarkan media panas/berbau/berbahaya?</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="material_handling" value="1" {{ old('material_handling') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="material_handling" value="0" {{ old('material_handling') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="ventilation_hazardous_emissions" value="1" {{ old('ventilation_hazardous_emissions') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="ventilation_hazardous_emissions" value="0" {{ old('ventilation_hazardous_emissions') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Personnel Safety atau Petugas lain -->
+                            <!-- Apakah perlindungan dibutuhkan untuk peralatan akses WaH dan/atau peralatan proses/pabrik di lokasi -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Personnel Safety atau Petugas lain yang diperlukan</span>
+                                    <span class="parent-question">Apakah perlindungan dibutuhkan untuk peralatan akses WaH dan/atau peralatan proses/pabrik di lokasi?</span>
                                     <div class="radio-group">
-                                        <label><input type="radio" name="safety_personnel_needed" value="1" {{ old('safety_personnel_needed') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="safety_personnel_needed" value="0" {{ old('safety_personnel_needed') == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="protection_needed_for_equipment" value="1" {{ old('protection_needed_for_equipment') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="protection_needed_for_equipment" value="0" {{ old('protection_needed_for_equipment') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Apakah ada metode akses & keluar yang aman -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Apakah ada metode akses & keluar yang aman? (Tangga akses harus diperpanjang 1 m di atas tempat pendaratan)</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="safe_access_exit_method" value="1" {{ old('safe_access_exit_method') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="safe_access_exit_method" value="0" {{ old('safe_access_exit_method') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Apakah cara yang aman untuk menaik turunkan material dan peralatan telah ditentukan -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Apakah cara yang aman untuk menaik turunkan material dan peralatan telah ditentukan?</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="safe_material_handling_method" value="1" {{ old('safe_material_handling_method') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="safe_material_handling_method" value="0" {{ old('safe_material_handling_method') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Apakah diperlukan rencana darurat & pelarian -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Apakah diperlukan rencana darurat & pelarian?</span>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="emergency_escape_plan_needed" value="1" {{ old('emergency_escape_plan_needed') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="emergency_escape_plan_needed" value="0" {{ old('emergency_escape_plan_needed') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
@@ -877,13 +969,16 @@ $(document).ready(function() {
 
         // Work Conditions - all required
         const workConditionFields = [
-            'area_below_closed',
-            'work_area_disturbances',
-            'ventilation_hazards',
-            'equipment_protection',
-            'emergency_exit_available',
-            'material_handling',
-            'safety_personnel_needed',
+            'workers_have_training_proof',
+            'area_below_blocked',
+            'workers_below_present',
+            'floor_suitable_for_access_equipment',
+            'obstacles_near_work_location',
+            'ventilation_hazardous_emissions',
+            'protection_needed_for_equipment',
+            'safe_access_exit_method',
+            'safe_material_handling_method',
+            'emergency_escape_plan_needed',
             'other_conditions_check'
         ];
 
@@ -1026,6 +1121,9 @@ $(document).ready(function() {
     // Function to get sub-question fields for each parent
     function getSubQuestionFields(parentFieldName) {
         const subQuestionMap = {
+            'overhead_hazards_checked': [
+                'overhead_hazards_minimal_guards'
+            ],
             'fixed_scaffolding_checked': [
                 'fixed_scaffolding_approved_by_she'
             ],
@@ -1033,9 +1131,11 @@ $(document).ready(function() {
                 'mobile_scaffolding_approved_by_she'
             ],
             'mobile_elevation_checked': [
-                'mobile_elevation_training_provided',
-                'mobile_elevation_used_before',
-                'mobile_elevation_location_marked'
+                'mobile_elevation_operator_trained',
+                'mobile_elevation_rescue_person',
+                'mobile_elevation_monitor_in_place',
+                'mobile_elevation_legal_inspection',
+                'mobile_elevation_pre_use_inspection'
             ],
             'ladder_checked': [
                 'mobile_elevation_no_other_tools',
@@ -1044,12 +1144,16 @@ $(document).ready(function() {
                 'safety_personnel_required'
             ],
             'fall_arrest_used': [
-                'area_closed_from_below',
-                'materials_secured'
+                'fall_arrest_worker_trained',
+                'fall_arrest_legal_inspection',
+                'fall_arrest_pre_use_inspection',
+                'fall_arrest_qualified_personnel'
             ],
             'roof_work_checked': [
-                'roof_load_capacity',
-                'roof_fragile_areas'
+                'roof_load_capacity_adequate',
+                'roof_edge_protection',
+                'roof_fall_protection_system',
+                'roof_communication_method'
             ]
         };
         

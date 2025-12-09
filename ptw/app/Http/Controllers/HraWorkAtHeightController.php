@@ -74,6 +74,10 @@ class HraWorkAtHeightController extends Controller
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
             
+            // Overhead Hazards
+            'overhead_hazards_checked' => 'boolean',
+            'overhead_hazards_minimal_guards' => 'boolean',
+            
             // Fixed Scaffolding
             'fixed_scaffolding_checked' => 'boolean',
             'fixed_scaffolding_approved_by_she' => 'boolean',
@@ -84,8 +88,11 @@ class HraWorkAtHeightController extends Controller
             
             // Mobile Elevation Platform
             'mobile_elevation_checked' => 'boolean',
-            'mobile_elevation_used_before' => 'boolean',
-            'mobile_elevation_training_provided' => 'boolean',
+            'mobile_elevation_operator_trained' => 'boolean',
+            'mobile_elevation_rescue_person' => 'boolean',
+            'mobile_elevation_monitor_in_place' => 'boolean',
+            'mobile_elevation_legal_inspection' => 'boolean',
+            'mobile_elevation_pre_use_inspection' => 'boolean',
             
             // Ladder
             'ladder_checked' => 'boolean',
@@ -95,22 +102,31 @@ class HraWorkAtHeightController extends Controller
             
             // Fall Arrest
             'fall_arrest_used' => 'boolean',
+            'fall_arrest_worker_trained' => 'boolean',
+            'fall_arrest_legal_inspection' => 'boolean',
+            'fall_arrest_pre_use_inspection' => 'boolean',
+            'fall_arrest_qualified_personnel' => 'boolean',
             'safety_personnel_required' => 'boolean',
             
             // Roof Work
             'roof_work_checked' => 'boolean',
-            'roof_fragile_areas' => 'boolean',
-            'roof_fall_protection' => 'boolean',
+            'roof_load_capacity_adequate' => 'boolean',
+            'roof_edge_protection' => 'boolean',
+            'roof_fall_protection_system' => 'boolean',
+            'roof_communication_method' => 'boolean',
             'area_closed_from_below' => 'boolean',
             
             // Work Conditions  
-            'area_below_closed' => 'boolean',
-            'work_area_disturbances' => 'boolean', 
-            'ventilation_hazards' => 'boolean',
-            'equipment_protection' => 'boolean',
-            'emergency_exit_available' => 'boolean',
-            'material_handling' => 'boolean',
-            'safety_personnel_needed' => 'boolean',
+            'workers_have_training_proof' => 'boolean',
+            'area_below_blocked' => 'boolean',
+            'workers_below_present' => 'boolean',
+            'floor_suitable_for_access_equipment' => 'boolean',
+            'obstacles_near_work_location' => 'boolean',
+            'ventilation_hazardous_emissions' => 'boolean',
+            'protection_needed_for_equipment' => 'boolean',
+            'safe_access_exit_method' => 'boolean',
+            'safe_material_handling_method' => 'boolean',
+            'emergency_escape_plan_needed' => 'boolean',
             'other_conditions_check' => 'boolean',
             'other_conditions_text' => 'nullable|string|max:1000',
             
@@ -178,6 +194,10 @@ class HraWorkAtHeightController extends Controller
             'end_datetime' => 'required|date|after:start_datetime',
             'work_description' => 'required|string',
             
+            // Overhead Hazards
+            'overhead_hazards_checked' => 'boolean',
+            'overhead_hazards_minimal_guards' => 'boolean',
+            
             // Fixed Scaffolding
             'fixed_scaffolding_checked' => 'boolean',
             'fixed_scaffolding_approved_by_she' => 'boolean',
@@ -188,8 +208,11 @@ class HraWorkAtHeightController extends Controller
             
             // Mobile Elevation Platform
             'mobile_elevation_checked' => 'boolean',
-            'mobile_elevation_used_before' => 'boolean',
-            'mobile_elevation_training_provided' => 'boolean',
+            'mobile_elevation_operator_trained' => 'boolean',
+            'mobile_elevation_rescue_person' => 'boolean',
+            'mobile_elevation_monitor_in_place' => 'boolean',
+            'mobile_elevation_legal_inspection' => 'boolean',
+            'mobile_elevation_pre_use_inspection' => 'boolean',
             
             // Ladder
             'ladder_checked' => 'boolean',
@@ -199,22 +222,31 @@ class HraWorkAtHeightController extends Controller
             
             // Fall Arrest
             'fall_arrest_used' => 'boolean',
+            'fall_arrest_worker_trained' => 'boolean',
+            'fall_arrest_legal_inspection' => 'boolean',
+            'fall_arrest_pre_use_inspection' => 'boolean',
+            'fall_arrest_qualified_personnel' => 'boolean',
             'safety_personnel_required' => 'boolean',
             
             // Roof Work
             'roof_work_checked' => 'boolean',
-            'roof_fragile_areas' => 'boolean',
-            'roof_fall_protection' => 'boolean',
+            'roof_load_capacity_adequate' => 'boolean',
+            'roof_edge_protection' => 'boolean',
+            'roof_fall_protection_system' => 'boolean',
+            'roof_communication_method' => 'boolean',
             'area_closed_from_below' => 'boolean',
             
             // Work Conditions  
-            'area_below_closed' => 'boolean',
-            'work_area_disturbances' => 'boolean',
-            'ventilation_hazards' => 'boolean',
-            'equipment_protection' => 'boolean',
-            'emergency_exit_available' => 'boolean',
-            'material_handling' => 'boolean',
-            'safety_personnel_needed' => 'boolean',
+            'workers_have_training_proof' => 'boolean',
+            'area_below_blocked' => 'boolean',
+            'workers_below_present' => 'boolean',
+            'floor_suitable_for_access_equipment' => 'boolean',
+            'obstacles_near_work_location' => 'boolean',
+            'ventilation_hazardous_emissions' => 'boolean',
+            'protection_needed_for_equipment' => 'boolean',
+            'safe_access_exit_method' => 'boolean',
+            'safe_material_handling_method' => 'boolean',
+            'emergency_escape_plan_needed' => 'boolean',
             'other_conditions_check' => 'boolean',
             'other_conditions_text' => 'nullable|string|max:1000',
             

@@ -186,6 +186,21 @@
         
         <div class="two-column">
             <div class="column">
+                <!-- Overhead Hazards -->
+                <div class="assessment-item">
+                    <div class="assessment-header">Overhead Hazards</div>
+                    <div class="row">
+                        <span class="checkbox {{ $hraWorkAtHeight->overhead_hazards_checked ? 'checked' : '' }}">{{ $hraWorkAtHeight->overhead_hazards_checked ? '✓' : '' }}</span>
+                        Layanan overhead/bahaya?
+                    </div>
+                    @if($hraWorkAtHeight->overhead_hazards_checked)
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->overhead_hazards_minimal_guards ? 'checked' : '' }}">{{ $hraWorkAtHeight->overhead_hazards_minimal_guards ? '✓' : '' }}</span>
+                        Pengaman minimal untuk melindungi dari bahaya di atas
+                    </div>
+                    @endif
+                </div>
+
                 <!-- Fixed Scaffolding -->
                 <div class="assessment-item">
                     <div class="assessment-header">Fixed Scaffolding</div>
@@ -201,40 +216,62 @@
                     @endif
                 </div>
 
-                <!-- Mobile Elevation Platform -->
+                <!-- Mobile Elevated Working Platform (MEWP) -->
                 <div class="assessment-item">
-                    <div class="assessment-header">Mobile Elevation Platform</div>
+                    <div class="assessment-header">Mobile Elevated Working Platform (MEWP)</div>
                     <div class="row">
                         <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_checked ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_checked ? '✓' : '' }}</span>
-                        Mobile elevation platform
+                        Mobile Elevated Working Platform (MEWP)
                     </div>
                     @if($hraWorkAtHeight->mobile_elevation_checked)
                     <div class="row" style="margin-left: 15px;">
-                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_training_provided ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_training_provided ? '✓' : '' }}</span>
-                        Operator terlatih?
+                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_operator_trained ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_operator_trained ? '✓' : '' }}</span>
+                        Operator terlatih
                     </div>
                     <div class="row" style="margin-left: 15px;">
-                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_used_before ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_used_before ? '✓' : '' }}</span>
-                        Penggunaannya tertulus?
+                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_rescue_person ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_rescue_person ? '✓' : '' }}</span>
+                        Orang yang berkompeten untuk melakukan penyelamatan
                     </div>
                     <div class="row" style="margin-left: 15px;">
-                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_location_marked ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_location_marked ? '✓' : '' }}</span>
-                        Menggunakan Alat Pelindung Jatuh?
+                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_monitor_in_place ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_monitor_in_place ? '✓' : '' }}</span>
+                        Pemantau di tempat untuk semua pergerakan MEWP
+                    </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_legal_inspection ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_legal_inspection ? '✓' : '' }}</span>
+                        Catatan pemeriksaan hukum valid
+                    </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->mobile_elevation_pre_use_inspection ? 'checked' : '' }}">{{ $hraWorkAtHeight->mobile_elevation_pre_use_inspection ? '✓' : '' }}</span>
+                        Pemeriksaan pra-penggunaan yang terdokumentasi telah selesai
                     </div>
                     @endif
                 </div>
 
                 <!-- Fall Arrest -->
                 <div class="assessment-item">
-                    <div class="assessment-header">Fall Arrest</div>
+                    <div class="assessment-header">APD WAH</div>
                     <div class="row">
                         <span class="checkbox {{ $hraWorkAtHeight->fall_arrest_used ? 'checked' : '' }}">{{ $hraWorkAtHeight->fall_arrest_used ? '✓' : '' }}</span>
-                        Fall arrest seperti FBH digunakan?
+                        APD WAH diperlukan? (peralatan penangkap dan penahan jatuh)
                     </div>
-                    <div class="row">
-                        <span class="checkbox {{ $hraWorkAtHeight->area_closed_from_below ? 'checked' : '' }}">{{ $hraWorkAtHeight->area_closed_from_below ? '✓' : '' }}</span>
-                        Diperiksa sebelum digunakan
+                    @if($hraWorkAtHeight->fall_arrest_used)
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->fall_arrest_worker_trained ? 'checked' : '' }}">{{ $hraWorkAtHeight->fall_arrest_worker_trained ? '✓' : '' }}</span>
+                        Pekerja yang terlatih dalam penggunaan
                     </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->fall_arrest_legal_inspection ? 'checked' : '' }}">{{ $hraWorkAtHeight->fall_arrest_legal_inspection ? '✓' : '' }}</span>
+                        Catatan pemeriksaan hukum valid
+                    </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->fall_arrest_pre_use_inspection ? 'checked' : '' }}">{{ $hraWorkAtHeight->fall_arrest_pre_use_inspection ? '✓' : '' }}</span>
+                        Pemeriksaan pra-penggunaan
+                    </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->fall_arrest_qualified_personnel ? 'checked' : '' }}">{{ $hraWorkAtHeight->fall_arrest_qualified_personnel ? '✓' : '' }}</span>
+                        Sarana pengikatan yang ditentukan oleh personel yang berkualifikasi
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -280,12 +317,20 @@
                     </div>
                     @if($hraWorkAtHeight->roof_work_checked)
                     <div class="row" style="margin-left: 15px;">
-                        <span class="checkbox {{ $hraWorkAtHeight->roof_fragile_areas ? 'checked' : '' }}">{{ $hraWorkAtHeight->roof_fragile_areas ? '✓' : '' }}</span>
-                        Apakah ada atap yang rawan?
+                        <span class="checkbox {{ $hraWorkAtHeight->roof_load_capacity_adequate ? 'checked' : '' }}">{{ $hraWorkAtHeight->roof_load_capacity_adequate ? '✓' : '' }}</span>
+                        Kapasitas menahan beban atap cukup
                     </div>
                     <div class="row" style="margin-left: 15px;">
-                        <span class="checkbox {{ $hraWorkAtHeight->roof_fall_protection ? 'checked' : '' }}">{{ $hraWorkAtHeight->roof_fall_protection ? '✓' : '' }}</span>
-                        Pelindung jatuh/pelindung disisi tersedia?
+                        <span class="checkbox {{ $hraWorkAtHeight->roof_edge_protection ? 'checked' : '' }}">{{ $hraWorkAtHeight->roof_edge_protection ? '✓' : '' }}</span>
+                        Penggunaan perlindungan tepi
+                    </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->roof_fall_protection_system ? 'checked' : '' }}">{{ $hraWorkAtHeight->roof_fall_protection_system ? '✓' : '' }}</span>
+                        Penggunaan sistem perlindungan jatuh/ WaH PPE
+                    </div>
+                    <div class="row" style="margin-left: 15px;">
+                        <span class="checkbox {{ $hraWorkAtHeight->roof_communication_method ? 'checked' : '' }}">{{ $hraWorkAtHeight->roof_communication_method ? '✓' : '' }}</span>
+                        Metode komunikasi yang disepakati
                     </div>
                     @endif
                 </div>
@@ -299,34 +344,46 @@
         <div class="two-column">
             <div class="column">
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->area_below_closed ? 'checked' : '' }}">{{ $hraWorkAtHeight->area_below_closed ? '✓' : '' }}</span>
-                    Area di bawah pekerjaan berlangsung ditutup dari lalu lintas/pejalan kaki
+                    <span class="checkbox {{ $hraWorkAtHeight->workers_have_training_proof ? 'checked' : '' }}">{{ $hraWorkAtHeight->workers_have_training_proof ? '✓' : '' }}</span>
+                    Apakah mereka yang terlibat memiliki bukti Pelatihan Bekerja di Ketinggian
                 </div>
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->ventilation_hazards ? 'checked' : '' }}">{{ $hraWorkAtHeight->ventilation_hazards ? '✓' : '' }}</span>
-                    Ventilasi, cerobong, bukaan yang mengeluarkan udara/air yang panas/berbau/berbahaya
+                    <span class="checkbox {{ $hraWorkAtHeight->area_below_blocked ? 'checked' : '' }}">{{ $hraWorkAtHeight->area_below_blocked ? '✓' : '' }}</span>
+                    Apakah area di bawah tempat kerja telah diblokir untuk kendaraan/lalu lintas/pejalan kaki
                 </div>
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->emergency_exit_available ? 'checked' : '' }}">{{ $hraWorkAtHeight->emergency_exit_available ? '✓' : '' }}</span>
-                    Terdapat titik untuk keluar dalam kondisi darurat
+                    <span class="checkbox {{ $hraWorkAtHeight->workers_below_present ? 'checked' : '' }}">{{ $hraWorkAtHeight->workers_below_present ? '✓' : '' }}</span>
+                    Apakah ada yang bekerja di bawah mereka yang bekerja di ketinggian
                 </div>
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->safety_personnel_needed ? 'checked' : '' }}">{{ $hraWorkAtHeight->safety_personnel_needed ? '✓' : '' }}</span>
-                    Personnel Safety atau Petugas lain yang diperlukan
+                    <span class="checkbox {{ $hraWorkAtHeight->floor_suitable_for_access_equipment ? 'checked' : '' }}">{{ $hraWorkAtHeight->floor_suitable_for_access_equipment ? '✓' : '' }}</span>
+                    Apakah lantai/tanah cocok untuk digunakannya peralatan akses
+                </div>
+                <div class="row">
+                    <span class="checkbox {{ $hraWorkAtHeight->obstacles_near_work_location ? 'checked' : '' }}">{{ $hraWorkAtHeight->obstacles_near_work_location ? '✓' : '' }}</span>
+                    Apakah ada kendala di atau dekat lokasi kerja (saluran kabel, kabel tunggal, pipa, dll.)
                 </div>
             </div>
             <div class="column">
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->work_area_disturbances ? 'checked' : '' }}">{{ $hraWorkAtHeight->work_area_disturbances ? '✓' : '' }}</span>
-                    Gangguan pada atau sekitar lokasi pekerjaan
+                    <span class="checkbox {{ $hraWorkAtHeight->ventilation_hazardous_emissions ? 'checked' : '' }}">{{ $hraWorkAtHeight->ventilation_hazardous_emissions ? '✓' : '' }}</span>
+                    Apakah ada ventilasi, cerobong asapyang dapat mengeluarkan media panas/berbau/berbahaya
                 </div>
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->equipment_protection ? 'checked' : '' }}">{{ $hraWorkAtHeight->equipment_protection ? '✓' : '' }}</span>
-                    Bagian dari mesin/peralatan harus dilindungi
+                    <span class="checkbox {{ $hraWorkAtHeight->protection_needed_for_equipment ? 'checked' : '' }}">{{ $hraWorkAtHeight->protection_needed_for_equipment ? '✓' : '' }}</span>
+                    Apakah perlindungan dibutuhkan untuk peralatan akses WaH dan/atau peralatan proses/pabrik di lokasi
                 </div>
                 <div class="row">
-                    <span class="checkbox {{ $hraWorkAtHeight->material_handling ? 'checked' : '' }}">{{ $hraWorkAtHeight->material_handling ? '✓' : '' }}</span>
-                    Material/alat yang perlu dinaik/turunkan
+                    <span class="checkbox {{ $hraWorkAtHeight->safe_access_exit_method ? 'checked' : '' }}">{{ $hraWorkAtHeight->safe_access_exit_method ? '✓' : '' }}</span>
+                    Apakah ada metode akses & keluar yang aman
+                </div>
+                <div class="row">
+                    <span class="checkbox {{ $hraWorkAtHeight->safe_material_handling_method ? 'checked' : '' }}">{{ $hraWorkAtHeight->safe_material_handling_method ? '✓' : '' }}</span>
+                    Apakah cara yang aman untuk menaik turunkan material dan peralatan telah ditentukan
+                </div>
+                <div class="row">
+                    <span class="checkbox {{ $hraWorkAtHeight->emergency_escape_plan_needed ? 'checked' : '' }}">{{ $hraWorkAtHeight->emergency_escape_plan_needed ? '✓' : '' }}</span>
+                    Apakah diperlukan rencana darurat & pelarian
                 </div>
                 <div class="row">
                     <span class="checkbox {{ $hraWorkAtHeight->other_conditions_check ? 'checked' : '' }}">{{ $hraWorkAtHeight->other_conditions_check ? '✓' : '' }}</span>

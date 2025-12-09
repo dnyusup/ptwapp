@@ -107,6 +107,35 @@
         <div class="row">
             <div class="col-lg-8">
                 
+                <!-- Overhead Hazards Section -->
+                <div class="checklist-section">
+                    <div class="section-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Layanan overhead/bahaya?
+                    </div>
+                    
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Jika menggunakan, tandai Y (jika diisi "Y" lanjutkan ke kolom sebelah kanan):</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="overhead_hazards_checked" value="1" {{ $hra->overhead_hazards_checked ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="overhead_hazards_checked" value="0" {{ !$hra->overhead_hazards_checked ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    @if($hra->overhead_hazards_checked)
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Tutup benturan, minimal, digunakan</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="overhead_hazards_minimal_guards" value="1" {{ $hra->overhead_hazards_minimal_guards ? 'checked' : '' }}> Ya</label>
+                                <label><input type="radio" name="overhead_hazards_minimal_guards" value="0" {{ !$hra->overhead_hazards_minimal_guards ? 'checked' : '' }}> Tidak</label>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+                
                 <!-- Fixed Scaffolding Section -->
                 <div class="checklist-section">
                     <div class="section-title">
@@ -219,6 +248,75 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Mobile Elevated Working Platform (MEWP) Section -->
+                <div class="checklist-section">
+                    <div class="section-title">
+                        <i class="fas fa-arrow-up me-2"></i>Mobile Elevated Working Platform (MEWP)
+                    </div>
+                    
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Mobile Elevated Working Platform (MEWP)</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="mobile_elevation_checked" value="1" {{ $hra->mobile_elevation_checked ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="mobile_elevation_checked" value="0" {{ !$hra->mobile_elevation_checked ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    @if($hra->mobile_elevation_checked)
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Operator terlatih</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="mobile_elevation_operator_trained" value="1" {{ $hra->mobile_elevation_operator_trained ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="mobile_elevation_operator_trained" value="0" {{ !$hra->mobile_elevation_operator_trained ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Orang yang berkompeten untuk melakukan penyelamatan</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="mobile_elevation_rescue_person" value="1" {{ $hra->mobile_elevation_rescue_person ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="mobile_elevation_rescue_person" value="0" {{ !$hra->mobile_elevation_rescue_person ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Pemantau di tempat untuk semua pergerakan MEWP</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="mobile_elevation_monitor_in_place" value="1" {{ $hra->mobile_elevation_monitor_in_place ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="mobile_elevation_monitor_in_place" value="0" {{ !$hra->mobile_elevation_monitor_in_place ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Catatan pemeriksaan hukum valid</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="mobile_elevation_legal_inspection" value="1" {{ $hra->mobile_elevation_legal_inspection ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="mobile_elevation_legal_inspection" value="0" {{ !$hra->mobile_elevation_legal_inspection ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item">
+                        <div class="condition-grid">
+                            <span>Pemeriksaan pra-penggunaan yang terdokumentasi telah selesai</span>
+                            <div class="radio-group">
+                                <label><input type="radio" name="mobile_elevation_pre_use_inspection" value="1" {{ $hra->mobile_elevation_pre_use_inspection ? 'checked' : '' }}> Y</label>
+                                <label><input type="radio" name="mobile_elevation_pre_use_inspection" value="0" {{ !$hra->mobile_elevation_pre_use_inspection ? 'checked' : '' }}> N</label>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Submit Button -->
