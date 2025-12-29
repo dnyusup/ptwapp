@@ -7,6 +7,7 @@ use App\Http\Controllers\PermitToWorkController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MethodStatementController;
+use App\Http\Controllers\EmergencyPlanController;
 use App\Http\Controllers\KontraktorListController;
 use App\Http\Controllers\HraWorkAtHeightController;
 use App\Http\Controllers\HraHotWorkController;
@@ -187,6 +188,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/permits/{permitNumber}/method-statement/request-approval', [MethodStatementController::class, 'requestApproval'])->name('method-statements.request-approval');
     Route::post('/permits/{permitNumber}/method-statement/approve', [MethodStatementController::class, 'approve'])->name('method-statements.approve');
     Route::post('/permits/{permitNumber}/method-statement/reject', [MethodStatementController::class, 'reject'])->name('method-statements.reject');
+    
+    // Emergency Plan routes
+    Route::get('/permits/{permitNumber}/emergency-plan/create', [EmergencyPlanController::class, 'create'])->name('emergency-plans.create');
+    Route::post('/permits/{permitNumber}/emergency-plan', [EmergencyPlanController::class, 'store'])->name('emergency-plans.store');
+    Route::get('/permits/{permitNumber}/emergency-plan', [EmergencyPlanController::class, 'show'])->name('emergency-plans.show');
+    Route::get('/permits/{permitNumber}/emergency-plan/edit', [EmergencyPlanController::class, 'edit'])->name('emergency-plans.edit');
+    Route::put('/permits/{permitNumber}/emergency-plan', [EmergencyPlanController::class, 'update'])->name('emergency-plans.update');
+    Route::post('/permits/{permitNumber}/emergency-plan/request-approval', [EmergencyPlanController::class, 'requestApproval'])->name('emergency-plans.request-approval');
+    Route::post('/permits/{permitNumber}/emergency-plan/approve', [EmergencyPlanController::class, 'approve'])->name('emergency-plans.approve');
+    Route::post('/permits/{permitNumber}/emergency-plan/reject', [EmergencyPlanController::class, 'reject'])->name('emergency-plans.reject');
     
     // HRA Work at Heights routes
     Route::get('/permits/{permit}/hra/work-at-heights', [HraWorkAtHeightController::class, 'index'])->name('hra.work-at-heights.index');

@@ -219,130 +219,170 @@
 
     <!-- Hot Work Safety Checklist -->
     <div class="section">
-        <div class="section-title">HOT WORK SAFETY CHECKLIST</div>
+        <div class="section-title">HRA HOT WORK ASSESSMENT</div>
         
+        <!-- Section 1: Requirements within 11m/35ft from hot work -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 1: Persyaratan dalam jarak 11m/35ft dari pekerjaan panas (termasuk di atas dan di bawah area kerja)
+        </div>
+
         <div class="checklist-item">
-            <div class="checklist-question">1. Apakah alternatif pengganti pekerjaan panas (Hot work) sudah dipertimbangkan</div>
-            <div class="checklist-answer {{ $hraHotWork->q1_alternative_considered ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q1_alternative_considered ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">1. Semua bahan yang mudah terbakar disingkirkan atau dilindungi dengan penutup tahan api</div>
+            <div class="checklist-answer {{ $hraHotWork->flammable_materials_removed ? 'yes' : 'no' }}">
+                {{ $hraHotWork->flammable_materials_removed ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">2. Apakah peralatan diperiksa dan apakah dalam kondisi baik?</div>
-            <div class="checklist-answer {{ $hraHotWork->q2_equipment_checked ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q2_equipment_checked ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">2. Cairan mudah terbakar, debu, serat, dan endapan minyak dihilangkan (debu di "dalam" dinding/atap/rongga)</div>
+            <div class="checklist-answer {{ $hraHotWork->flammable_liquids_removed ? 'yes' : 'no' }}">
+                {{ $hraHotWork->flammable_liquids_removed ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">3. Benda mudah terbakar (flammable) & dapat terbakar (combustible) dipindah?</div>
-            <div class="checklist-answer {{ $hraHotWork->q3_flammable_moved ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q3_flammable_moved ? 'YA' : 'TIDAK' }}
-            </div>
-        </div>
-        @if($hraHotWork->q3_distance)
-        <div class="sub-question">Jarak: {{ $hraHotWork->q3_distance }}m (min 12m)</div>
-        @endif
-
-        <div class="checklist-item">
-            <div class="checklist-question">4. Jika tidak bisa dipindah: flammable atau combustible dilindungi oleh lembar logam dan/atau cover tahan api</div>
-            <div class="checklist-answer {{ $hraHotWork->q4_protected_cover ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q4_protected_cover ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">3. Lantai yang mudah terbakar dibasahi, ditutup dengan pasir basah atau penutup tahan api yang tumpang tindih</div>
+            <div class="checklist-answer {{ $hraHotWork->flammable_floors_wetted ? 'yes' : 'no' }}">
+                {{ $hraHotWork->flammable_floors_wetted ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">5. Kotoran atau debu dibersihkan?</div>
-            <div class="checklist-answer {{ $hraHotWork->q5_debris_cleaned ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q5_debris_cleaned ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">4. Dinding/langit-langit/atap yang mudah terbakar dilindungi dengan penutup tahan api</div>
+            <div class="checklist-answer {{ $hraHotWork->walls_ceiling_protected ? 'yes' : 'no' }}">
+                {{ $hraHotWork->walls_ceiling_protected ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">6. Area sekitar termasuk tangki, pipa, dinding, dll diperiksa sebagai antisipasi jika flammable/combustible material tersembunyi?</div>
-            <div class="checklist-answer {{ $hraHotWork->q6_area_inspected ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q6_area_inspected ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">5. Lantai disapu bersih dari bahan yang mudah terbakar</div>
+            <div class="checklist-answer {{ $hraHotWork->floors_swept_clean ? 'yes' : 'no' }}">
+                {{ $hraHotWork->floors_swept_clean ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">7. Apakah dinding yang dapat terbakar, atap dan/atau struktur lainnya ada di lokasi?</div>
-            <div class="checklist-answer {{ $hraHotWork->q7_flammable_structures ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q7_flammable_structures ? 'YA' : 'TIDAK' }}
-            </div>
-        </div>
-        @if($hraHotWork->q7_flammable_structures && $hraHotWork->q7_actions_taken)
-        <div class="sub-question">Tindakan yang diambil: {{ $hraHotWork->q7_actions_taken }}</div>
-        @endif
-
-        <div class="checklist-item">
-            <div class="checklist-question">8. Selimut/blanket tahan api atau screen dipasang untuk membatasi bunga api?</div>
-            <div class="checklist-answer {{ $hraHotWork->q8_fire_blanket ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q8_fire_blanket ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">6. Material mudah terbakar di sisi lain dinding, langit-langit atau atap disingkirkan (perhatikan insulasinya)</div>
+            <div class="checklist-answer {{ $hraHotWork->materials_other_side_removed ? 'yes' : 'no' }}">
+                {{ $hraHotWork->materials_other_side_removed ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">9. Tutup valve otomatis, saluran pembuangan (drain), cover, dll?</div>
-            <div class="checklist-answer {{ $hraHotWork->q9_valve_drain_covered ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q9_valve_drain_covered ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">7. Atmosfer yang mudah meledak dihilangkan</div>
+            <div class="checklist-answer {{ $hraHotWork->explosive_atmosphere_removed ? 'yes' : 'no' }}">
+                {{ $hraHotWork->explosive_atmosphere_removed ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">10. Isolasi ducting/conveyor/exhaust yang mungkin kemasukan bunga api atau material terbakar?</div>
-            <div class="checklist-answer {{ $hraHotWork->q10_isolation_ducting ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q10_isolation_ducting ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">8. Semua bukaan dinding/lantai, termasuk saluran pembuangan, ditutup dengan penutup tahan api</div>
+            <div class="checklist-answer {{ $hraHotWork->wall_floor_openings_covered ? 'yes' : 'no' }}">
+                {{ $hraHotWork->wall_floor_openings_covered ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">11. Lubang dan lubang pembuangan tertutup (sealing pada joint, chinks, bukaan, ducting, dll)?</div>
-            <div class="checklist-answer {{ $hraHotWork->q11_holes_sealed ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q11_holes_sealed ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">9. Saluran, konveyor, katup/saluran pembuangan yang terbuka secara otomatis, dll, terlindungi, terisolasi, atau keduanya</div>
+            <div class="checklist-answer {{ $hraHotWork->ducts_conveyors_protected ? 'yes' : 'no' }}">
+                {{ $hraHotWork->ducts_conveyors_protected ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">12. Ventilasi cukup di lokasi pekerjaan? ({{ $hraHotWork->q12_ventilation_type ?: 'tidak ditentukan' }})</div>
-            <div class="checklist-answer {{ $hraHotWork->q12_ventilation_adequate ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q12_ventilation_adequate ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">10. Jika ada risiko kebakaran dari konduksi/radiasi, misalnya di sepanjang balok, tindakan pencegahan tambahan diterapkan</div>
+            <div class="checklist-answer {{ $hraHotWork->fire_risk_prevention_applied ? 'yes' : 'no' }}">
+                {{ $hraHotWork->fire_risk_prevention_applied ? 'V' : '' }}
+            </div>
+        </div>
+
+        <!-- Section 2: Requirements when working on enclosed equipment -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 2: Persyaratan saat bekerja pada peralatan tertutup
+        </div>
+
+        <div class="checklist-item">
+            <div class="checklist-question">11. Peralatan dibersihkan dari semua bahan yang mudah terbakar</div>
+            <div class="checklist-answer {{ $hraHotWork->equipment_cleaned_flammable ? 'yes' : 'no' }}">
+                {{ $hraHotWork->equipment_cleaned_flammable ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">13. Peralatan listrik dan kabel terlindungi?</div>
-            <div class="checklist-answer {{ $hraHotWork->q13_electrical_protected ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q13_electrical_protected ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">12. Wadah dikosongkan, dibersihkan, dan diuji bebas dari cairan dan uap yang mudah terbakar (Lengkapi form-H)</div>
+            <div class="checklist-answer {{ $hraHotWork->containers_emptied_cleaned ? 'yes' : 'no' }}">
+                {{ $hraHotWork->containers_emptied_cleaned ? 'V' : '' }}
+            </div>
+        </div>
+
+        <!-- Section 3: Building panels/materials -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 3: Panel bangunan/material
+        </div>
+
+        <div class="checklist-item">
+            <div class="checklist-question">13. Panel bangunan/material yang sedang dikerjakan adalah diketahui tidak mudah terbakar</div>
+            <div class="checklist-answer {{ $hraHotWork->building_materials_non_flammable ? 'yes' : 'no' }}">
+                {{ $hraHotWork->building_materials_non_flammable ? 'V' : '' }}
             </div>
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">14. Peralatan/mesin disekitarnya, pipa dan material terlindungi?</div>
-            <div class="checklist-answer {{ $hraHotWork->q14_equipment_protected ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q14_equipment_protected ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">14. Jika "tidak" pada pertanyaan di atas, bahan yang mudah terbakar HARUS dipotong hingga minimal 50 cm dan dilindungi oleh bahan pelindung yang tidak mudah terbakar</div>
+            <div class="checklist-answer {{ $hraHotWork->flammable_materials_cut_protected ? 'yes' : 'no' }}">
+                {{ $hraHotWork->flammable_materials_cut_protected ? 'V' : '' }}
             </div>
         </div>
 
-        <div class="checklist-item">
-            <div class="checklist-question">15. Pekerjaan panas yang berada di atas, tambahan perlindungan disediakan di bawah?</div>
-            <div class="checklist-answer {{ $hraHotWork->q15_overhead_protection ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q15_overhead_protection ? 'YA' : 'TIDAK' }}
-            </div>
+        <!-- Section 4: Ventilation -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 4: Ventilasi
         </div>
 
         <div class="checklist-item">
-            <div class="checklist-question">16. Lokasi kerja diberi tanda/barikade yang memadai?</div>
-            <div class="checklist-answer {{ $hraHotWork->q16_area_marked ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q16_area_marked ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">15. Ventilasi yang cukup di tempat kerja 
+                @if($hraHotWork->ventilation_type)
+                    ({{ $hraHotWork->ventilation_type }})
+                @endif
+            </div>
+            <div class="checklist-answer {{ $hraHotWork->ventilation_adequate ? 'yes' : 'no' }}">
+                {{ $hraHotWork->ventilation_adequate ? 'V' : '' }}
             </div>
         </div>
 
+        <!-- Section 5: Blow lamps and gas cylinders -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 5: Lampu tiup dan tabung gas
+        </div>
+
         <div class="checklist-item">
-            <div class="checklist-question">17. Gas monitoring untuk kemungkinan adanya gas flammable harus dilakukan sebelum pekerjaan dilakukan</div>
-            <div class="checklist-answer {{ $hraHotWork->q17_gas_monitoring ? 'yes' : 'no' }}">
-                {{ $hraHotWork->q17_gas_monitoring ? 'YA' : 'TIDAK' }}
+            <div class="checklist-question">16. Lampu tiup dan tabung gas hanya boleh dipasang atau diganti di area terbuka dan berventilasi baik</div>
+            <div class="checklist-answer {{ $hraHotWork->gas_lamps_open_area ? 'yes' : 'no' }}">
+                {{ $hraHotWork->gas_lamps_open_area ? 'V' : '' }}
+            </div>
+        </div>
+
+        <!-- Section 6: Equipment and welding -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 6: Peralatan dan pengelasan
+        </div>
+
+        <div class="checklist-item">
+            <div class="checklist-question">17. Apakah semua peralatan telah dipasang dan pengalasan dimonitor dari pengelasan dalam kondisi baik?</div>
+            <div class="checklist-answer {{ $hraHotWork->equipment_installed_monitored ? 'yes' : 'no' }}">
+                {{ $hraHotWork->equipment_installed_monitored ? 'V' : '' }}
+            </div>
+        </div>
+
+        <!-- Section 7: Worker notification -->
+        <div style="font-weight: bold; font-size: 12px; margin: 10px 0; background-color: #e8f4f8; padding: 5px; border-left: 4px solid #007bff;">
+            Bagian 7: Pemberitahuan pekerja
+        </div>
+
+        <div class="checklist-item">
+            <div class="checklist-question">18. Semua pekerja yang ada di area tersebut diberitahu tentang pekerjaan panas yang sedang dilakukan</div>
+            <div class="checklist-answer {{ $hraHotWork->workers_notified ? 'yes' : 'no' }}">
+                {{ $hraHotWork->workers_notified ? 'V' : '' }}
             </div>
         </div>
     </div>

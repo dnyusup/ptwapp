@@ -292,6 +292,31 @@
         </div>
     </div>
 
+    <!-- Risk Assessment & Method Statement Section -->
+    <div class="section">
+        <div class="section-title">Penilaian Risiko & Pernyataan Metode</div>
+        <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="info-row">
+                <div class="info-label" style="font-size: 11px;">Penilaian Risiko & Pernyataan Metode: {{ $permit->risk_method_assessment ? strtoupper($permit->risk_method_assessment) : 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="font-size: 11px;">Penggunaan/Penyimpanan bahan kimia: {{ $permit->chemical_usage_storage ? strtoupper($permit->chemical_usage_storage) : 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="font-size: 11px;">Kondisi peralatan/instalasi: {{ $permit->equipment_condition ? strtoupper($permit->equipment_condition) : 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="font-size: 11px;">Keberadaan asbes: {{ $permit->asbestos_presence ? strtoupper($permit->asbestos_presence) : 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="font-size: 11px;">Area ATEX: {{ $permit->atex_area ? strtoupper($permit->atex_area) : 'N/A' }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label" style="font-size: 11px;">Area penyimpanan gas: {{ $permit->gas_storage_area ? strtoupper($permit->gas_storage_area) : 'N/A' }}</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Digital Signatures Section -->
     <div class="signatures">
         <div class="section-title">Digital Signatures & Approvals</div>
@@ -402,16 +427,16 @@
             <!-- Work Method Explanations -->
             @php
                 $explanations = [
-                    'work_access_explanation' => 'Cara menuju dan dari lokasi kerja',
-                    'safety_equipment_explanation' => 'APD dan peralatan safety',
-                    'training_competency_explanation' => 'Training/kompetensi/pengalaman',
-                    'route_identification_explanation' => 'Identifikasi rute',
-                    'work_area_preparation_explanation' => 'Lokasi peralatan dan penyimpanan',
-                    'work_sequence_explanation' => 'Urutan pekerjaan',
-                    'equipment_maintenance_explanation' => 'Peralatan yang dibutuhkan',
-                    'platform_explanation' => 'Platform sementara',
-                    'hand_washing_explanation' => 'Pengaruh cuaca',
-                    'work_area_cleanliness_explanation' => 'Kebersihan dan kerapian area kerja'
+                    'safe_access_explanation' => 'Tentukan akses aman ke dan dari lokasi kerja, termasuk platform permanen, scaffolds (pegangan tangan, papan kaki, dll.), dan menara seluler. Dan bagaimana akses tanpa izin akan dicegah.',
+                    'ppe_safety_equipment_explanation' => 'Tentukan APD dan peralatan keselamatan yang akan digunakan, dan kapan.',
+                    'qualifications_training_explanation' => 'Cantumkan kualifikasi/pelatihan/pengalaman mereka yang diizinkan untuk melaksanakan pekerjaan tersebut dan pelatihan khusus apa pun untuk pekerjaan spesifik ini.',
+                    'safe_routes_identification_explanation' => 'Mengidentifikasi rute akses aman untuk pejalan kaki, kendaraan, pabrik dan peralatan, dll.',
+                    'storage_security_explanation' => 'Lokasi untuk penyimpanan peralatan dan material di luar pekerjaan dan pengaturan penandaan, penanganan, dan keamanan di tempat kerja.',
+                    'work_order_explanation' => 'Tentukan urutan pekerjaan.',
+                    'equipment_checklist_explanation' => 'Buat daftar perlengkapan yang dibutuhkan, bagaimana perlengkapan tersebut akan disediakan, dan pemeriksaan apa saja yang perlu dilakukan, termasuk cranes, slings, dan lain-lain.',
+                    'temporary_work_explanation' => 'Jelaskan pekerjaan sementara yang akan disediakan dan tanggung jawab atas desain yang kompeten, misalnya scaffolding, trench supports, penyangga lantai sementara, dll.',
+                    'weather_conditions_explanation' => 'Pertimbangan tentang dampak cuaca dan keterbatasan dalam bekerja dalam kondisi buruk.',
+                    'area_maintenance_explanation' => 'Pengaturan untuk menjaga area kerja tetap bersih dan rapi, akomodasi sementara, dan area penyimpanan material.'
                 ];
                 
                 $hasExplanations = false;
@@ -425,7 +450,7 @@
             
             @if($hasExplanations)
             <div class="section">
-                <div class="section-title">Work Method Explanations</div>
+                <div class="section-title">Detail Langkah-Langkah Pekerjaan</div>
                 @foreach($explanations as $field => $label)
                     @if($permit->methodStatement->$field)
                     <div style="margin-bottom: 15px;">
@@ -477,6 +502,120 @@
                         @endif
                     </tbody>
                 </table>
+            </div>
+            @endif
+        </div>
+    </div>
+    @endif
+
+    <!-- Page 3: Emergency Plan -->
+    @if($permit->emergencyPlan)
+    <div class="page-break">
+        <div class="header">
+            <div class="company-logo">EMERGENCY PLAN</div>
+            <div class="document-title">EMERGENCY & ESCAPE PLAN</div>
+            <div class="permit-number">{{ $permit->permit_number }}</div>
+        </div>
+
+        <div class="emergency-plan">
+            <div class="section">
+                <div class="section-title">Emergency Plan Information</div>
+                <div class="info-grid">
+                    <div class="info-row">
+                        <div class="info-label">Status:</div>
+                        <div class="info-value">{{ ucfirst($permit->emergencyPlan->status ?? 'N/A') }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Created:</div>
+                        <div class="info-value">{{ $permit->emergencyPlan->created_at ? $permit->emergencyPlan->created_at->format('d M Y H:i') : 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kemungkinan Kontaminasi -->
+            @if($permit->emergencyPlan->kontaminasi_keadaan)
+            <div class="section">
+                <div class="section-title">Kemungkinan Kontaminasi</div>
+                <div style="padding: 10px; background-color: #f5f5f5; border-left: 4px solid #666; font-size: 11px;">
+                    {{ $permit->emergencyPlan->kontaminasi_keadaan }}
+                </div>
+            </div>
+            @endif
+
+            <!-- Emergency Checklist -->
+            <div class="section">
+                <div class="section-title">Keadaan Darurat Perencanaan Harus Mencakup</div>
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60%">Pertanyaan</th>
+                            <th style="width: 20%; text-align: center;">Ya</th>
+                            <th style="width: 20%; text-align: center;">Tidak</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $emergencyChecklist = [
+                                'petugas_tanggap_darurat' => 'Petugas tanggap darurat tersedia',
+                                'cara_meminta_bantuan' => 'Cara meminta bantuan diketahui',
+                                'sarana_akses_aman' => 'Sarana akses aman tersedia',
+                                'orang_diselamatkan_aman' => 'Orang yang diselamatkan dalam keadaan aman',
+                                'tata_graha_keadaan_baik' => 'Tata graha dalam keadaan baik',
+                                'lokasi_titik_panggilan' => 'Lokasi titik panggilan diketahui',
+                                'ketersediaan_petugas_pertolongan' => 'Ketersediaan petugas pertolongan',
+                                'ketersediaan_defibrilator' => 'Ketersediaan defibrilator',
+                                'ketersediaan_media_pemadam' => 'Ketersediaan media pemadam',
+                                'kebutuhan_alat_pernapasan' => 'Kebutuhan alat pernapasan',
+                                'apd_khusus_lainnya' => 'APD khusus lainnya',
+                                'alat_ukur_gas_dikalibrasi' => 'Alat ukur gas dikalibrasi',
+                                'peralatan_keselamatan_khusus' => 'Peralatan keselamatan khusus'
+                            ];
+                        @endphp
+                        
+                        @foreach($emergencyChecklist as $field => $label)
+                        <tr>
+                            <td>{{ $label }}</td>
+                            <td style="text-align: center; font-weight: bold;">
+                                @if($permit->emergencyPlan->$field)
+                                    ✓
+                                @endif
+                            </td>
+                            <td style="text-align: center; font-weight: bold;">
+                                @if(!$permit->emergencyPlan->$field)
+                                    ✓
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <!-- APD Khusus Detail -->
+                @if($permit->emergencyPlan->apd_khusus_lainnya && $permit->emergencyPlan->sebutkan_apd)
+                <div style="margin-top: 15px; padding: 10px; background-color: #f5f5f5; border-left: 3px solid #666;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">APD khusus yang diperlukan:</div>
+                    <div style="font-size: 11px;">{{ $permit->emergencyPlan->sebutkan_apd }}</div>
+                </div>
+                @endif
+            </div>
+
+            <!-- Alat Keselamatan -->
+            @if($permit->emergencyPlan->alat_keselamatan_digunakan)
+            <div class="section">
+                <div class="section-title">Alat yang akan digunakan (mempertimbangkan persyaratan keselamatan)</div>
+                <div style="padding: 10px; background-color: #f5f5f5; border-left: 3px solid #666; font-size: 11px;">
+                    {{ $permit->emergencyPlan->alat_keselamatan_digunakan }}
+                </div>
+            </div>
+            @endif
+
+            <!-- Rencana Penyelamatan -->
+            @if($permit->emergencyPlan->deskripsi_rencana_penyelamatan)
+            <div class="section">
+                <div class="section-title">Deskripsi rencana penyelamatan dan penanggung jawab</div>
+                <div style="padding: 10px; background-color: #f5f5f5; border-left: 3px solid #666; font-size: 11px;">
+                    {{ $permit->emergencyPlan->deskripsi_rencana_penyelamatan }}
+                </div>
             </div>
             @endif
         </div>

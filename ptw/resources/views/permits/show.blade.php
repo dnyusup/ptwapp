@@ -270,6 +270,9 @@
                 {{-- Request Approval Button --}}
                 @if(
                     $permit->methodStatement // Pastikan method statement sudah dibuat
+                    && $permit->emergencyPlan // Pastikan emergency plan sudah dibuat
+                    && $permit->methodStatement->status === 'completed'
+                    && $permit->emergencyPlan->status === 'completed'
                     && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                     && in_array($permit->status, ['draft'])
                 )
@@ -279,7 +282,16 @@
                             <i class="fas fa-paper-plane me-2"></i>Request Approval
                         </button>
                     </form>
-                @elseif($permit->methodStatement && $permit->methodStatement->status === 'completed' &&
+                @elseif(!$permit->methodStatement || $permit->methodStatement->status !== 'completed')
+                    <button type="button" class="btn btn-outline-secondary" disabled title="Method Statement must be completed first">
+                        <i class="fas fa-lock me-2"></i>Request Approval (Method Statement Required)
+                    </button>
+                @elseif(!$permit->emergencyPlan || $permit->emergencyPlan->status !== 'completed')
+                    <button type="button" class="btn btn-outline-secondary" disabled title="Emergency & Escape Plan must be completed first">
+                        <i class="fas fa-lock me-2"></i>Request Approval (Emergency Plan Required)
+                    </button>
+                @elseif(($permit->methodStatement && $permit->methodStatement->status === 'completed' &&
+                        $permit->emergencyPlan && $permit->emergencyPlan->status === 'completed') &&
                         !in_array($permit->status, ['approved', 'active', 'rejected', 'pending_approval']) &&
                         auth()->id() !== $permit->permit_issuer_id)
                     <button type="button" class="btn btn-outline-secondary" disabled title="Only permit creator can request approval">
@@ -829,6 +841,64 @@
                             </div>
                             <a href="{{ route('method-statements.create', $permit->permit_number) }}" class="btn btn-primary btn-sm">
                                 <i class="fas fa-plus me-1"></i>Create Method Statement
+                            </a>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Emergency & Escape Plan Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-gradient-danger text-white">
+                    <h6 class="mb-0 fw-semibold">
+                        <i class="fas fa-shield-alt me-2"></i>Emergency & Escape Plan
+                    </h6>
+                </div>
+                <div class="card-body p-4">
+                    @if($permit->emergencyPlan)
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-success bg-opacity-10 text-success me-3">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Emergency & Escape Plan Completed</h6>
+                                    <p class="mb-0 text-muted small">
+                                        Status: <span class="badge bg-{{ $permit->emergencyPlan->status === 'completed' ? 'success' : ($permit->emergencyPlan->status === 'approved' ? 'primary' : 'secondary') }}">
+                                            {{ ucfirst($permit->emergencyPlan->status) }}
+                                        </span>
+                                    </p>
+                                    <p class="mb-0 text-muted small">
+                                        Created: {{ $permit->emergencyPlan->created_at->format('d M Y H:i') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('emergency-plans.show', $permit->permit_number) }}" class="btn btn-outline-info btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                                @if($permit->emergencyPlan->status === 'draft' || auth()->user()->role === 'administrator')
+                                <a href="{{ route('emergency-plans.edit', $permit->permit_number) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-warning bg-opacity-10 text-warning me-3">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">Emergency & Escape Plan Required</h6>
+                                    <p class="mb-0 text-muted small">
+                                        Emergency & Escape Plan belum dibuat untuk permit ini.
+                                    </p>
+                                </div>
+                            </div>
+                            <a href="{{ route('emergency-plans.create', $permit->permit_number) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Create Emergency Plan
                             </a>
                         </div>
                     @endif
@@ -1410,6 +1480,16 @@
                                     'title' => 'Method Statement Created',
                                     'by' => $permit->methodStatement->creator->name ?? 'N/A',
                                     'color' => 'bg-warning'
+                                ]);
+                            }
+                            
+                            // Emergency Plan Created
+                            if ($permit->emergencyPlan) {
+                                $timelineEvents->push([
+                                    'timestamp' => $permit->emergencyPlan->created_at,
+                                    'title' => 'Emergency & Escape Plan Created',
+                                    'by' => $permit->emergencyPlan->creator->name ?? 'N/A',
+                                    'color' => 'bg-danger'
                                 ]);
                             }
                             

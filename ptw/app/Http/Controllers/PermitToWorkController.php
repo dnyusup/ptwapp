@@ -162,7 +162,7 @@ class PermitToWorkController extends Controller
             $permit->update(['status' => 'expired']);
         }
         
-        $permit->load(['permitIssuer', 'authorizer', 'receiver', 'locationOwner', 'methodStatement.creator', 'riskAssessments']);
+        $permit->load(['permitIssuer', 'authorizer', 'receiver', 'locationOwner', 'methodStatement.creator', 'emergencyPlan.creator', 'riskAssessments']);
         return view('permits.show', compact('permit'));
     }
 
@@ -525,22 +525,28 @@ class PermitToWorkController extends Controller
     public function requestApproval(PermitToWork $permit)
     {
         // Check if user is the permit creator
-        //if (Auth::id() !== $permit->permit_issuer_id) {
-        //    return redirect()->back()
-        //        ->with('error', 'Access denied. Only the permit creator can request approval.');
-        //}
+        if (Auth::id() !== $permit->permit_issuer_id) {
+            return redirect()->back()
+                ->with('error', 'Access denied. Only the permit creator can request approval.');
+        }
 
         // Check if permit can be submitted for approval
-        //if (!in_array($permit->status, ['draft', 'rejected', 'resubmitted'])) {
-        //    return redirect()->back()
-        //        ->with('error', 'This permit cannot be submitted for approval in its current status.');
-        //}
+        if (!in_array($permit->status, ['draft', 'rejected', 'resubmitted'])) {
+            return redirect()->back()
+                ->with('error', 'This permit cannot be submitted for approval in its current status.');
+        }
 
         // Check if method statement exists and is completed
-        //if (!$permit->methodStatement || $permit->methodStatement->status !== 'completed') {
-        //    return redirect()->back()
-        //        ->with('error', 'Method Statement must be completed before requesting approval.');
-        //}
+        if (!$permit->methodStatement || $permit->methodStatement->status !== 'completed') {
+            return redirect()->back()
+                ->with('error', 'Method Statement must be completed before requesting approval.');
+        }
+
+        // Check if emergency plan exists and is completed
+        if (!$permit->emergencyPlan || $permit->emergencyPlan->status !== 'completed') {
+            return redirect()->back()
+                ->with('error', 'Emergency & Escape Plan must be completed before requesting approval.');
+        }
 
         try {
             // Update permit status
@@ -920,7 +926,8 @@ class PermitToWorkController extends Controller
                 'permitIssuer', 
                 'authorizer', 
                 'receiver', 
-                'methodStatement'
+                'methodStatement',
+                'emergencyPlan'
             ]);
 
             // Check if user has permission to download

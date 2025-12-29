@@ -128,6 +128,11 @@ class PermitToWork extends Model
         return $this->hasOne(MethodStatement::class, 'permit_number', 'permit_number');
     }
 
+    public function emergencyPlan()
+    {
+        return $this->hasOne(EmergencyPlan::class, 'permit_number', 'permit_number');
+    }
+
     public function riskAssessments()
     {
         return $this->hasMany(RiskAssessment::class);

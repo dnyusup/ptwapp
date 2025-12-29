@@ -249,199 +249,249 @@
                     </div>
                     <div class="card-body" style="background: #f8f9fa; padding: 25px;">
                     
-                        <!-- Question 1 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Apakah alternatif pengganti pekerjaan panas (Hot work) sudah dipertimbangkan</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q1_alternative_considered" value="1" {{ old('q1_alternative_considered', $hraHotWork->q1_alternative_considered) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q1_alternative_considered" value="0" {{ old('q1_alternative_considered', $hraHotWork->q1_alternative_considered) == '0' ? 'checked' : '' }}> Tidak</label>
+                        <!-- Section 1: Persyaratan dalam jarak 11m/35ft dari pekerjaan panas -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 1: Persyaratan dalam jarak 11m/35ft dari pekerjaan panas (termasuk di atas dan di bawah area kerja):</h6>
+                        
+                            <!-- Question 1 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Semua bahan yang mudah terbakar disingkirkan atau dilindungi dengan penutup tahan api</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="flammable_materials_removed" value="1" {{ old('flammable_materials_removed', $hraHotWork->flammable_materials_removed) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="flammable_materials_removed" value="0" {{ old('flammable_materials_removed', $hraHotWork->flammable_materials_removed) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 2 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Cairan mudah terbakar, debu, serat, dan endapan minyak dihilangkan (debu di "dalam" dinding/atap/rongga)</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="flammable_liquids_removed" value="1" {{ old('flammable_liquids_removed', $hraHotWork->flammable_liquids_removed) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="flammable_liquids_removed" value="0" {{ old('flammable_liquids_removed', $hraHotWork->flammable_liquids_removed) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 3 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Lantai yang mudah terbakar dibasahi, ditutup dengan pasir basah atau penutup tahan api yang tumpang tindih</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="flammable_floors_wetted" value="1" {{ old('flammable_floors_wetted', $hraHotWork->flammable_floors_wetted) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="flammable_floors_wetted" value="0" {{ old('flammable_floors_wetted', $hraHotWork->flammable_floors_wetted) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="flammable_floors_wetted" value="N/A" {{ old('flammable_floors_wetted', $hraHotWork->flammable_floors_wetted) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 4 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Dinding/langit-langit/atap yang mudah terbakar dilindungi dengan penutup tahan api</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="walls_ceiling_protected" value="1" {{ old('walls_ceiling_protected', $hraHotWork->walls_ceiling_protected) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="walls_ceiling_protected" value="0" {{ old('walls_ceiling_protected', $hraHotWork->walls_ceiling_protected) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="walls_ceiling_protected" value="N/A" {{ old('walls_ceiling_protected', $hraHotWork->walls_ceiling_protected) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 5 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Lantai disapu bersih dari bahan yang mudah terbakar</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="floors_swept_clean" value="1" {{ old('floors_swept_clean', $hraHotWork->floors_swept_clean) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="floors_swept_clean" value="0" {{ old('floors_swept_clean', $hraHotWork->floors_swept_clean) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 6 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Material mudah terbakar di sisi lain dinding, langit-langit atau atap disingkirkan (perhatikan insulasinya)</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="materials_other_side_removed" value="1" {{ old('materials_other_side_removed', $hraHotWork->materials_other_side_removed) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="materials_other_side_removed" value="0" {{ old('materials_other_side_removed', $hraHotWork->materials_other_side_removed) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 7 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Atmosfer yang mudah meledak dihilangkan</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="explosive_atmosphere_removed" value="1" {{ old('explosive_atmosphere_removed', $hraHotWork->explosive_atmosphere_removed) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="explosive_atmosphere_removed" value="0" {{ old('explosive_atmosphere_removed', $hraHotWork->explosive_atmosphere_removed) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 8 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Semua bukaan dinding/lantai, termasuk saluran pembuangan, ditutup dengan penutup tahan api</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="wall_floor_openings_covered" value="1" {{ old('wall_floor_openings_covered', $hraHotWork->wall_floor_openings_covered) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="wall_floor_openings_covered" value="0" {{ old('wall_floor_openings_covered', $hraHotWork->wall_floor_openings_covered) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="wall_floor_openings_covered" value="N/A" {{ old('wall_floor_openings_covered', $hraHotWork->wall_floor_openings_covered) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 9 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Saluran, konveyor, katup/saluran pembuangan yang terbuka secara otomatis, dll, terlindungi, terisolasi, atau keduanya</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="ducts_conveyors_protected" value="1" {{ old('ducts_conveyors_protected', $hraHotWork->ducts_conveyors_protected) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="ducts_conveyors_protected" value="0" {{ old('ducts_conveyors_protected', $hraHotWork->ducts_conveyors_protected) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="ducts_conveyors_protected" value="N/A" {{ old('ducts_conveyors_protected', $hraHotWork->ducts_conveyors_protected) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 10 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Jika ada risiko kebakaran dari konduksi/radiasi, misalnya di sepanjang balok, tindakan pencegahan tambahan diterapkan</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="fire_risk_prevention_applied" value="1" {{ old('fire_risk_prevention_applied', $hraHotWork->fire_risk_prevention_applied) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="fire_risk_prevention_applied" value="0" {{ old('fire_risk_prevention_applied', $hraHotWork->fire_risk_prevention_applied) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="fire_risk_prevention_applied" value="N/A" {{ old('fire_risk_prevention_applied', $hraHotWork->fire_risk_prevention_applied) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question 2 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Apakah peralatan diperiksa dan apakah dalam kondisi baik?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q2_equipment_checked" value="1" {{ old('q2_equipment_checked', $hraHotWork->q2_equipment_checked) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q2_equipment_checked" value="0" {{ old('q2_equipment_checked', $hraHotWork->q2_equipment_checked) == '0' ? 'checked' : '' }}> Tidak</label>
+                        <!-- Section 2: Persyaratan saat bekerja pada peralatan tertutup -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 2: Persyaratan saat bekerja pada peralatan tertutup:</h6>
+                        
+                            <!-- Question 11 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Peralatan dibersihkan dari semua bahan yang mudah terbakar</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="equipment_cleaned_flammable" value="1" {{ old('equipment_cleaned_flammable', $hraHotWork->equipment_cleaned_flammable) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="equipment_cleaned_flammable" value="0" {{ old('equipment_cleaned_flammable', $hraHotWork->equipment_cleaned_flammable) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="equipment_cleaned_flammable" value="N/A" {{ old('equipment_cleaned_flammable', $hraHotWork->equipment_cleaned_flammable) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 12 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Wadah dikosongkan, dibersihkan, dan diuji bebas dari cairan dan uap yang mudah terbakar (Lengkapi form-H)</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="containers_emptied_cleaned" value="1" {{ old('containers_emptied_cleaned', $hraHotWork->containers_emptied_cleaned) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="containers_emptied_cleaned" value="0" {{ old('containers_emptied_cleaned', $hraHotWork->containers_emptied_cleaned) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="containers_emptied_cleaned" value="N/A" {{ old('containers_emptied_cleaned', $hraHotWork->containers_emptied_cleaned) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question 3 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Benda mudah terbakar (flammable) & dapat terbakar (combustible) dipindah?</span>
-                                <div class="checkbox-group">
-                                    <input type="number" class="form-control" id="q3_distance" name="q3_distance" placeholder="12" min="12" style="width: 80px; height: 32px; margin-right: 8px;" value="{{ old('q3_distance', $hraHotWork->q3_distance) }}" onchange="toggleQ3Checkbox()">
-                                    <span class="small">m (min 12m)</span>
-                                    <label><input type="radio" id="q3_flammable_moved_ya" name="q3_flammable_moved" value="1" {{ old('q3_flammable_moved', $hraHotWork->q3_flammable_moved) == '1' ? 'checked' : '' }} disabled> Ya</label>
-                                    <label><input type="radio" id="q3_flammable_moved_tidak" name="q3_flammable_moved" value="0" {{ old('q3_flammable_moved', $hraHotWork->q3_flammable_moved) == '0' ? 'checked' : '' }} disabled> Tidak</label>
+                        <!-- Section 3: Panel bangunan/material -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 3: Panel bangunan/material:</h6>
+                        
+                            <!-- Question 13 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Panel bangunan/material yang sedang dikerjakan adalah diketahui tidak mudah terbakar</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="building_materials_non_flammable" value="1" {{ old('building_materials_non_flammable', $hraHotWork->building_materials_non_flammable) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="building_materials_non_flammable" value="0" {{ old('building_materials_non_flammable', $hraHotWork->building_materials_non_flammable) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="building_materials_non_flammable" value="N/A" {{ old('building_materials_non_flammable', $hraHotWork->building_materials_non_flammable) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question 14 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Jika "tidak" pada pertanyaan di atas, bahan yang mudah terbakar HARUS dipotong hingga minimal 50 cm dan dilindungi oleh bahan pelindung yang tidak mudah terbakar</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="flammable_materials_cut_protected" value="1" {{ old('flammable_materials_cut_protected', $hraHotWork->flammable_materials_cut_protected) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="flammable_materials_cut_protected" value="0" {{ old('flammable_materials_cut_protected', $hraHotWork->flammable_materials_cut_protected) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="flammable_materials_cut_protected" value="N/A" {{ old('flammable_materials_cut_protected', $hraHotWork->flammable_materials_cut_protected) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question 4 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Jika tidak bisa dipindah: flammable atau combustible dilindungi oleh lembar logam dan/atau cover tahan api</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q4_protected_cover" value="1" {{ old('q4_protected_cover', $hraHotWork->q4_protected_cover) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q4_protected_cover" value="0" {{ old('q4_protected_cover', $hraHotWork->q4_protected_cover) == '0' ? 'checked' : '' }}> Tidak</label>
+                        <!-- Section 4: Ventilasi -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 4: Ventilasi:</h6>
+                        
+                            <!-- Question 15 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Ventilasi yang cukup di tempat kerja</span>
+                                    <div class="checkbox-group">
+                                        <span class="small">(</span>
+                                        <label><input type="radio" name="ventilation_type" value="alami" {{ old('ventilation_type', $hraHotWork->ventilation_type) == 'alami' ? 'checked' : '' }} onchange="toggleVentilationCheckbox()"> alami</label>
+                                        <label><input type="radio" name="ventilation_type" value="buatan" {{ old('ventilation_type', $hraHotWork->ventilation_type) == 'buatan' ? 'checked' : '' }} onchange="toggleVentilationCheckbox()"> buatan</label>
+                                        <span class="small">)</span>
+                                        <label><input type="radio" id="ventilation_adequate_ya" name="ventilation_adequate" value="1" {{ old('ventilation_adequate', $hraHotWork->ventilation_adequate) == '1' ? 'checked' : '' }} disabled> Ya</label>
+                                        <label><input type="radio" id="ventilation_adequate_tidak" name="ventilation_adequate" value="0" {{ old('ventilation_adequate', $hraHotWork->ventilation_adequate) == '0' ? 'checked' : '' }} disabled> Tidak</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question 5 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Kotoran atau debu dibersihkan?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q5_debris_cleaned" value="1" {{ old('q5_debris_cleaned', $hraHotWork->q5_debris_cleaned) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q5_debris_cleaned" value="0" {{ old('q5_debris_cleaned', $hraHotWork->q5_debris_cleaned) == '0' ? 'checked' : '' }}> Tidak</label>
+                        <!-- Section 5: Lampu tiup dan tabung gas -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 5: Lampu tiup dan tabung gas:</h6>
+                        
+                            <!-- Question 16 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Lampu tiup dan tabung gas hanya boleh dipasang atau diganti di area terbuka dan berventilasi baik</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="gas_lamps_open_area" value="1" {{ old('gas_lamps_open_area', $hraHotWork->gas_lamps_open_area) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="gas_lamps_open_area" value="0" {{ old('gas_lamps_open_area', $hraHotWork->gas_lamps_open_area) == '0' ? 'checked' : '' }}> Tidak</label>
+                                        <label><input type="radio" name="gas_lamps_open_area" value="N/A" {{ old('gas_lamps_open_area', $hraHotWork->gas_lamps_open_area) == 'N/A' ? 'checked' : '' }}> N/A</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question 6 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Area sekitar termasuk tangki, pipa, dinding, dll diperiksa sebagai antisipasi jika flammable/combustible material tersembunyi?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q6_area_inspected" value="1" {{ old('q6_area_inspected', $hraHotWork->q6_area_inspected) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q6_area_inspected" value="0" {{ old('q6_area_inspected', $hraHotWork->q6_area_inspected) == '0' ? 'checked' : '' }}> Tidak</label>
+                        <!-- Section 6: Peralatan dan pengelasan -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 6: Peralatan dan pengelasan:</h6>
+                        
+                            <!-- Question 17 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Apakah semua peralatan telah dipasang dan pengalasan dimonitor dari pengelasan dalam kondisi baik?</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="equipment_installed_monitored" value="1" {{ old('equipment_installed_monitored', $hraHotWork->equipment_installed_monitored) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="equipment_installed_monitored" value="0" {{ old('equipment_installed_monitored', $hraHotWork->equipment_installed_monitored) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question 7 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Apakah dinding yang dapat terbakar, atap dan/atau struktur lainnya ada di lokasi?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q7_flammable_structures" value="1" {{ old('q7_flammable_structures', $hraHotWork->q7_flammable_structures) == '1' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Ya</label>
-                                    <label><input type="radio" name="q7_flammable_structures" value="0" {{ old('q7_flammable_structures', $hraHotWork->q7_flammable_structures) == '0' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Tidak</label>
-                                </div>
-                            </div>
-                            <div id="q7_actions_field" class="mt-2" style="display: {{ old('q7_flammable_structures') == '1' ? 'block' : 'none' }};">
-                                <label class="form-label small text-muted">Jika "Ya" apa yang dilakukan (contoh: membasahi, menutup dengan lembar logam, dll):</label>
-                                <textarea class="form-control" name="q7_actions_taken" rows="2" placeholder="Jelaskan tindakan yang dilakukan...">{{ old('q7_actions_taken', $hraHotWork->q7_actions_taken) }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Question 8 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Selimut/blanket tahan api atau screen dipasang untuk membatasi bunga api?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q8_fire_blanket" value="1" {{ old('q8_fire_blanket', $hraHotWork->q8_fire_blanket) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q8_fire_blanket" value="0" {{ old('q8_fire_blanket', $hraHotWork->q8_fire_blanket) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 9 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Tutup valve otomatis, saluran pembuangan (drain), cover, dll?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q9_valve_drain_covered" value="1" {{ old('q9_valve_drain_covered', $hraHotWork->q9_valve_drain_covered) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q9_valve_drain_covered" value="0" {{ old('q9_valve_drain_covered', $hraHotWork->q9_valve_drain_covered) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 10 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Isolasi ducting/conveyor/exhaust yang mungkin kemasukan bunga api atau material terbakar?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q10_isolation_ducting" value="1" {{ old('q10_isolation_ducting', $hraHotWork->q10_isolation_ducting) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q10_isolation_ducting" value="0" {{ old('q10_isolation_ducting', $hraHotWork->q10_isolation_ducting) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 11 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Lubang dan lubang pembuangan tertutup (sealing pada joint, chinks, bukaan, ducting, dll)?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q11_holes_sealed" value="1" {{ old('q11_holes_sealed', $hraHotWork->q11_holes_sealed) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q11_holes_sealed" value="0" {{ old('q11_holes_sealed', $hraHotWork->q11_holes_sealed) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 12 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Ventilasi cukup di lokasi pekerjaan?</span>
-                                <div class="checkbox-group">
-                                    <span class="small">(</span>
-                                    <label><input type="radio" name="q12_ventilation_type" value="alami" {{ old('q12_ventilation_type', $hraHotWork->q12_ventilation_type) == 'alami' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> alami</label>
-                                    <label><input type="radio" name="q12_ventilation_type" value="buatan" {{ old('q12_ventilation_type', $hraHotWork->q12_ventilation_type) == 'buatan' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> buatan</label>
-                                    <span class="small">)</span>
-                                    <label><input type="radio" id="q12_ventilation_adequate_ya" name="q12_ventilation_adequate" value="1" {{ old('q12_ventilation_adequate', $hraHotWork->q12_ventilation_adequate) == '1' ? 'checked' : '' }} disabled> Ya</label>
-                                    <label><input type="radio" id="q12_ventilation_adequate_tidak" name="q12_ventilation_adequate" value="0" {{ old('q12_ventilation_adequate', $hraHotWork->q12_ventilation_adequate) == '0' ? 'checked' : '' }} disabled> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 13 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Peralatan listrik dan kabel terlindungi?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q13_electrical_protected" value="1" {{ old('q13_electrical_protected', $hraHotWork->q13_electrical_protected) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q13_electrical_protected" value="0" {{ old('q13_electrical_protected', $hraHotWork->q13_electrical_protected) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 14 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Peralatan/mesin disekitarnya, pipa dan material terlindungi?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q14_equipment_protected" value="1" {{ old('q14_equipment_protected', $hraHotWork->q14_equipment_protected) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q14_equipment_protected" value="0" {{ old('q14_equipment_protected', $hraHotWork->q14_equipment_protected) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 15 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Pekerjaan panas yang berada di atas, tambahan perlindungan disediakan di bawah?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q15_overhead_protection" value="1" {{ old('q15_overhead_protection', $hraHotWork->q15_overhead_protection) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q15_overhead_protection" value="0" {{ old('q15_overhead_protection', $hraHotWork->q15_overhead_protection) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 16 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Lokasi kerja diberi tanda/barikade yang memadai?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q16_area_marked" value="1" {{ old('q16_area_marked', $hraHotWork->q16_area_marked) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q16_area_marked" value="0" {{ old('q16_area_marked', $hraHotWork->q16_area_marked) == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Question 17 -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Gas monitoring untuk kemungkinan adanya gas flammable harus dilakukan <u>sebelum</u> pekerjaan dilakukan<br><small class="text-muted">Jika "Ya" formulir H-Exposures harus diisi.</small></span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="q17_gas_monitoring" value="1" {{ old('q17_gas_monitoring', $hraHotWork->q17_gas_monitoring) == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q17_gas_monitoring" value="0" {{ old('q17_gas_monitoring', $hraHotWork->q17_gas_monitoring) == '0' ? 'checked' : '' }}> Tidak</label>
+                        <!-- Section 7: Pemberitahuan pekerja -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-dark mb-3">Section 7: Pemberitahuan pekerja:</h6>
+                        
+                            <!-- Question 18 -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="parent-question">Semua pekerja yang ada di area tersebut diberitahu tentang pekerjaan panas yang sedang dilakukan</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="workers_notified" value="1" {{ old('workers_notified', $hraHotWork->workers_notified) == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="workers_notified" value="0" {{ old('workers_notified', $hraHotWork->workers_notified) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -558,6 +608,19 @@
                                     <div class="checkbox-group">
                                         <label><input type="radio" name="monitoring_distance" value="1" {{ old('monitoring_distance', $hraHotWork->monitoring_distance) == '1' ? 'checked' : '' }}> Ya</label>
                                         <label><input type="radio" name="monitoring_distance" value="0" {{ old('monitoring_distance', $hraHotWork->monitoring_distance) == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Inspection Duration -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">4. Berapa lama inspeksi tambahan diperlukan?</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="additional_inspection_duration" value="30min" {{ old('additional_inspection_duration', $hraHotWork->additional_inspection_duration) == '30min' ? 'checked' : '' }}> 30min</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="60min" {{ old('additional_inspection_duration', $hraHotWork->additional_inspection_duration) == '60min' ? 'checked' : '' }}> 60min</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="90min" {{ old('additional_inspection_duration', $hraHotWork->additional_inspection_duration) == '90min' ? 'checked' : '' }}> 90min</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="120min" {{ old('additional_inspection_duration', $hraHotWork->additional_inspection_duration) == '120min' ? 'checked' : '' }}> 120min</label>
                                     </div>
                                 </div>
                             </div>
@@ -827,26 +890,6 @@ function toggleNotificationFields(isChecked) {
     }
 }
 
-function toggleQ3Checkbox() {
-    const distanceInput = document.getElementById('q3_distance');
-    const radioYa = document.getElementById('q3_flammable_moved_ya');
-    const radioTidak = document.getElementById('q3_flammable_moved_tidak');
-    const distance = parseFloat(distanceInput.value);
-    
-    if (distance && distance >= 12) {
-        radioYa.disabled = false;
-        radioTidak.disabled = false;
-        radioYa.parentElement.style.opacity = '1';
-        radioTidak.parentElement.style.opacity = '1';
-    } else {
-        radioYa.disabled = true;
-        radioTidak.disabled = true;
-        radioYa.checked = false;
-        radioTidak.checked = false;
-        radioYa.parentElement.style.opacity = '0.5';
-        radioTidak.parentElement.style.opacity = '0.5';
-    }
-}
 
 function updateEndDate() {
     const startDate = document.getElementById('start_date').value;
@@ -873,10 +916,10 @@ function updateEndTime() {
     }
 }
 
-function toggleQ12Checkbox() {
-    const radioButtons = document.querySelectorAll('input[name="q12_ventilation_type"]');
-    const radioYa = document.getElementById('q12_ventilation_adequate_ya');
-    const radioTidak = document.getElementById('q12_ventilation_adequate_tidak');
+function toggleVentilationCheckbox() {
+    const radioButtons = document.querySelectorAll('input[name="ventilation_type"]');
+    const radioYa = document.getElementById('ventilation_adequate_ya');
+    const radioTidak = document.getElementById('ventilation_adequate_tidak');
     let isRadioSelected = false;
     
     // Check if any radio button is selected
@@ -898,6 +941,7 @@ function toggleQ12Checkbox() {
         radioTidak.checked = false;
         radioYa.parentElement.style.opacity = '0.5';
         radioTidak.parentElement.style.opacity = '0.5';
+    }
     }
 }
 
@@ -948,11 +992,8 @@ $(document).ready(function() {
         $('#worker_phone').val('');
     });
     
-    // Initialize Q3 checkbox state
-    toggleQ3Checkbox();
-    
-    // Initialize Q12 checkbox state
-    toggleQ12Checkbox();
+    // Initialize ventilation checkbox state
+    toggleVentilationCheckbox();
     
     // Initialize conditional fields based on existing data
     initializeConditionalFields();
@@ -987,21 +1028,24 @@ $(document).ready(function() {
     // Add form validation for radio buttons
     $('form').on('submit', function(e) {
         const radioGroups = [
-            'q1_alternative_considered',
-            'q2_equipment_checked', 
-            'q4_protected_cover',
-            'q5_debris_cleaned',
-            'q6_area_inspected',
-            'q7_flammable_structures',
-            'q8_fire_blanket',
-            'q9_valve_drain_covered',
-            'q10_isolation_ducting',
-            'q11_holes_sealed',
-            'q13_electrical_protected',
-            'q14_equipment_protected',
-            'q15_overhead_protection',
-            'q16_area_marked',
-            'q17_gas_monitoring',
+            'flammable_materials_removed',
+            'flammable_liquids_removed',
+            'flammable_floors_wetted',
+            'walls_ceiling_protected',
+            'floors_swept_clean',
+            'materials_other_side_removed',
+            'explosive_atmosphere_removed',
+            'wall_floor_openings_covered',
+            'ducts_conveyors_protected',
+            'fire_risk_prevention_applied',
+            'equipment_cleaned_flammable',
+            'containers_emptied_cleaned',
+            'building_materials_non_flammable',
+            'flammable_materials_cut_protected',
+            'ventilation_adequate',
+            'gas_lamps_open_area',
+            'equipment_installed_monitored',
+            'workers_notified',
             // Form Terlampir radio groups
             'apar_air',
             'apar_powder',
@@ -1051,34 +1095,21 @@ $(document).ready(function() {
         });
 
         // Check conditional radio groups
-        const distanceInput = document.getElementById('q3_distance');
-        if (distanceInput.value && parseFloat(distanceInput.value) >= 12) {
-            const q3Radios = document.querySelectorAll('input[name="q3_flammable_moved"]');
-            let q3Checked = false;
-            q3Radios.forEach(radio => {
-                if (radio.checked) q3Checked = true;
-            });
-            if (!q3Checked) {
-                isValid = false;
-                missingAnswers.push('q3_flammable_moved');
-            }
-        }
-
-        const ventilationRadios = document.querySelectorAll('input[name="q12_ventilation_type"]');
+        const ventilationRadios = document.querySelectorAll('input[name="ventilation_type"]');
         let ventilationTypeChecked = false;
         ventilationRadios.forEach(radio => {
             if (radio.checked) ventilationTypeChecked = true;
         });
         
         if (ventilationTypeChecked) {
-            const q12Radios = document.querySelectorAll('input[name="q12_ventilation_adequate"]');
-            let q12Checked = false;
-            q12Radios.forEach(radio => {
-                if (radio.checked) q12Checked = true;
+            const ventilationAdequateRadios = document.querySelectorAll('input[name="ventilation_adequate"]');
+            let ventilationAdequateChecked = false;
+            ventilationAdequateRadios.forEach(radio => {
+                if (radio.checked) ventilationAdequateChecked = true;
             });
-            if (!q12Checked) {
+            if (!ventilationAdequateChecked) {
                 isValid = false;
-                missingAnswers.push('q12_ventilation_adequate');
+                missingAnswers.push('ventilation_adequate');
             }
         }
 

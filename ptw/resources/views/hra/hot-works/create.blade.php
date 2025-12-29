@@ -239,6 +239,33 @@
                     </div>
                 </div>
                 
+                <!-- Pre-Assessment Questions -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
+                        <!-- Question: Can Hot Work be avoided -->
+                        <div class="checklist-item">
+                            <div class="condition-grid">
+                                <span class="parent-question">Apakah Pekerjaan Panas dapat dihindari? (Jika "Y", berhenti, tinjau metode untuk menghilangkan bahaya, misalnya pekerjaan panas)</span>
+                                <div class="checkbox-group">
+                                    <label><input type="radio" name="hot_work_avoidable" value="1" {{ old('hot_work_avoidable') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="hot_work_avoidable" value="0" {{ old('hot_work_avoidable') == '0' ? 'checked' : '' }}> Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question: Can Hot Work be done in designated area -->
+                        <div class="checklist-item">
+                            <div class="condition-grid">
+                                <span class="parent-question">Bisakah Pekerjaan Panas dilakukan di Area Pekerjaan Panas yang telah ditentukan? (Jika "Y", hentikan dan pindahkan lokasi pekerjaan panas)</span>
+                                <div class="checkbox-group">
+                                    <label><input type="radio" name="hot_work_designated_area" value="1" {{ old('hot_work_designated_area') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="hot_work_designated_area" value="0" {{ old('hot_work_designated_area') == '0' ? 'checked' : '' }}> Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- HRA Hot Work Safety Checklist -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header" style="background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%); color: white; border: none;">
@@ -248,13 +275,16 @@
                     </div>
                     <div class="card-body" style="background: #f8f9fa; padding: 25px;">
                     
+                        <!-- Section 1: Persyaratan dalam jarak 11m/35ft dari pekerjaan panas -->
+                        <h6 class="fw-bold text-primary mb-3">Persyaratan dalam jarak 11m/35ft dari pekerjaan panas (termasuk di atas dan di bawah area kerja):</h6>
+
                         <!-- Question 1 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Apakah alternatif pengganti pekerjaan panas (Hot work) sudah dipertimbangkan</span>
+                                <span class="parent-question">Semua bahan yang mudah terbakar disingkirkan atau dilindungi dengan penutup tahan api</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q1_alternative_considered" value="1" {{ old('q1_alternative_considered') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q1_alternative_considered" value="0" {{ old('q1_alternative_considered') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="flammable_materials_removed" value="1" {{ old('flammable_materials_removed') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="flammable_materials_removed" value="0" {{ old('flammable_materials_removed') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -262,10 +292,10 @@
                         <!-- Question 2 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Apakah peralatan diperiksa dan apakah dalam kondisi baik?</span>
+                                <span class="parent-question">Cairan mudah terbakar, debu, serat, dan endapan minyak dihilangkan (debu di "dalam" dinding/atap/rongga)</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q2_equipment_checked" value="1" {{ old('q2_equipment_checked') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q2_equipment_checked" value="0" {{ old('q2_equipment_checked') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="flammable_liquids_removed" value="1" {{ old('flammable_liquids_removed') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="flammable_liquids_removed" value="0" {{ old('flammable_liquids_removed') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -273,12 +303,11 @@
                         <!-- Question 3 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Benda mudah terbakar (flammable) & dapat terbakar (combustible) dipindah?</span>
+                                <span class="parent-question">Lantai yang mudah terbakar dibasahi, ditutup dengan pasir basah atau penutup tahan api yang tumpang tindih</span>
                                 <div class="checkbox-group">
-                                    <input type="number" class="form-control" id="q3_distance" name="q3_distance" placeholder="12" min="12" style="width: 80px; height: 32px; margin-right: 8px;" value="{{ old('q3_distance') }}" onchange="toggleQ3Checkbox()">
-                                    <span class="small">m (min 12m)</span>
-                                    <label><input type="radio" id="q3_flammable_moved_ya" name="q3_flammable_moved" value="1" {{ old('q3_flammable_moved') == '1' ? 'checked' : '' }} disabled> Ya</label>
-                                    <label><input type="radio" id="q3_flammable_moved_tidak" name="q3_flammable_moved" value="0" {{ old('q3_flammable_moved') == '0' ? 'checked' : '' }} disabled> Tidak</label>
+                                    <label><input type="radio" name="flammable_floors_wetted" value="1" {{ old('flammable_floors_wetted') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="flammable_floors_wetted" value="0" {{ old('flammable_floors_wetted') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="flammable_floors_wetted" value="N/A" {{ old('flammable_floors_wetted') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -286,10 +315,11 @@
                         <!-- Question 4 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Jika tidak bisa dipindah: flammable atau combustible dilindungi oleh lembar logam dan/atau cover tahan api</span>
+                                <span class="parent-question">Dinding/langit-langit/atap yang mudah terbakar dilindungi dengan penutup tahan api</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q4_protected_cover" value="1" {{ old('q4_protected_cover') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q4_protected_cover" value="0" {{ old('q4_protected_cover') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="walls_ceiling_protected" value="1" {{ old('walls_ceiling_protected') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="walls_ceiling_protected" value="0" {{ old('walls_ceiling_protected') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="walls_ceiling_protected" value="N/A" {{ old('walls_ceiling_protected') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -297,10 +327,10 @@
                         <!-- Question 5 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Kotoran atau debu dibersihkan?</span>
+                                <span class="parent-question">Lantai disapu bersih dari bahan yang mudah terbakar</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q5_debris_cleaned" value="1" {{ old('q5_debris_cleaned') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q5_debris_cleaned" value="0" {{ old('q5_debris_cleaned') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="floors_swept_clean" value="1" {{ old('floors_swept_clean') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="floors_swept_clean" value="0" {{ old('floors_swept_clean') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -308,10 +338,10 @@
                         <!-- Question 6 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Area sekitar termasuk tangki, pipa, dinding, dll diperiksa sebagai antisipasi jika flammable/combustible material tersembunyi?</span>
+                                <span class="parent-question">Material mudah terbakar di sisi lain dinding, langit-langit atau atap disingkirkan (perhatikan insulasinya)</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q6_area_inspected" value="1" {{ old('q6_area_inspected') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q6_area_inspected" value="0" {{ old('q6_area_inspected') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="materials_other_side_removed" value="1" {{ old('materials_other_side_removed') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="materials_other_side_removed" value="0" {{ old('materials_other_side_removed') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -319,25 +349,22 @@
                         <!-- Question 7 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Apakah dinding yang dapat terbakar, atap dan/atau struktur lainnya ada di lokasi?</span>
+                                <span class="parent-question">Atmosfer yang mudah meledak dihilangkan</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q7_flammable_structures" value="1" {{ old('q7_flammable_structures') == '1' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Ya</label>
-                                    <label><input type="radio" name="q7_flammable_structures" value="0" {{ old('q7_flammable_structures') == '0' ? 'checked' : '' }} onchange="toggleActionField('q7_actions_field', this.value == '1')"> Tidak</label>
+                                    <label><input type="radio" name="explosive_atmosphere_removed" value="1" {{ old('explosive_atmosphere_removed') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="explosive_atmosphere_removed" value="0" {{ old('explosive_atmosphere_removed') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
-                            </div>
-                            <div id="q7_actions_field" class="mt-2" style="display: {{ old('q7_flammable_structures') == '1' ? 'block' : 'none' }};">
-                                <label class="form-label small text-muted">Jika "Ya" apa yang dilakukan (contoh: membasahi, menutup dengan lembar logam, dll):</label>
-                                <textarea class="form-control" name="q7_actions_taken" rows="2" placeholder="Jelaskan tindakan yang dilakukan...">{{ old('q7_actions_taken') }}</textarea>
                             </div>
                         </div>
 
                         <!-- Question 8 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Selimut/blanket tahan api atau screen dipasang untuk membatasi bunga api?</span>
+                                <span class="parent-question">Semua bukaan dinding/lantai, termasuk saluran pembuangan, ditutup dengan penutup tahan api</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q8_fire_blanket" value="1" {{ old('q8_fire_blanket') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q8_fire_blanket" value="0" {{ old('q8_fire_blanket') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="wall_floor_openings_covered" value="1" {{ old('wall_floor_openings_covered') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="wall_floor_openings_covered" value="0" {{ old('wall_floor_openings_covered') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="wall_floor_openings_covered" value="N/A" {{ old('wall_floor_openings_covered') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -345,10 +372,11 @@
                         <!-- Question 9 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Tutup valve otomatis, saluran pembuangan (drain), cover, dll?</span>
+                                <span class="parent-question">Saluran, konveyor, katup/saluran pembuangan yang terbuka secara otomatis, dll, terlindungi, terisolasi, atau keduanya</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q9_valve_drain_covered" value="1" {{ old('q9_valve_drain_covered') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q9_valve_drain_covered" value="0" {{ old('q9_valve_drain_covered') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="ducts_conveyors_protected" value="1" {{ old('ducts_conveyors_protected') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="ducts_conveyors_protected" value="0" {{ old('ducts_conveyors_protected') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="ducts_conveyors_protected" value="N/A" {{ old('ducts_conveyors_protected') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -356,21 +384,26 @@
                         <!-- Question 10 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Isolasi ducting/conveyor/exhaust yang mungkin kemasukan bunga api atau material terbakar?</span>
+                                <span class="parent-question">Jika ada risiko kebakaran dari konduksi/radiasi, misalnya di sepanjang balok, tindakan pencegahan tambahan diterapkan</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q10_isolation_ducting" value="1" {{ old('q10_isolation_ducting') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q10_isolation_ducting" value="0" {{ old('q10_isolation_ducting') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="fire_risk_prevention_applied" value="1" {{ old('fire_risk_prevention_applied') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="fire_risk_prevention_applied" value="0" {{ old('fire_risk_prevention_applied') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="fire_risk_prevention_applied" value="N/A" {{ old('fire_risk_prevention_applied') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Section 2: Persyaratan saat bekerja pada peralatan tertutup -->
+                        <h6 class="fw-bold text-primary mb-3 mt-4">Persyaratan saat bekerja pada peralatan tertutup:</h6>
+
                         <!-- Question 11 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Lubang dan lubang pembuangan tertutup (sealing pada joint, chinks, bukaan, ducting, dll)?</span>
+                                <span class="parent-question">Peralatan dibersihkan dari semua bahan yang mudah terbakar</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q11_holes_sealed" value="1" {{ old('q11_holes_sealed') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q11_holes_sealed" value="0" {{ old('q11_holes_sealed') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="equipment_cleaned_flammable" value="1" {{ old('equipment_cleaned_flammable') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="equipment_cleaned_flammable" value="0" {{ old('equipment_cleaned_flammable') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="equipment_cleaned_flammable" value="N/A" {{ old('equipment_cleaned_flammable') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -378,36 +411,38 @@
                         <!-- Question 12 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Ventilasi cukup di lokasi pekerjaan?</span>
+                                <span class="parent-question">Wadah dikosongkan, dibersihkan, dan diuji bebas dari cairan dan uap yang mudah terbakar (Lengkapi form-H)</span>
                                 <div class="checkbox-group">
-                                    <span class="small">(</span>
-                                    <label><input type="radio" name="q12_ventilation_type" value="alami" {{ old('q12_ventilation_type') == 'alami' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> alami</label>
-                                    <label><input type="radio" name="q12_ventilation_type" value="buatan" {{ old('q12_ventilation_type') == 'buatan' ? 'checked' : '' }} onchange="toggleQ12Checkbox()"> buatan</label>
-                                    <span class="small">)</span>
-                                    <label><input type="radio" id="q12_ventilation_adequate_ya" name="q12_ventilation_adequate" value="1" {{ old('q12_ventilation_adequate') == '1' ? 'checked' : '' }} disabled> Ya</label>
-                                    <label><input type="radio" id="q12_ventilation_adequate_tidak" name="q12_ventilation_adequate" value="0" {{ old('q12_ventilation_adequate') == '0' ? 'checked' : '' }} disabled> Tidak</label>
+                                    <label><input type="radio" name="containers_emptied_cleaned" value="1" {{ old('containers_emptied_cleaned') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="containers_emptied_cleaned" value="0" {{ old('containers_emptied_cleaned') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="containers_emptied_cleaned" value="N/A" {{ old('containers_emptied_cleaned') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Section 3: Panel bangunan/material -->
+                        <h6 class="fw-bold text-primary mb-3 mt-4">Panel bangunan/material:</h6>
+
                         <!-- Question 13 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Peralatan listrik dan kabel terlindungi?</span>
+                                <span class="parent-question">Panel bangunan/material yang sedang dikerjakan adalah diketahui tidak mudah terbakar</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q13_electrical_protected" value="1" {{ old('q13_electrical_protected') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q13_electrical_protected" value="0" {{ old('q13_electrical_protected') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="building_materials_non_flammable" value="1" {{ old('building_materials_non_flammable') == '1' ? 'checked' : '' }} onchange="toggleFollowUpQuestion(this.name, 'flammable_materials_cut_field', '0')"> Ya</label>
+                                    <label><input type="radio" name="building_materials_non_flammable" value="0" {{ old('building_materials_non_flammable') == '0' ? 'checked' : '' }} onchange="toggleFollowUpQuestion(this.name, 'flammable_materials_cut_field', '0')"> Tidak</label>
+                                    <label><input type="radio" name="building_materials_non_flammable" value="N/A" {{ old('building_materials_non_flammable') == 'N/A' ? 'checked' : '' }} onchange="toggleFollowUpQuestion(this.name, 'flammable_materials_cut_field', '0')"> N/A</label>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Question 14 -->
-                        <div class="checklist-item">
+                        <div class="checklist-item" id="flammable_materials_cut_field" style="display: {{ old('building_materials_non_flammable') == '0' ? 'block' : 'none' }};">
                             <div class="condition-grid">
-                                <span class="parent-question">Peralatan/mesin disekitarnya, pipa dan material terlindungi?</span>
+                                <span class="parent-question">Jika "tidak" pada pertanyaan di atas, bahan yang mudah terbakar HARUS dipotong hingga minimal 50 cm dan dilindungi oleh bahan pelindung yang tidak mudah terbakar</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q14_equipment_protected" value="1" {{ old('q14_equipment_protected') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q14_equipment_protected" value="0" {{ old('q14_equipment_protected') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="flammable_materials_cut_protected" value="1" {{ old('flammable_materials_cut_protected') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="flammable_materials_cut_protected" value="0" {{ old('flammable_materials_cut_protected') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="flammable_materials_cut_protected" value="N/A" {{ old('flammable_materials_cut_protected') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -415,10 +450,15 @@
                         <!-- Question 15 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Pekerjaan panas yang berada di atas, tambahan perlindungan disediakan di bawah?</span>
+                                <span class="fw-bold text-primary">Ventilasi yang cukup di tempat kerja (alami atau buatan)</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q15_overhead_protection" value="1" {{ old('q15_overhead_protection') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q15_overhead_protection" value="0" {{ old('q15_overhead_protection') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <select class="form-select me-3" name="ventilation_type" id="ventilation_type" style="width: 180px; min-width: 180px;" onchange="updateVentilationCheckbox()">
+                                        <option value="">Pilih...</option>
+                                        <option value="alami" {{ old('ventilation_type') == 'alami' ? 'selected' : '' }}>Alami</option>
+                                        <option value="buatan" {{ old('ventilation_type') == 'buatan' ? 'selected' : '' }}>Buatan</option>
+                                    </select>
+                                    <label><input type="radio" name="ventilation_adequate" id="ventilation_adequate_ya" value="1" {{ old('ventilation_adequate') == '1' ? 'checked' : '' }} {{ old('ventilation_type') ? '' : 'disabled' }}> Ya</label>
+                                    <label><input type="radio" name="ventilation_adequate" id="ventilation_adequate_tidak" value="0" {{ old('ventilation_adequate') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -426,10 +466,11 @@
                         <!-- Question 16 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Lokasi kerja diberi tanda/barikade yang memadai?</span>
+                                <span class="fw-bold text-primary">Lampu tiup dan tabung gas hanya boleh dipasang atau diganti di area terbuka dan berventilasi baik</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q16_area_marked" value="1" {{ old('q16_area_marked') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q16_area_marked" value="0" {{ old('q16_area_marked') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="gas_lamps_open_area" value="1" {{ old('gas_lamps_open_area') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="gas_lamps_open_area" value="0" {{ old('gas_lamps_open_area') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="gas_lamps_open_area" value="N/A" {{ old('gas_lamps_open_area') == 'N/A' ? 'checked' : '' }}> N/A</label>
                                 </div>
                             </div>
                         </div>
@@ -437,10 +478,21 @@
                         <!-- Question 17 -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Gas monitoring untuk kemungkinan adanya gas flammable harus dilakukan <u>sebelum</u> pekerjaan dilakukan<br><small class="text-muted">Jika "Ya" formulir H-Exposures harus diisi.</small></span>
+                                <span class="fw-bold text-primary">Apakah semua peralatan telah dipasang dan pengalasan dimonitor dari pengelasan dalam kondisi baik?</span>
                                 <div class="checkbox-group">
-                                    <label><input type="radio" name="q17_gas_monitoring" value="1" {{ old('q17_gas_monitoring') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="q17_gas_monitoring" value="0" {{ old('q17_gas_monitoring') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    <label><input type="radio" name="equipment_installed_monitored" value="1" {{ old('equipment_installed_monitored') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="equipment_installed_monitored" value="0" {{ old('equipment_installed_monitored') == '0' ? 'checked' : '' }}> Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question 18 -->
+                        <div class="checklist-item">
+                            <div class="condition-grid">
+                                <span class="fw-bold text-primary">Semua pekerja yang ada di area tersebut diberitahu tentang pekerjaan panas yang sedang dilakukan</span>
+                                <div class="checkbox-group">
+                                    <label><input type="radio" name="workers_notified" value="1" {{ old('workers_notified') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="workers_notified" value="0" {{ old('workers_notified') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -459,7 +511,7 @@
                         
                         <!-- APAR Section -->
                         <div class="mb-4">
-                            <h6 class="fw-bold text-dark mb-3">APAR</h6>
+                            <h6 class="fw-bold text-dark mb-3">APAR setidaknya tersedia 2 di area pekerjaan panas</h6>
                             
                             <!-- APAR Air -->
                             <div class="checklist-item">
@@ -493,12 +545,23 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- APAR Foam -->
+                            <div class="checklist-item">
+                                <div class="condition-grid">
+                                    <span class="sub-question">Foam</span>
+                                    <div class="checkbox-group">
+                                        <label><input type="radio" name="apar_foam" value="1" {{ old('apar_foam') == '1' ? 'checked' : '' }}> Ya</label>
+                                        <label><input type="radio" name="apar_foam" value="0" {{ old('apar_foam') == '0' ? 'checked' : '' }}> Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Fire Blanket -->
                         <div class="mb-4">
                             <div class="condition-grid">
-                                <span class="sub-question fw-bold">Fire blanket</span>
+                                <span class="sub-question">Fire blanket</span>
                                 <div class="checkbox-group">
                                     <label><input type="radio" name="fire_blanket" value="1" {{ old('fire_blanket') == '1' ? 'checked' : '' }}> Ya</label>
                                     <label><input type="radio" name="fire_blanket" value="0" {{ old('fire_blanket') == '0' ? 'checked' : '' }}> Tidak</label>
@@ -506,10 +569,103 @@
                             </div>
                         </div>
 
+                    </div>
+                </div>
+
+                <!-- Emergency Systems Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white; border: none;">
+                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Emergency Systems
+                        </h5>
+                    </div>
+                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
+
+                        <!-- Titik panggilan darurat -->
+                        <div class="checklist-item">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="emergency_call_point" class="form-label fw-bold">Titik panggilan darurat/alarm kebakaran terdekat</label>
+                                    <input type="text" class="form-control" id="emergency_call_point" name="emergency_call_point" value="{{ old('emergency_call_point') }}" placeholder="Sebutkan lokasi titik panggilan darurat/alarm terdekat">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sistem penyiram otomatis -->
+                        <div class="checklist-item">
+                            <div class="condition-grid">
+                                <span class="parent-question">Apakah sistem penyiram otomatis (jika ada) tidak berfungsi?</span>
+                                <div class="checkbox-group">
+                                    <label><input type="radio" name="sprinkler_system_disabled" value="1" {{ old('sprinkler_system_disabled') == '1' ? 'checked' : '' }}> Ya</label>
+                                    <label><input type="radio" name="sprinkler_system_disabled" value="0" {{ old('sprinkler_system_disabled') == '0' ? 'checked' : '' }}> Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sistem deteksi kebakaran -->
+                        <div class="checklist-item">
+                            <div class="condition-grid">
+                                <span class="parent-question">Apakah sistem deteksi kebakaran (jika berlaku) harus diisolasi >10 jam?</span>
+                                <div class="checkbox-group">
+                                    <label><input type="radio" name="fire_detection_isolated" value="1" {{ old('fire_detection_isolated') == '1' ? 'checked' : '' }} onchange="toggleInsurersFields(this.checked)"> Ya</label>
+                                    <label><input type="radio" name="fire_detection_isolated" value="0" {{ old('fire_detection_isolated') == '0' ? 'checked' : '' }} onchange="toggleInsurersFields(false)"> Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Insurers notification section -->
+                        <div id="insurers_section" class="mb-4" style="display: {{ old('fire_detection_isolated') == '1' ? 'block' : 'none' }};">
+                            <!-- Insurers notified of isolation -->
+                            <div class="checklist-item">
+                                <div class="row">
+                                    <div class="col-12 mb-2">
+                                        <label class="form-label fw-bold">Insurers notified of isolation</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="isolation_notified_by" class="form-label small text-muted">Oleh:</label>
+                                        <input type="text" class="form-control" id="isolation_notified_by" name="isolation_notified_by" value="{{ old('isolation_notified_by') }}" placeholder="Nama yang memberitahu">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="isolation_notified_when" class="form-label small text-muted">Kapan:</label>
+                                        <input type="text" class="form-control" id="isolation_notified_when" name="isolation_notified_when" value="{{ old('isolation_notified_when') }}" placeholder="Tanggal/waktu">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Insurers notified of reinstatement -->
+                            <div class="checklist-item">
+                                <div class="row">
+                                    <div class="col-12 mb-2">
+                                        <label class="form-label fw-bold">Insurers notified of reinstatement</label>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="reinstatement_notified_by" class="form-label small text-muted">Oleh:</label>
+                                        <input type="text" class="form-control" id="reinstatement_notified_by" name="reinstatement_notified_by" value="{{ old('reinstatement_notified_by') }}" placeholder="Nama yang memberitahu">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="reinstatement_notified_when" class="form-label small text-muted">Kapan:</label>
+                                        <input type="text" class="form-control" id="reinstatement_notified_when" name="reinstatement_notified_when" value="{{ old('reinstatement_notified_when') }}" placeholder="Tanggal/waktu">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Fire Watch Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header" style="background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); color: white; border: none;">
+                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-fire-extinguisher me-2"></i>Fire Watch
+                        </h5>
+                    </div>
+                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
+
                         <!-- Petugas Fire Watch -->
                         <div class="checklist-item">
                             <div class="condition-grid">
-                                <span class="parent-question">Petugas Fire Watch</span>
+                                <span class="parent-question">Petugas Fire Watch (harus dilatih dalam bahaya, risiko, dan pengendalian kebakaran. Pelatihan terverifikasi?)</span>
                                 <div class="checkbox-group">
                                     <label><input type="radio" name="fire_watch_officer" value="1" {{ old('fire_watch_officer') == '1' ? 'checked' : '' }} onchange="toggleFireWatchField(this.checked)"> Ya</label>
                                     <label><input type="radio" name="fire_watch_officer" value="0" {{ old('fire_watch_officer') == '0' ? 'checked' : '' }} onchange="toggleFireWatchField(false)"> Tidak</label>
@@ -528,7 +684,7 @@
                             <!-- Sprinkler -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">1. Bangunan terpasang sprinkler</span>
+                                    <span class="sub-question">1. Bangunan dilindungi oleh alat penyiram otomatis.</span>
                                     <div class="checkbox-group">
                                         <label><input type="radio" name="monitoring_sprinkler" value="1" {{ old('monitoring_sprinkler') == '1' ? 'checked' : '' }}> Ya</label>
                                         <label><input type="radio" name="monitoring_sprinkler" value="0" {{ old('monitoring_sprinkler') == '0' ? 'checked' : '' }}> Tidak</label>
@@ -540,7 +696,7 @@
                             <div class="checklist-item">
                                 <div class="condition-grid">
                                     <div>
-                                        <span class="sub-question">2. Tidak ada combustible material (kayu, plastik, oli, dll) digunakan di atap dinding atau lantai konstruksi, termasuk insulasi.</span>
+                                        <span class="sub-question">2. Tidak ada bahan yang mudah terbakar yang digunakan pada konstruksi atap/langit-langit, dinding atau lantai.</span>
                                         <br><small class="text-muted">Tidak memberikan penilaian jika TIDAK YAKIN</small>
                                     </div>
                                     <div class="checkbox-group">
@@ -553,105 +709,24 @@
                             <!-- Material Distance -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="sub-question">3. Semua combustible material, termasuk cairan flammable, debu combustible, debu mengandung oli, minimal sejauh 11 m dari lokasi kerja.</span>
+                                    <span class="sub-question">3. Semua bahan yang mudah terbakar/debu, serat atau endapan berminyak, berada setidaknya 11m dari area kerja.</span>
                                     <div class="checkbox-group">
                                         <label><input type="radio" name="monitoring_distance" value="1" {{ old('monitoring_distance') == '1' ? 'checked' : '' }}> Ya</label>
                                         <label><input type="radio" name="monitoring_distance" value="0" {{ old('monitoring_distance') == '0' ? 'checked' : '' }}> Tidak</label>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Emergency Call Location -->
-                        <div class="checklist-item">
-                            <div class="row">
-                                <div class="col-12">
-                                    <label for="emergency_call" class="form-label fw-bold">Breakglass/emergency call terdekat</label>
-                                    <input type="text" class="form-control" id="emergency_call" name="emergency_call" value="{{ old('emergency_call') }}" placeholder="Lokasi emergency call terdekat">
-                                    <small class="text-muted">Sebutkan lokasi emergency call terdekat dari area kerja</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sprinkler Check -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Cek kondisi sistem sprinkler (jika tersedia)</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="sprinkler_check" value="1" {{ old('sprinkler_check') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="sprinkler_check" value="0" {{ old('sprinkler_check') == '0' ? 'checked' : '' }}> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Detector Shutdown -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Mematikan peralatan detektor api?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="detector_shutdown" value="1" {{ old('detector_shutdown') == '1' ? 'checked' : '' }} onchange="toggleDetectorShutdownFields(this.checked)"> Ya</label>
-                                    <label><input type="radio" name="detector_shutdown" value="0" {{ old('detector_shutdown') == '0' ? 'checked' : '' }} onchange="toggleDetectorShutdownFields(false)"> Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Conditional Fields - Only show if detector_shutdown = Ya -->
-                        <div id="detector_shutdown_fields" style="display: {{ old('detector_shutdown') == '1' ? 'block' : 'none' }};">
-                            <!-- Notification Required -->
+                            <!-- Additional Inspection Duration -->
                             <div class="checklist-item">
                                 <div class="condition-grid">
-                                    <span class="parent-question">Pemberitahuan ke SHE & Security dibutuhkan?</span>
+                                    <span class="sub-question">4. Berapa lama inspeksi tambahan diperlukan?</span>
                                     <div class="checkbox-group">
-                                        <label><input type="radio" name="notification_required" value="1" {{ old('notification_required') == '1' ? 'checked' : '' }} onchange="toggleNotificationFields(this.checked)"> Ya</label>
-                                        <label><input type="radio" name="notification_required" value="0" {{ old('notification_required') == '0' ? 'checked' : '' }} onchange="toggleNotificationFields(false)"> Tidak</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="30min" {{ old('additional_inspection_duration') == '30min' ? 'checked' : '' }}> 30min</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="60min" {{ old('additional_inspection_duration') == '60min' ? 'checked' : '' }}> 60min</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="90min" {{ old('additional_inspection_duration') == '90min' ? 'checked' : '' }}> 90min</label>
+                                        <label><input type="radio" name="additional_inspection_duration" value="120min" {{ old('additional_inspection_duration') == '120min' ? 'checked' : '' }}> 120min</label>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Notification Contact Details - Only show if notification_required = Ya -->
-                            <div id="notification_contact_fields" class="checklist-item" style="display: {{ old('notification_required') == '1' ? 'block' : 'none' }};">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label for="notification_phone" class="form-label">Telepon (jika diperlukan notifikasi)</label>
-                                        <input type="text" class="form-control" id="notification_phone" name="notification_phone" value="{{ old('notification_phone') }}" placeholder="Nomor telepon">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="notification_name" class="form-label">Nama (jika diperlukan notifikasi)</label>
-                                        <input type="text" class="form-control" id="notification_name" name="notification_name" value="{{ old('notification_name') }}" placeholder="Nama penanggung jawab">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Insurance Notification -->
-                            <div class="checklist-item">
-                                <div class="condition-grid">
-                                    <span class="parent-question">Pemberitahuan ke Asuransi dibutuhkan?</span>
-                                    <div class="checkbox-group">
-                                        <label><input type="radio" name="insurance_notification" value="1" {{ old('insurance_notification') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="insurance_notification" value="0" {{ old('insurance_notification') == '0' ? 'checked' : '' }}> Tidak</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Detector Confirmation -->
-                            <div class="checklist-item">
-                                <div class="condition-grid">
-                                    <span class="parent-question">Memastikan detektor sudah mati?</span>
-                                    <div class="checkbox-group">
-                                        <label><input type="radio" name="detector_confirmed_off" value="1" {{ old('detector_confirmed_off') == '1' ? 'checked' : '' }}> Ya</label>
-                                        <label><input type="radio" name="detector_confirmed_off" value="0" {{ old('detector_confirmed_off') == '0' ? 'checked' : '' }}> Tidak</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Gas Monitoring -->
-                        <div class="checklist-item">
-                            <div class="condition-grid">
-                                <span class="parent-question">Gas monitoring untuk kemungkinan gas flammable dibutuhkan selama bekerja?</span>
-                                <div class="checkbox-group">
-                                    <label><input type="radio" name="gas_monitoring_required" value="1" {{ old('gas_monitoring_required') == '1' ? 'checked' : '' }}> Ya</label>
-                                    <label><input type="radio" name="gas_monitoring_required" value="0" {{ old('gas_monitoring_required') == '0' ? 'checked' : '' }}> Tidak</label>
                                 </div>
                             </div>
                         </div>
@@ -784,6 +859,21 @@ function toggleFireWatchField(isChecked) {
     }
 }
 
+function toggleInsurersFields(isChecked) {
+    const section = document.getElementById('insurers_section');
+    const inputs = section.querySelectorAll('input[type="text"]');
+    
+    if (isChecked) {
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+        // Clear all text inputs in the section
+        inputs.forEach(input => {
+            input.value = '';
+        });
+    }
+}
+
 function toggleDetectorShutdownFields(isChecked) {
     const fieldsContainer = document.getElementById('detector_shutdown_fields');
     
@@ -827,24 +917,34 @@ function toggleNotificationFields(isChecked) {
     }
 }
 
-function toggleQ3Checkbox() {
-    const distanceInput = document.getElementById('q3_distance');
-    const radioYa = document.getElementById('q3_flammable_moved_ya');
-    const radioTidak = document.getElementById('q3_flammable_moved_tidak');
-    const distance = parseFloat(distanceInput.value);
+function toggleFollowUpQuestion(fieldName, followUpFieldId, triggerValue) {
+    const selectedRadio = document.querySelector(`input[name="${fieldName}"]:checked`);
+    const followUpField = document.getElementById(followUpFieldId);
     
-    if (distance && distance >= 12) {
+    if (selectedRadio && selectedRadio.value === triggerValue) {
+        followUpField.style.display = 'block';
+    } else {
+        followUpField.style.display = 'none';
+        // Clear the radio buttons in follow-up question when hiding
+        const followUpRadios = followUpField.querySelectorAll('input[type="radio"]');
+        followUpRadios.forEach(radio => {
+            radio.checked = false;
+        });
+    }
+}
+
+function updateVentilationCheckbox() {
+    const ventilationSelect = document.getElementById('ventilation_type');
+    const radioYa = document.getElementById('ventilation_adequate_ya');
+    const radioTidak = document.getElementById('ventilation_adequate_tidak');
+    
+    if (ventilationSelect && ventilationSelect.value) {
         radioYa.disabled = false;
-        radioTidak.disabled = false;
         radioYa.parentElement.style.opacity = '1';
-        radioTidak.parentElement.style.opacity = '1';
     } else {
         radioYa.disabled = true;
-        radioTidak.disabled = true;
         radioYa.checked = false;
-        radioTidak.checked = false;
         radioYa.parentElement.style.opacity = '0.5';
-        radioTidak.parentElement.style.opacity = '0.5';
     }
 }
 
@@ -873,33 +973,6 @@ function updateEndTime() {
     }
 }
 
-function toggleQ12Checkbox() {
-    const radioButtons = document.querySelectorAll('input[name="q12_ventilation_type"]');
-    const radioYa = document.getElementById('q12_ventilation_adequate_ya');
-    const radioTidak = document.getElementById('q12_ventilation_adequate_tidak');
-    let isRadioSelected = false;
-    
-    // Check if any radio button is selected
-    radioButtons.forEach(radio => {
-        if (radio.checked) {
-            isRadioSelected = true;
-        }
-    });
-    
-    if (isRadioSelected) {
-        radioYa.disabled = false;
-        radioTidak.disabled = false;
-        radioYa.parentElement.style.opacity = '1';
-        radioTidak.parentElement.style.opacity = '1';
-    } else {
-        radioYa.disabled = true;
-        radioTidak.disabled = true;
-        radioYa.checked = false;
-        radioTidak.checked = false;
-        radioYa.parentElement.style.opacity = '0.5';
-        radioTidak.parentElement.style.opacity = '0.5';
-    }
-}
 
 // Initialize on page load
 $(document).ready(function() {
@@ -922,11 +995,8 @@ $(document).ready(function() {
         $('#worker_phone').val('');
     });
     
-    // Initialize Q3 checkbox state
-    toggleQ3Checkbox();
-    
-    // Initialize Q12 checkbox state
-    toggleQ12Checkbox();
+    // Initialize ventilation checkbox state
+    updateVentilationCheckbox();
 
     // Handle datetime validation
     $('#start_datetime').on('change', function() {
@@ -958,22 +1028,27 @@ $(document).ready(function() {
     // Add form validation for radio buttons
     $('form').on('submit', function(e) {
         const radioGroups = [
-            'q1_alternative_considered',
-            'q2_equipment_checked', 
-            'q4_protected_cover',
-            'q5_debris_cleaned',
-            'q6_area_inspected',
-            'q7_flammable_structures',
-            'q8_fire_blanket',
-            'q9_valve_drain_covered',
-            'q10_isolation_ducting',
-            'q11_holes_sealed',
-            'q13_electrical_protected',
-            'q14_equipment_protected',
-            'q15_overhead_protection',
-            'q16_area_marked',
-            'q17_gas_monitoring',
-            // Form Terlampir radio groups
+            // New comprehensive assessment fields
+            'flammable_materials_removed',
+            'flammable_liquids_removed',
+            'flammable_floors_wetted',
+            'walls_ceiling_protected',
+            'floors_swept_clean',
+            'materials_other_side_removed',
+            'explosive_atmosphere_removed',
+            'wall_floor_openings_covered',
+            'ducts_conveyors_protected',
+            'fire_risk_prevention_applied',
+            'equipment_cleaned_flammable',
+            'containers_emptied_cleaned',
+            'building_materials_non_flammable',
+            'flammable_materials_cut_protected',
+            'ventilation_adequate',
+            'gas_lamps_open_area',
+            'equipment_installed_monitored',
+            'workers_notified',
+            
+            // Fire equipment and monitoring
             'apar_air',
             'apar_powder',
             'apar_co2',
