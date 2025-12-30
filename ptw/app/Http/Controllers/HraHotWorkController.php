@@ -215,6 +215,27 @@ class HraHotWorkController extends Controller
             'equipment_installed_monitored' => 'nullable|boolean',
             'workers_notified' => 'nullable|boolean',
             
+            // Additional hot work assessment fields
+            'drainage_sealed' => 'nullable|in:0,1,N/A',
+            'openings_sealed' => 'nullable|in:0,1,N/A', 
+            'conveyor_belts_stopped' => 'nullable|in:0,1,N/A',
+            'q3_distance' => 'nullable|numeric|min:0',
+            'q3_flammable_moved' => 'nullable|in:0,1,N/A',
+            'fire_alarm_disabled' => 'nullable|in:0,1,N/A',
+            'q12_ventilation_type' => 'nullable|in:natural,mechanical,N/A',
+            'q12_ventilation_adequate' => 'nullable|boolean',
+            'fire_watch_assigned' => 'nullable|boolean',
+            'fire_extinguisher_available' => 'nullable|boolean',
+            'water_hose_available' => 'nullable|in:0,1,N/A',
+            'welding_machine_grounded' => 'nullable|in:0,1,N/A',
+            'gas_cylinders_secured' => 'nullable|in:0,1,N/A',
+            'hoses_cables_good_condition' => 'nullable|in:0,1,N/A',
+            'hot_work_equipment_inspected' => 'nullable|boolean',
+            'torch_shutoff_valves_working' => 'nullable|in:0,1,N/A',
+            'weather_conditions_suitable' => 'nullable|boolean',
+            'area_cleared_personnel' => 'nullable|boolean',
+            'additional_notes' => 'nullable|string',
+            
             // Peralatan Pemadam Api
             'apar_air' => 'nullable|boolean',
             'apar_powder' => 'nullable|boolean',

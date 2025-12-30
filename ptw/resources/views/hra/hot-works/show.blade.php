@@ -117,7 +117,7 @@
                 
                 <!-- Download PDF Button - only visible when approved -->
                 @if($hraHotWork->approval_status === 'approved')
-                <a href="{{ route('hra.hot-works.download-pdf', [$permit, $hraHotWork]) }}" class="btn btn-success">
+                <a href="{{ route('hra.hot-works.download-pdf', ['permit' => $permit, 'hraHotWork' => $hraHotWork]) }}" class="btn btn-success">
                     <i class="fas fa-download me-2"></i>Download PDF
                 </a>
                 @endif
@@ -140,7 +140,7 @@
                 <!-- Edit Button - only visible when not pending or approved -->
                 @if(($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator') && 
                     !in_array($hraHotWork->approval_status, ['pending', 'approved']))
-                <a href="{{ route('hra.hot-works.edit', [$permit, $hraHotWork]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
+                <a href="{{ route('hra.hot-works.edit', ['permit' => $permit, 'hraHotWork' => $hraHotWork]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>
                 @endif

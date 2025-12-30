@@ -46,6 +46,28 @@ class HraHotWork extends Model
         'gas_lamps_open_area',
         'equipment_installed_monitored',
         'workers_notified',
+        
+        // Additional fields for hot work assessment 
+        'drainage_sealed',
+        'openings_sealed', 
+        'conveyor_belts_stopped',
+        'q3_distance',
+        'q3_flammable_moved',
+        'fire_alarm_disabled',
+        'q12_ventilation_type',
+        'q12_ventilation_adequate',
+        'fire_watch_assigned',
+        'fire_extinguisher_available', 
+        'water_hose_available',
+        'welding_machine_grounded',
+        'gas_cylinders_secured',
+        'hoses_cables_good_condition',
+        'hot_work_equipment_inspected',
+        'torch_shutoff_valves_working',
+        'weather_conditions_suitable',
+        'area_cleared_personnel',
+        'additional_notes',
+        
         // Peralatan Pemadam Api fields
         'apar_air',
         'apar_powder',
@@ -187,5 +209,37 @@ class HraHotWork extends Model
         }
         
         $this->save();
+    }
+
+    /**
+     * Get start date from start_datetime
+     */
+    public function getStartDateAttribute()
+    {
+        return $this->start_datetime ? $this->start_datetime->format('Y-m-d') : null;
+    }
+
+    /**
+     * Get start time from start_datetime
+     */
+    public function getStartTimeAttribute()
+    {
+        return $this->start_datetime ? $this->start_datetime->format('H:i') : null;
+    }
+
+    /**
+     * Get end date from end_datetime
+     */
+    public function getEndDateAttribute()
+    {
+        return $this->end_datetime ? $this->end_datetime->format('Y-m-d') : null;
+    }
+
+    /**
+     * Get end time from end_datetime
+     */
+    public function getEndTimeAttribute()
+    {
+        return $this->end_datetime ? $this->end_datetime->format('H:i') : null;
     }
 }
