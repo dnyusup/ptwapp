@@ -68,137 +68,52 @@ class HraLotoIsolationController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
-            
-            // Isolasi Mesin/Tangki
-            'machine_tank_name' => 'required|string|max:255',
-            
-            // Panel Listrik
-            'panel_listrik_mati' => 'nullable|boolean',
-            'panel_listrik_dikunci' => 'nullable|boolean',
-            'panel_listrik_diperiksa' => 'nullable|boolean',
-            'panel_listrik_dipasang_tag' => 'nullable|boolean',
-            
-            // Pneumatic
-            'pneumatic_mati' => 'nullable|boolean',
-            'pneumatic_dikunci' => 'nullable|boolean',
-            'pneumatic_diperiksa' => 'nullable|boolean',
-            'pneumatic_dipasang_tag' => 'nullable|boolean',
-            
-            // Hydraulic
-            'hydraulic_mati' => 'nullable|boolean',
-            'hydraulic_dikunci' => 'nullable|boolean',
-            'hydraulic_diperiksa' => 'nullable|boolean',
-            'hydraulic_dipasang_tag' => 'nullable|boolean',
-            
-            // Gravitasi
-            'gravitasi_mati' => 'nullable|boolean',
-            'gravitasi_dikunci' => 'nullable|boolean',
-            'gravitasi_diperiksa' => 'nullable|boolean',
-            'gravitasi_dipasang_tag' => 'nullable|boolean',
-            
-            // Spring/Per
-            'spring_per_mati' => 'nullable|boolean',
-            'spring_per_dikunci' => 'nullable|boolean',
-            'spring_per_diperiksa' => 'nullable|boolean',
-            'spring_per_dipasang_tag' => 'nullable|boolean',
-            
-            // Rotasi/Gerakan
-            'rotasi_gerakan_mati' => 'nullable|boolean',
-            'rotasi_gerakan_dikunci' => 'nullable|boolean',
-            'rotasi_gerakan_diperiksa' => 'nullable|boolean',
-            'rotasi_gerakan_dipasang_tag' => 'nullable|boolean',
-            
-            // Isolasi Listrik - Panel Listrik
-            'bekerja_panel_listrik' => 'nullable|string|in:ya,tidak',
-            'referensi_manual_panel' => 'nullable|string|max:255',
-            'saklar_diposisi_off' => 'nullable|string|in:ya,tidak',
-            'tag_dipasang_panel' => 'nullable|string|in:ya,tidak',
-            'sekring_cb_dimatikan' => 'nullable|string|in:ya,tidak',
-            'panel_off_panel' => 'nullable|string|in:ya,tidak',
-            
-            // Isolasi Listrik - Sistem Mekanis
-            'bekerja_sistem_mekanis' => 'nullable|string|in:ya,tidak',
-            'referensi_manual_sistem' => 'nullable|string|max:255',
-            'safety_switch_off' => 'nullable|string|in:ya,tidak',
-            'tag_dipasang_sistem' => 'nullable|string|in:ya,tidak',
-            'sekring_cb_sistem_dimatikan' => 'nullable|string|in:ya,tidak',
-            'sudah_dicoba_dinyalakan' => 'nullable|string|in:ya,tidak',
-            
-            // Tes Listrik
-            'membutuhkan_tes_listrik_on' => 'nullable|string|in:ya,tidak',
-            'safety_barrier' => 'nullable|string|in:ya,tidak',
-            'full_face_protection' => 'nullable|string|in:ya,tidak',
-            'insulated_gloves' => 'nullable|string|in:ya,tidak',
-            'insulated_mat' => 'nullable|string|in:ya,tidak',
-            'full_length_sleeves' => 'nullable|string|in:ya,tidak',
-            'tool_insulation_satisfactory' => 'nullable|string|in:ya,tidak',
-            'maximum_voltage' => 'nullable|integer|min:0',
-            'alasan_live_test' => 'required_if:membutuhkan_tes_listrik_on,ya|nullable|string|max:1000',
-            
-            // Isolasi Utility
-            'utility_listrik_off' => 'nullable|boolean',
-            'utility_listrik_secured' => 'nullable|boolean',
-            'utility_listrik_checked' => 'nullable|boolean',
-            'utility_listrik_tagged' => 'nullable|boolean',
-            'utility_cooling_water_off' => 'nullable|boolean',
-            'utility_cooling_water_secured' => 'nullable|boolean',
-            'utility_cooling_water_checked' => 'nullable|boolean',
-            'utility_cooling_water_tagged' => 'nullable|boolean',
-            'utility_oil_hidrolik_off' => 'nullable|boolean',
-            'utility_oil_hidrolik_secured' => 'nullable|boolean',
-            'utility_oil_hidrolik_checked' => 'nullable|boolean',
-            'utility_oil_hidrolik_tagged' => 'nullable|boolean',
-            'utility_kompresor_off' => 'nullable|boolean',
-            'utility_kompresor_secured' => 'nullable|boolean',
-            'utility_kompresor_checked' => 'nullable|boolean',
-            'utility_kompresor_tagged' => 'nullable|boolean',
-            'utility_vacuum_off' => 'nullable|boolean',
-            'utility_vacuum_secured' => 'nullable|boolean',
-            'utility_vacuum_checked' => 'nullable|boolean',
-            'utility_vacuum_tagged' => 'nullable|boolean',
-            'utility_gas_off' => 'nullable|boolean',
-            'utility_gas_secured' => 'nullable|boolean',
-            'utility_gas_checked' => 'nullable|boolean',
-            'utility_gas_tagged' => 'nullable|boolean',
-            'utility_lainnya_nama' => 'nullable|string|max:255|min:5',
-            'utility_lainnya_off' => 'nullable|boolean',
-            'utility_lainnya_secured' => 'nullable|boolean',
-            'utility_lainnya_checked' => 'nullable|boolean',
-            'utility_lainnya_tagged' => 'nullable|boolean',
-            'line_diisolasi_plat' => 'nullable|string|in:ya,tidak',
-            'alasan_deskripsi_isolasi' => 'nullable|string|max:1000',
-            'area_terdampak_isolasi' => 'nullable|string|max:255',
-            'area_sudah_diberitahu' => 'nullable|string|in:ya,tidak',
-            
-            // Mematikan Pipa
-            'isi_line_pipa' => 'nullable|string|max:255',
-            'tidak_ada_sisa_tekanan' => 'nullable|string|in:ya,tidak',
-            'drain_bleed_valves' => 'nullable|string|in:ya,tidak',
-            'pipa_purged_udara' => 'nullable|boolean',
-            'pipa_purged_air' => 'nullable|boolean',
-            'pipa_purged_nitrogen' => 'nullable|boolean',
-            'pipa_diisolasi_plat' => 'nullable|string|in:ya,tidak',
-            'pipa_kosong' => 'nullable|string|in:ya,tidak',
-            'pipa_bersih' => 'nullable|string|in:ya,tidak',
-            'alasan_deskripsi_isolasi_pipa' => 'nullable|string|max:1000',
+            // Pre Isolation
+            'pid_reviewed' => 'required|string|in:ya,tidak',
+            // Electrical Isolation
+            'electrical_enabled' => 'nullable|boolean',
+            'electrical_hv_installation' => 'nullable|string|in:ya,tidak',
+            'electrical_isolations' => 'nullable|array',
+            'electrical_energy_control_method' => 'nullable|string',
+            // Mechanical Isolation
+            'mechanical_enabled' => 'nullable|boolean',
+            'mechanical_gravitasi' => 'nullable|string|in:ya,tidak',
+            'mechanical_hidrolik' => 'nullable|string|in:ya,tidak',
+            'mechanical_kelembaman' => 'nullable|string|in:ya,tidak',
+            'mechanical_spring' => 'nullable|string|in:ya,tidak',
+            'mechanical_pneumatik' => 'nullable|string|in:ya,tidak',
+            'mechanical_lainnya' => 'nullable|string|max:255',
+            'mechanical_isolations' => 'nullable|array',
+            'mechanical_energy_control_method' => 'nullable|string',
+            // Process Isolation
+            'process_enabled' => 'nullable|boolean',
+            'process_isolations' => 'nullable|array',
+            'process_energy_control_method' => 'nullable|string',
+            // Utility Isolation
+            'utility_enabled' => 'nullable|boolean',
+            'utility_isolations' => 'nullable|array',
+            'utility_energy_control_method' => 'nullable|string',
+            // Verifikasi Isolasi
+            'affected_area' => 'nullable|string|max:255',
+            'all_individuals_informed' => 'nullable|string|in:ya,tidak',
+            'individual_lototo_required' => 'nullable|string|in:ya,tidak',
+            'ptw_issuer_lototo_key' => 'nullable|string|in:ya,tidak',
+            // Line Breaking
+            'line_content_before' => 'nullable|string|max:255',
+            'lb_no_residual_pressure' => 'nullable|string|in:ya,tidak',
+            'lb_drain_valve_open' => 'nullable|string|in:ya,tidak',
+            'lb_emergency_arrangements' => 'nullable|string|in:ya,tidak',
+            'lb_line_isolated' => 'nullable|string|in:ya,tidak',
+            'lb_line_empty' => 'nullable|string|in:ya,tidak',
+            'lb_line_clean' => 'nullable|string|in:ya,tidak',
+            'lb_no_asbestos' => 'nullable|string|in:ya,tidak',
+            'lb_pipe_no_support_needed' => 'nullable|string|in:ya,tidak',
+            'lb_lototo_drainage' => 'nullable|string|in:ya,tidak',
+            'lb_purged_air' => 'nullable|boolean',
+            'lb_purged_water' => 'nullable|boolean',
+            'lb_purged_n2' => 'nullable|boolean',
+            'lb_additional_control' => 'nullable|string',
         ]);
-        
-        // Custom validation for utility lainnya
-        if (!empty($validated['utility_lainnya_nama']) && strlen(trim($validated['utility_lainnya_nama'])) >= 5) {
-            // If lainnya name is provided with at least 5 characters, at least one checkbox must be selected
-            $lainnyaCheckboxes = [
-                $validated['utility_lainnya_off'] ?? false,
-                $validated['utility_lainnya_secured'] ?? false,
-                $validated['utility_lainnya_checked'] ?? false,
-                $validated['utility_lainnya_tagged'] ?? false
-            ];
-            
-            if (!in_array(true, $lainnyaCheckboxes)) {
-                return redirect()->back()
-                    ->withErrors(['utility_lainnya_checkboxes' => 'Minimal satu status isolasi harus dipilih untuk utility lainnya.'])
-                    ->withInput();
-            }
-        }
         
         // Combine date and time fields into datetime
         $validated['start_datetime'] = $validated['start_date'] . ' ' . $validated['start_time'];
@@ -206,6 +121,26 @@ class HraLotoIsolationController extends Controller
         
         // Remove the separate date and time fields as they're not needed in database
         unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
+
+        // Convert electrical_isolations array to JSON
+        if (isset($validated['electrical_isolations'])) {
+            $validated['electrical_isolations'] = json_encode($validated['electrical_isolations']);
+        }
+
+        // Convert mechanical_isolations array to JSON
+        if (isset($validated['mechanical_isolations'])) {
+            $validated['mechanical_isolations'] = json_encode($validated['mechanical_isolations']);
+        }
+
+        // Convert process_isolations array to JSON
+        if (isset($validated['process_isolations'])) {
+            $validated['process_isolations'] = json_encode($validated['process_isolations']);
+        }
+
+        // Convert utility_isolations array to JSON
+        if (isset($validated['utility_isolations'])) {
+            $validated['utility_isolations'] = json_encode($validated['utility_isolations']);
+        }
 
         // Generate HRA permit number
         $hraPermitNumber = HraLotoIsolation::generateHraPermitNumber($permit->permit_number);
@@ -271,107 +206,51 @@ class HraLotoIsolationController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
-            
-            // Isolasi Mesin/Tangki
-            'machine_tank_name' => 'required|string|max:255',
-            
-            // All the validation rules from store method
-            'panel_listrik_mati' => 'nullable|boolean',
-            'panel_listrik_dikunci' => 'nullable|boolean',
-            'panel_listrik_diperiksa' => 'nullable|boolean',
-            'panel_listrik_dipasang_tag' => 'nullable|boolean',
-            'pneumatic_mati' => 'nullable|boolean',
-            'pneumatic_dikunci' => 'nullable|boolean',
-            'pneumatic_diperiksa' => 'nullable|boolean',
-            'pneumatic_dipasang_tag' => 'nullable|boolean',
-            'hydraulic_mati' => 'nullable|boolean',
-            'hydraulic_dikunci' => 'nullable|boolean',
-            'hydraulic_diperiksa' => 'nullable|boolean',
-            'hydraulic_dipasang_tag' => 'nullable|boolean',
-            'gravitasi_mati' => 'nullable|boolean',
-            'gravitasi_dikunci' => 'nullable|boolean',
-            'gravitasi_diperiksa' => 'nullable|boolean',
-            'gravitasi_dipasang_tag' => 'nullable|boolean',
-            'spring_per_mati' => 'nullable|boolean',
-            'spring_per_dikunci' => 'nullable|boolean',
-            'spring_per_diperiksa' => 'nullable|boolean',
-            'spring_per_dipasang_tag' => 'nullable|boolean',
-            'rotasi_gerakan_mati' => 'nullable|boolean',
-            'rotasi_gerakan_dikunci' => 'nullable|boolean',
-            'rotasi_gerakan_diperiksa' => 'nullable|boolean',
-            'rotasi_gerakan_dipasang_tag' => 'nullable|boolean',
-            
-            // Isolasi Listrik
-            'bekerja_panel_listrik' => 'nullable|string|in:ya,tidak',
-            'referensi_manual_panel' => 'nullable|string|in:ya,tidak',
-            'saklar_diposisi_off' => 'nullable|string|in:ya,tidak',
-            'tag_dipasang_panel' => 'nullable|string|in:ya,tidak',
-            'sekring_cb_dimatikan' => 'nullable|string|in:ya,tidak',
-            'panel_off_panel' => 'nullable|string|in:ya,tidak',
-            'bekerja_sistem_mekanis' => 'nullable|string|in:ya,tidak',
-            'referensi_manual_sistem' => 'nullable|string|in:ya,tidak',
-            'safety_switch_off' => 'nullable|string|in:ya,tidak',
-            'tag_dipasang_sistem' => 'nullable|string|in:ya,tidak',
-            'sekring_cb_sistem_dimatikan' => 'nullable|string|in:ya,tidak',
-            'sudah_dicoba_dinyalakan' => 'nullable|string|in:ya,tidak',
-            
-            // Tes Listrik
-            'membutuhkan_tes_listrik_on' => 'nullable|string|in:ya,tidak',
-            'safety_barrier' => 'nullable|string|in:ya,tidak',
-            'full_face_protection' => 'nullable|string|in:ya,tidak',
-            'insulated_gloves' => 'nullable|string|in:ya,tidak',
-            'insulated_mat' => 'nullable|string|in:ya,tidak',
-            'full_length_sleeves' => 'nullable|string|in:ya,tidak',
-            'tool_insulation_satisfactory' => 'nullable|string|in:ya,tidak',
-            'maximum_voltage' => 'nullable|numeric|min:0',
-            'alasan_live_test' => 'nullable|string|max:1000',
-            
-            // Isolasi Utility
-            'utility_listrik_off' => 'nullable|boolean',
-            'utility_listrik_secured' => 'nullable|boolean',
-            'utility_listrik_checked' => 'nullable|boolean',
-            'utility_listrik_tagged' => 'nullable|boolean',
-            'utility_cooling_water_off' => 'nullable|boolean',
-            'utility_cooling_water_secured' => 'nullable|boolean',
-            'utility_cooling_water_checked' => 'nullable|boolean',
-            'utility_cooling_water_tagged' => 'nullable|boolean',
-            'utility_oil_hidrolik_off' => 'nullable|boolean',
-            'utility_oil_hidrolik_secured' => 'nullable|boolean',
-            'utility_oil_hidrolik_checked' => 'nullable|boolean',
-            'utility_oil_hidrolik_tagged' => 'nullable|boolean',
-            'utility_kompresor_off' => 'nullable|boolean',
-            'utility_kompresor_secured' => 'nullable|boolean',
-            'utility_kompresor_checked' => 'nullable|boolean',
-            'utility_kompresor_tagged' => 'nullable|boolean',
-            'utility_vacuum_off' => 'nullable|boolean',
-            'utility_vacuum_secured' => 'nullable|boolean',
-            'utility_vacuum_checked' => 'nullable|boolean',
-            'utility_vacuum_tagged' => 'nullable|boolean',
-            'utility_gas_off' => 'nullable|boolean',
-            'utility_gas_secured' => 'nullable|boolean',
-            'utility_gas_checked' => 'nullable|boolean',
-            'utility_gas_tagged' => 'nullable|boolean',
-            'utility_lainnya_nama' => 'nullable|string|max:255|min:5',
-            'utility_lainnya_off' => 'nullable|boolean',
-            'utility_lainnya_secured' => 'nullable|boolean',
-            'utility_lainnya_checked' => 'nullable|boolean',
-            'utility_lainnya_tagged' => 'nullable|boolean',
-            'line_diisolasi_plat' => 'nullable|string|in:ya,tidak',
-            'alasan_deskripsi_isolasi' => 'nullable|string|max:1000',
-            'area_terdampak_isolasi' => 'nullable|string|max:255',
-            'area_sudah_diberitahu' => 'nullable|string|in:ya,tidak',
-            
-            // Mematikan Pipa
-            'isi_line_pipa' => 'nullable|string|max:255',
-            'tidak_ada_sisa_tekanan' => 'nullable|string|in:ya,tidak',
-            'drain_bleed_valves' => 'nullable|string|in:ya,tidak',
-            'pipa_purged_udara' => 'nullable|boolean',
-            'pipa_purged_air' => 'nullable|boolean',
-            'pipa_purged_nitrogen' => 'nullable|boolean',
-            'pipa_diisolasi_plat' => 'nullable|string|in:ya,tidak',
-            'pipa_kosong' => 'nullable|string|in:ya,tidak',
-            'pipa_bersih' => 'nullable|string|in:ya,tidak',
-            'alasan_deskripsi_isolasi_pipa' => 'nullable|string|max:1000',
+            // Pre Isolation
+            'pid_reviewed' => 'required|string|in:ya,tidak',
+            // Electrical Isolation
+            'electrical_enabled' => 'nullable|boolean',
+            'electrical_hv_installation' => 'nullable|string|in:ya,tidak',
+            'electrical_isolations' => 'nullable|array',
+            'electrical_energy_control_method' => 'nullable|string',
+            // Mechanical Isolation
+            'mechanical_enabled' => 'nullable|boolean',
+            'mechanical_gravitasi' => 'nullable|string|in:ya,tidak',
+            'mechanical_hidrolik' => 'nullable|string|in:ya,tidak',
+            'mechanical_kelembaman' => 'nullable|string|in:ya,tidak',
+            'mechanical_spring' => 'nullable|string|in:ya,tidak',
+            'mechanical_pneumatik' => 'nullable|string|in:ya,tidak',
+            'mechanical_lainnya' => 'nullable|string|max:255',
+            'mechanical_isolations' => 'nullable|array',
+            'mechanical_energy_control_method' => 'nullable|string',
+            // Process Isolation
+            'process_enabled' => 'nullable|boolean',
+            'process_isolations' => 'nullable|array',
+            'process_energy_control_method' => 'nullable|string',
+            // Utility Isolation
+            'utility_enabled' => 'nullable|boolean',
+            'utility_isolations' => 'nullable|array',
+            'utility_energy_control_method' => 'nullable|string',
+            // Verifikasi Isolasi
+            'affected_area' => 'nullable|string|max:255',
+            'all_individuals_informed' => 'nullable|string|in:ya,tidak',
+            'individual_lototo_required' => 'nullable|string|in:ya,tidak',
+            'ptw_issuer_lototo_key' => 'nullable|string|in:ya,tidak',
+            // Line Breaking
+            'line_content_before' => 'nullable|string|max:255',
+            'lb_no_residual_pressure' => 'nullable|string|in:ya,tidak',
+            'lb_drain_valve_open' => 'nullable|string|in:ya,tidak',
+            'lb_emergency_arrangements' => 'nullable|string|in:ya,tidak',
+            'lb_line_isolated' => 'nullable|string|in:ya,tidak',
+            'lb_line_empty' => 'nullable|string|in:ya,tidak',
+            'lb_line_clean' => 'nullable|string|in:ya,tidak',
+            'lb_no_asbestos' => 'nullable|string|in:ya,tidak',
+            'lb_pipe_no_support_needed' => 'nullable|string|in:ya,tidak',
+            'lb_lototo_drainage' => 'nullable|string|in:ya,tidak',
+            'lb_purged_air' => 'nullable|boolean',
+            'lb_purged_water' => 'nullable|boolean',
+            'lb_purged_n2' => 'nullable|boolean',
+            'lb_additional_control' => 'nullable|string',
         ]);
         
         // Handle datetime combination like in store method
@@ -380,26 +259,30 @@ class HraLotoIsolationController extends Controller
         
         // Remove separate date/time fields
         unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
-        
-        // Custom validation for utility lainnya (same as store method)
-        if (!empty($validated['utility_lainnya_nama']) && strlen(trim($validated['utility_lainnya_nama'])) >= 5) {
-            $lainnyaCheckboxes = [
-                $validated['utility_lainnya_off'] ?? false,
-                $validated['utility_lainnya_secured'] ?? false,
-                $validated['utility_lainnya_checked'] ?? false,
-                $validated['utility_lainnya_tagged'] ?? false
-            ];
-            
-            if (!in_array(true, $lainnyaCheckboxes)) {
-                return back()->withErrors([
-                    'utility_lainnya_off' => 'Jika nama utility lainnya diisi, minimal satu checkbox harus dipilih.'
-                ])->withInput();
-            }
+
+        // Convert electrical_isolations array to JSON
+        if (isset($validated['electrical_isolations'])) {
+            $validated['electrical_isolations'] = json_encode($validated['electrical_isolations']);
+        }
+
+        // Convert mechanical_isolations array to JSON
+        if (isset($validated['mechanical_isolations'])) {
+            $validated['mechanical_isolations'] = json_encode($validated['mechanical_isolations']);
+        }
+
+        // Convert process_isolations array to JSON
+        if (isset($validated['process_isolations'])) {
+            $validated['process_isolations'] = json_encode($validated['process_isolations']);
+        }
+
+        // Convert utility_isolations array to JSON
+        if (isset($validated['utility_isolations'])) {
+            $validated['utility_isolations'] = json_encode($validated['utility_isolations']);
         }
 
         $hraLotoIsolation->update($validated);
 
-        return redirect()->route('permits.show', $permit)
+        return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
                         ->with('success', 'HRA LOTO/Isolation updated successfully.');
     }
 

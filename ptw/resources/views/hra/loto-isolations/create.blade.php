@@ -19,23 +19,6 @@
     box-shadow: 0 0 20px rgba(0,0,0,0.08);
 }
 
-/* Styling for disabled test listrik fields */
-.tes-listrik-field:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.tes-listrik-field:disabled + .form-check-label {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Styling for disabled utility lainnya checkboxes */
-.utility-lainnya-checkbox:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .card-header {
     border: none;
     border-radius: 15px 15px 0 0;
@@ -193,939 +176,736 @@
                     </div>
                 </div>
 
-                <!-- Isolasi Mesin/Tangki Card -->
+                <!-- Pre Isolation Card -->
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white; border: none;">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #6f42c1 0%, #563d7c 100%);">
                         <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            <i class="fas fa-cogs me-2"></i>Isolasi Mesin/Tangki
+                            <i class="fas fa-clipboard-check me-2"></i>Pre Isolation
                         </h5>
                     </div>
-                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
-                        
-                        <!-- Nama/No. Mesin/Tangki -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <label for="machine_tank_name" class="form-label" style="font-weight: 600;">Nama/No. mesin/tangki:</label>
-                                <input type="text" class="form-control" id="machine_tank_name" name="machine_tank_name" 
-                                       value="{{ old('machine_tank_name') }}" placeholder="Masukkan nama atau nomor mesin/tangki" required>
-                            </div>
-                        </div>
-
-                        <!-- Isolasi Energi Table -->
+                    <div class="card-body">
                         <div class="row">
-                            <div class="col-12">
-                                <h6 class="mb-3" style="font-weight: 600; color: #495057;">Isolasi Energi (pilih yang sesuai):</h6>
-                                
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" style="font-size: 14px;">
-                                        <thead style="background-color: #e9ecef;">
-                                            <tr>
-                                                <th style="width: 25%; font-weight: 600;">Jenis Energi</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">mati/off</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">dikunci</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">diperiksa</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">dipasang tag</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Panel Listrik -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Panel Listrik</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="panel_listrik_mati" value="1" {{ old('panel_listrik_mati') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="panel_listrik_dikunci" value="1" {{ old('panel_listrik_dikunci') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="panel_listrik_diperiksa" value="1" {{ old('panel_listrik_diperiksa') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="panel_listrik_dipasang_tag" value="1" {{ old('panel_listrik_dipasang_tag') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Pneumatic -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Pneumatic</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="pneumatic_mati" value="1" {{ old('pneumatic_mati') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="pneumatic_dikunci" value="1" {{ old('pneumatic_dikunci') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="pneumatic_diperiksa" value="1" {{ old('pneumatic_diperiksa') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="pneumatic_dipasang_tag" value="1" {{ old('pneumatic_dipasang_tag') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Hydraulic -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Hydraulic</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="hydraulic_mati" value="1" {{ old('hydraulic_mati') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="hydraulic_dikunci" value="1" {{ old('hydraulic_dikunci') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="hydraulic_diperiksa" value="1" {{ old('hydraulic_diperiksa') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="hydraulic_dipasang_tag" value="1" {{ old('hydraulic_dipasang_tag') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Gravitasi -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Gravitasi</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="gravitasi_mati" value="1" {{ old('gravitasi_mati') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="gravitasi_dikunci" value="1" {{ old('gravitasi_dikunci') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="gravitasi_diperiksa" value="1" {{ old('gravitasi_diperiksa') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="gravitasi_dipasang_tag" value="1" {{ old('gravitasi_dipasang_tag') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Spring/Per -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Spring/Per</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="spring_per_mati" value="1" {{ old('spring_per_mati') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="spring_per_dikunci" value="1" {{ old('spring_per_dikunci') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="spring_per_diperiksa" value="1" {{ old('spring_per_diperiksa') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="spring_per_dipasang_tag" value="1" {{ old('spring_per_dipasang_tag') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Rotasi/Gerakan -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Rotasi/Gerakan</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="rotasi_gerakan_mati" value="1" {{ old('rotasi_gerakan_mati') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="rotasi_gerakan_dikunci" value="1" {{ old('rotasi_gerakan_dikunci') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="rotasi_gerakan_diperiksa" value="1" {{ old('rotasi_gerakan_diperiksa') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="rotasi_gerakan_dipasang_tag" value="1" {{ old('rotasi_gerakan_dipasang_tag') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            <div class="col-12 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Apakah P&ID dan/atau rencana kelistrikan yang sesuai telah ditinjau?</label>
+                                    <div class="d-flex gap-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="pid_reviewed" id="pid_reviewed_ya" value="ya" {{ old('pid_reviewed') == 'ya' ? 'checked' : '' }} required>
+                                            <label class="form-check-label" for="pid_reviewed_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="pid_reviewed" id="pid_reviewed_tidak" value="tidak" {{ old('pid_reviewed') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="pid_reviewed_tidak">Tidak</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Isolasi Listrik Card -->
+                <!-- Electrical Isolation Card -->
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header" style="background: linear-gradient(135deg, #fd7e14 0%, #e55d00 100%); color: white; border: none;">
-                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            <i class="fas fa-bolt me-2"></i>Isolasi Listrik
-                        </h5>
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #fd7e14 0%, #dc6a12 100%);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                <i class="fas fa-bolt me-2"></i>Electrical Isolation
+                            </h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="electrical_enabled" name="electrical_enabled" value="1" {{ old('electrical_enabled') ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
+                                <label class="form-check-label ms-2" for="electrical_enabled">Aktifkan</label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
-                        
-                        <!-- Note -->
-                        <div class="alert alert-info mb-4" style="border-left: 4px solid #17a2b8;">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <small><em>Pekerjaan harus dilakukan oleh orang yang kompeten</em></small>
+                    <div class="card-body" id="electrical_body" style="{{ old('electrical_enabled') ? '' : 'display: none;' }}">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Sedang mengerjakan instalasi HV?</label>
+                                    <div class="d-flex gap-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="electrical_hv_installation" id="electrical_hv_ya" value="ya" {{ old('electrical_hv_installation') == 'ya' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="electrical_hv_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="electrical_hv_installation" id="electrical_hv_tidak" value="tidak" {{ old('electrical_hv_installation') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="electrical_hv_tidak">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Left Section -->
+                        <!-- Electrical Isolation Table -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">No.</th>
+                                        <th>Isolation Description</th>
+                                        <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                                        <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                                        <th style="width: 100px;" class="text-center">Zero Energy</th>
+                                        <th style="width: 100px;" class="text-center">Try Out</th>
+                                        <th style="width: 100px;" class="text-center">Removal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for($i = 0; $i <= 5; $i++)
+                                    <tr>
+                                        <td class="text-center"><strong>E{{ $i }}</strong></td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="electrical_isolations[{{ $i }}][description]" 
+                                                   value="{{ old('electrical_isolations.'.$i.'.description') }}" 
+                                                   placeholder="Deskripsi isolasi...">
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="electrical_isolations[{{ $i }}][stop_isolate]" 
+                                                   value="1" {{ old('electrical_isolations.'.$i.'.stop_isolate') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="electrical_isolations[{{ $i }}][lock_tag]" 
+                                                   value="1" {{ old('electrical_isolations.'.$i.'.lock_tag') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="electrical_isolations[{{ $i }}][zero_energy]" 
+                                                   value="1" {{ old('electrical_isolations.'.$i.'.zero_energy') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="electrical_isolations[{{ $i }}][try_out]" 
+                                                   value="1" {{ old('electrical_isolations.'.$i.'.try_out') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="electrical_isolations[{{ $i }}][removal]" 
+                                                   value="1" {{ old('electrical_isolations.'.$i.'.removal') ? 'checked' : '' }}>
+                                        </td>
+                                    </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Energy Control Method -->
                         <div class="row">
+                            <div class="col-12">
+                                <label for="electrical_energy_control_method" class="form-label">Metode untuk mengendalikan energi yang tersimpan:</label>
+                                <textarea class="form-control" id="electrical_energy_control_method" 
+                                          name="electrical_energy_control_method" rows="4" 
+                                          placeholder="Jelaskan metode pengendalian energi...">{{ old('electrical_energy_control_method') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mechanical Isolation Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                <i class="fas fa-cogs me-2"></i>Mechanical Isolation
+                            </h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="mechanical_enabled" name="mechanical_enabled" value="1" {{ old('mechanical_enabled') ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
+                                <label class="form-check-label ms-2" for="mechanical_enabled">Aktifkan</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" id="mechanical_body" style="{{ old('mechanical_enabled') ? '' : 'display: none;' }}">
+                        <!-- Yes/No Questions in 2 columns -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Gravitasi</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_gravitasi" id="mechanical_gravitasi_ya" value="ya" {{ old('mechanical_gravitasi') == 'ya' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_gravitasi_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_gravitasi" id="mechanical_gravitasi_tidak" value="tidak" {{ old('mechanical_gravitasi') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_gravitasi_tidak">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Hidrolik</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_hidrolik" id="mechanical_hidrolik_ya" value="ya" {{ old('mechanical_hidrolik') == 'ya' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_hidrolik_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_hidrolik" id="mechanical_hidrolik_tidak" value="tidak" {{ old('mechanical_hidrolik') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_hidrolik_tidak">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Kelembaman</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_kelembaman" id="mechanical_kelembaman_ya" value="ya" {{ old('mechanical_kelembaman') == 'ya' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_kelembaman_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_kelembaman" id="mechanical_kelembaman_tidak" value="tidak" {{ old('mechanical_kelembaman') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_kelembaman_tidak">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Spring</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_spring" id="mechanical_spring_ya" value="ya" {{ old('mechanical_spring') == 'ya' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_spring_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_spring" id="mechanical_spring_tidak" value="tidak" {{ old('mechanical_spring') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_spring_tidak">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Pneumatik</label>
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_pneumatik" id="mechanical_pneumatik_ya" value="ya" {{ old('mechanical_pneumatik') == 'ya' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_pneumatik_ya">Ya</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="mechanical_pneumatik" id="mechanical_pneumatik_tidak" value="tidak" {{ old('mechanical_pneumatik') == 'tidak' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="mechanical_pneumatik_tidak">Tidak</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label class="form-label mb-0">Lainnya</label>
+                                    <input type="text" class="form-control form-control-sm" style="width: 200px;" 
+                                           name="mechanical_lainnya" value="{{ old('mechanical_lainnya') }}" 
+                                           placeholder="Sebutkan...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mechanical Isolation Table -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">No.</th>
+                                        <th>Isolation Description</th>
+                                        <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                                        <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                                        <th style="width: 100px;" class="text-center">Zero Energy</th>
+                                        <th style="width: 100px;" class="text-center">Try Out</th>
+                                        <th style="width: 100px;" class="text-center">Removal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for($i = 0; $i <= 5; $i++)
+                                    <tr>
+                                        <td class="text-center"><strong>M{{ $i }}</strong></td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="mechanical_isolations[{{ $i }}][description]" 
+                                                   value="{{ old('mechanical_isolations.'.$i.'.description') }}" 
+                                                   placeholder="Deskripsi isolasi...">
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="mechanical_isolations[{{ $i }}][stop_isolate]" 
+                                                   value="1" {{ old('mechanical_isolations.'.$i.'.stop_isolate') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="mechanical_isolations[{{ $i }}][lock_tag]" 
+                                                   value="1" {{ old('mechanical_isolations.'.$i.'.lock_tag') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="mechanical_isolations[{{ $i }}][zero_energy]" 
+                                                   value="1" {{ old('mechanical_isolations.'.$i.'.zero_energy') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="mechanical_isolations[{{ $i }}][try_out]" 
+                                                   value="1" {{ old('mechanical_isolations.'.$i.'.try_out') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="mechanical_isolations[{{ $i }}][removal]" 
+                                                   value="1" {{ old('mechanical_isolations.'.$i.'.removal') ? 'checked' : '' }}>
+                                        </td>
+                                    </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Energy Control Method -->
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="mechanical_energy_control_method" class="form-label">Metode untuk mengendalikan energi yang tersimpan:</label>
+                                <textarea class="form-control" id="mechanical_energy_control_method" 
+                                          name="mechanical_energy_control_method" rows="4" 
+                                          placeholder="Jelaskan metode pengendalian energi...">{{ old('mechanical_energy_control_method') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Isolation Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #6610f2 0%, #4c0fb8 100%);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                <i class="fas fa-industry me-2"></i>Process Isolation
+                            </h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="process_enabled" name="process_enabled" value="1" {{ old('process_enabled') ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
+                                <label class="form-check-label ms-2" for="process_enabled">Aktifkan</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" id="process_body" style="{{ old('process_enabled') ? '' : 'display: none;' }}">
+                        <!-- Process Isolation Table -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">No.</th>
+                                        <th>Isolation Description</th>
+                                        <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                                        <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                                        <th style="width: 100px;" class="text-center">Zero Energy</th>
+                                        <th style="width: 100px;" class="text-center">Try Out</th>
+                                        <th style="width: 100px;" class="text-center">Removal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for($i = 0; $i <= 5; $i++)
+                                    <tr>
+                                        <td class="text-center"><strong>P{{ $i }}</strong></td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="process_isolations[{{ $i }}][description]" 
+                                                   value="{{ old('process_isolations.'.$i.'.description') }}" 
+                                                   placeholder="Deskripsi isolasi...">
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="process_isolations[{{ $i }}][stop_isolate]" 
+                                                   value="1" {{ old('process_isolations.'.$i.'.stop_isolate') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="process_isolations[{{ $i }}][lock_tag]" 
+                                                   value="1" {{ old('process_isolations.'.$i.'.lock_tag') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="process_isolations[{{ $i }}][zero_energy]" 
+                                                   value="1" {{ old('process_isolations.'.$i.'.zero_energy') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="process_isolations[{{ $i }}][try_out]" 
+                                                   value="1" {{ old('process_isolations.'.$i.'.try_out') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="process_isolations[{{ $i }}][removal]" 
+                                                   value="1" {{ old('process_isolations.'.$i.'.removal') ? 'checked' : '' }}>
+                                        </td>
+                                    </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Energy Control Method -->
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="process_energy_control_method" class="form-label">Metode untuk mengendalikan energi yang tersimpan:</label>
+                                <textarea class="form-control" id="process_energy_control_method" 
+                                          name="process_energy_control_method" rows="4" 
+                                          placeholder="Jelaskan metode pengendalian energi...">{{ old('process_energy_control_method') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utility Isolation Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #e83e8c 0%, #c71d6f 100%);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                                <i class="fas fa-plug me-2"></i>Utility Isolation
+                            </h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="utility_enabled" name="utility_enabled" value="1" {{ old('utility_enabled') ? 'checked' : '' }} style="width: 3em; height: 1.5em;">
+                                <label class="form-check-label ms-2" for="utility_enabled">Aktifkan</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" id="utility_body" style="{{ old('utility_enabled') ? '' : 'display: none;' }}">
+                        <!-- Utility Isolation Table -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">No.</th>
+                                        <th>Isolation Description</th>
+                                        <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                                        <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                                        <th style="width: 100px;" class="text-center">Zero Energy</th>
+                                        <th style="width: 100px;" class="text-center">Try Out</th>
+                                        <th style="width: 100px;" class="text-center">Removal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for($i = 0; $i <= 5; $i++)
+                                    <tr>
+                                        <td class="text-center"><strong>U{{ $i }}</strong></td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="utility_isolations[{{ $i }}][description]" 
+                                                   value="{{ old('utility_isolations.'.$i.'.description') }}" 
+                                                   placeholder="Deskripsi isolasi...">
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="utility_isolations[{{ $i }}][stop_isolate]" 
+                                                   value="1" {{ old('utility_isolations.'.$i.'.stop_isolate') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="utility_isolations[{{ $i }}][lock_tag]" 
+                                                   value="1" {{ old('utility_isolations.'.$i.'.lock_tag') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="utility_isolations[{{ $i }}][zero_energy]" 
+                                                   value="1" {{ old('utility_isolations.'.$i.'.zero_energy') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="utility_isolations[{{ $i }}][try_out]" 
+                                                   value="1" {{ old('utility_isolations.'.$i.'.try_out') ? 'checked' : '' }}>
+                                        </td>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="form-check-input" 
+                                                   name="utility_isolations[{{ $i }}][removal]" 
+                                                   value="1" {{ old('utility_isolations.'.$i.'.removal') ? 'checked' : '' }}>
+                                        </td>
+                                    </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Energy Control Method -->
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="utility_energy_control_method" class="form-label">Metode untuk mengendalikan energi yang tersimpan:</label>
+                                <textarea class="form-control" id="utility_energy_control_method" 
+                                          name="utility_energy_control_method" rows="4" 
+                                          placeholder="Jelaskan metode pengendalian energi...">{{ old('utility_energy_control_method') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Isolasi Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #6f42c1 0%, #563d7c 100%);">
+                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-clipboard-check me-2"></i>Verifikasi Isolasi
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Daerah yang terpengaruh -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="affected_area" class="form-label mb-0" style="flex: 1;">Daerah yang akan terpengaruh oleh isolasi?</label>
+                                <input type="text" class="form-control" id="affected_area" name="affected_area" 
+                                       style="max-width: 400px;" value="{{ old('affected_area') }}">
+                            </div>
+                        </div>
+
+                        <!-- Question 1 -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <p class="mb-0" style="flex: 1;">Semua individu yang terkena dampak (termasuk yang tidak berada di area terdekat) diberitahu tentang isolasi, untuk tetap menjauh dan tidak mencoba mengoperasikan peralatan</p>
+                                <div class="d-flex gap-3 ms-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="all_individuals_informed" id="all_individuals_informed_ya" value="ya" {{ old('all_individuals_informed') == 'ya' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="all_individuals_informed_ya">Ya</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="all_individuals_informed" id="all_individuals_informed_tidak" value="tidak" {{ old('all_individuals_informed') == 'tidak' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="all_individuals_informed_tidak">Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <p class="mb-0" style="flex: 1;">Semua orang yang bekerja pada peralatan <strong class="text-danger">HARUS</strong> LOTOTO secara individual dengan kunci pribadi dan merupakan satu-satunya yang berwenang untuk melepasnya.</p>
+                                <div class="d-flex gap-3 ms-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="individual_lototo_required" id="individual_lototo_required_ya" value="ya" {{ old('individual_lototo_required') == 'ya' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="individual_lototo_required_ya">Ya</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="individual_lototo_required" id="individual_lototo_required_tidak" value="tidak" {{ old('individual_lototo_required') == 'tidak' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="individual_lototo_required_tidak">Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question 3 -->
+                        <div class="mb-0">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <p class="mb-0" style="flex: 1;">PtW Issuer <strong class="text-danger">HARUS</strong> memiliki kunci LOTOTO pada setiap isolasi (atau kotak LoToTo terkait).</p>
+                                <div class="d-flex gap-3 ms-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ptw_issuer_lototo_key" id="ptw_issuer_lototo_key_ya" value="ya" {{ old('ptw_issuer_lototo_key') == 'ya' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="ptw_issuer_lototo_key_ya">Ya</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="ptw_issuer_lototo_key" id="ptw_issuer_lototo_key_tidak" value="tidak" {{ old('ptw_issuer_lototo_key') == 'tidak' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="ptw_issuer_lototo_key_tidak">Tidak</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Line Breaking Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #fd7e14 0%, #dc6a12 100%);">
+                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-unlink me-2"></i>Line Breaking
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Konten baris sebelumnya -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <label for="line_content_before" class="form-label mb-0" style="flex: 1;">Konten baris sebelumnya:</label>
+                                <input type="text" class="form-control" id="line_content_before" name="line_content_before" 
+                                       style="max-width: 400px;" value="{{ old('line_content_before') }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Left Column -->
                             <div class="col-md-6">
-                                <h6 class="mb-3" style="font-weight: 600; color: #495057;">Panel Listrik:</h6>
-                                
-                                <!-- Bekerja pada panel listrik -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label class="form-label" style="font-weight: 500;">Bekerja pada panel listrik?</label>
+                                <!-- Question 1 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Tidak ada tekanan sisa di saluran</label>
                                         <div class="d-flex gap-3">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="bekerja_panel_listrik" id="panel_listrik_ya" value="ya" {{ old('bekerja_panel_listrik') == 'ya' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="panel_listrik_ya">Ya</label>
+                                                <input class="form-check-input" type="radio" name="lb_no_residual_pressure" id="lb_no_residual_pressure_ya" value="ya" {{ old('lb_no_residual_pressure') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_no_residual_pressure_ya">Ya</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="bekerja_panel_listrik" id="panel_listrik_tidak" value="tidak" {{ old('bekerja_panel_listrik') == 'tidak' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="panel_listrik_tidak">Tidak</label>
+                                                <input class="form-check-input" type="radio" name="lb_no_residual_pressure" id="lb_no_residual_pressure_tidak" value="tidak" {{ old('lb_no_residual_pressure') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_no_residual_pressure_tidak">Tidak</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Referensi Manual -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label for="referensi_manual_panel" class="form-label" style="font-weight: 500;">Referensi Manual</label>
-                                        <input type="text" class="form-control" id="referensi_manual_panel" name="referensi_manual_panel" 
-                                               value="{{ old('referensi_manual_panel') }}" placeholder="Masukkan referensi manual">
-                                    </div>
-                                </div>
-
-                                <!-- Panel Listrik Items -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <!-- Saklar diposisi OFF -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Saklar diposisi "OFF" dan digembok?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="saklar_diposisi_off" id="saklar_off_ya" value="ya" {{ old('saklar_diposisi_off') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="saklar_off_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="saklar_diposisi_off" id="saklar_off_tidak" value="tidak" {{ old('saklar_diposisi_off') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="saklar_off_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tag dipasang -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Tag dipasang?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="tag_dipasang_panel" id="tag_panel_ya" value="ya" {{ old('tag_dipasang_panel') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="tag_panel_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="tag_dipasang_panel" id="tag_panel_tidak" value="tidak" {{ old('tag_dipasang_panel') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="tag_panel_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Sekring/CB dimatikan -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Sekring/CB dimatikan/dicabut?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="sekring_cb_dimatikan" id="sekring_cb_ya" value="ya" {{ old('sekring_cb_dimatikan') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="sekring_cb_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="sekring_cb_dimatikan" id="sekring_cb_tidak" value="tidak" {{ old('sekring_cb_dimatikan') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="sekring_cb_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Panel OFF -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Panel OFF?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="panel_off_panel" id="panel_off_ya" value="ya" {{ old('panel_off_panel') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="panel_off_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="panel_off_panel" id="panel_off_tidak" value="tidak" {{ old('panel_off_panel') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="panel_off_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <h6 class="mb-3" style="font-weight: 600; color: #495057;">Sistem Mekanis:</h6>
-                                
-                                <!-- Bekerja pada sistem mekanis -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label class="form-label" style="font-weight: 500;">Bekerja pada sistem mekanis?</label>
+                                <!-- Question 2 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Katup pembuangan terbuka dan tidak tersumbat</label>
                                         <div class="d-flex gap-3">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="bekerja_sistem_mekanis" id="sistem_mekanis_ya" value="ya" {{ old('bekerja_sistem_mekanis') == 'ya' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="sistem_mekanis_ya">Ya</label>
+                                                <input class="form-check-input" type="radio" name="lb_drain_valve_open" id="lb_drain_valve_open_ya" value="ya" {{ old('lb_drain_valve_open') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_drain_valve_open_ya">Ya</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="bekerja_sistem_mekanis" id="sistem_mekanis_tidak" value="tidak" {{ old('bekerja_sistem_mekanis') == 'tidak' ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="sistem_mekanis_tidak">Tidak</label>
+                                                <input class="form-check-input" type="radio" name="lb_drain_valve_open" id="lb_drain_valve_open_tidak" value="tidak" {{ old('lb_drain_valve_open') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_drain_valve_open_tidak">Tidak</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Referensi Manual -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label for="referensi_manual_sistem" class="form-label" style="font-weight: 500;">Referensi Manual</label>
-                                        <input type="text" class="form-control" id="referensi_manual_sistem" name="referensi_manual_sistem" 
-                                               value="{{ old('referensi_manual_sistem') }}" placeholder="Masukkan referensi manual">
-                                    </div>
-                                </div>
-
-                                <!-- Sistem Mekanis Items -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <!-- Safety switch 3-phase -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Safety switch 3-phase diposisi "OFF" dan digembok?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="safety_switch_off" id="safety_switch_ya" value="ya" {{ old('safety_switch_off') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="safety_switch_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="safety_switch_off" id="safety_switch_tidak" value="tidak" {{ old('safety_switch_off') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="safety_switch_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tag dipasang sistem -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Tag dipasang?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="tag_dipasang_sistem" id="tag_sistem_ya" value="ya" {{ old('tag_dipasang_sistem') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="tag_sistem_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="tag_dipasang_sistem" id="tag_sistem_tidak" value="tidak" {{ old('tag_dipasang_sistem') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="tag_sistem_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Sekring/CB sistem -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Sekring/CB dimatikan/dicabut?</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="sekring_cb_sistem_dimatikan" id="sekring_sistem_ya" value="ya" {{ old('sekring_cb_sistem_dimatikan') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="sekring_sistem_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="sekring_cb_sistem_dimatikan" id="sekring_sistem_tidak" value="tidak" {{ old('sekring_cb_sistem_dimatikan') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="sekring_sistem_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Sudah dicoba dinyalakan -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Sudah dicoba dinyalakan dan terbukti 'OFF'</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="sudah_dicoba_dinyalakan" id="dicoba_nyala_ya" value="ya" {{ old('sudah_dicoba_dinyalakan') == 'ya' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="dicoba_nyala_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="sudah_dicoba_dinyalakan" id="dicoba_nyala_tidak" value="tidak" {{ old('sudah_dicoba_dinyalakan') == 'tidak' ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="dicoba_nyala_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tes Listrik Card -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none;">
-                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            <i class="fas fa-bolt me-2"></i>Tes Listrik
-                        </h5>
-                    </div>
-                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
-                        
-                        <div class="row">
-                            <!-- Left Section -->
-                            <div class="col-md-6">
-                                <!-- Membutuhkan tes dengan listrik ON -->
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-8">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Membutuhkan tes dengan listrik ON?</label>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="membutuhkan_tes_listrik_on" id="tes_listrik_ya" value="ya" {{ old('membutuhkan_tes_listrik_on') == 'ya' ? 'checked' : '' }} onchange="toggleTestListrikFields()">
-                                            <label class="form-check-label" for="tes_listrik_ya" style="font-size: 12px;">Ya</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="membutuhkan_tes_listrik_on" id="tes_listrik_tidak" value="tidak" {{ old('membutuhkan_tes_listrik_on') == 'tidak' ? 'checked' : '' }} onchange="toggleTestListrikFields()">
-                                            <label class="form-check-label" for="tes_listrik_tidak" style="font-size: 12px;">Tidak</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Jika Y detailkan item di bawah -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label style="font-size: 13px; font-weight: 500; margin-bottom: 10px;">Jika "Y" detailkan item di bawah:</label>
-                                        
-                                        <!-- Safety barrier -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Safety barrier</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="safety_barrier" id="safety_barrier_ya" value="ya" {{ old('safety_barrier') == 'ya' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="safety_barrier_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="safety_barrier" id="safety_barrier_tidak" value="tidak" {{ old('safety_barrier') == 'tidak' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="safety_barrier_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Full face protection -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Full face protection</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="full_face_protection" id="full_face_ya" value="ya" {{ old('full_face_protection') == 'ya' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="full_face_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="full_face_protection" id="full_face_tidak" value="tidak" {{ old('full_face_protection') == 'tidak' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="full_face_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Insulated gloves -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Insulated gloves</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="insulated_gloves" id="gloves_ya" value="ya" {{ old('insulated_gloves') == 'ya' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="gloves_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="insulated_gloves" id="gloves_tidak" value="tidak" {{ old('insulated_gloves') == 'tidak' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="gloves_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Insulated mat -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Insulated mat</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="insulated_mat" id="mat_ya" value="ya" {{ old('insulated_mat') == 'ya' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="mat_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="insulated_mat" id="mat_tidak" value="tidak" {{ old('insulated_mat') == 'tidak' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="mat_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Full length sleeves -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Full length sleeves</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="full_length_sleeves" id="sleeves_ya" value="ya" {{ old('full_length_sleeves') == 'ya' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="sleeves_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="full_length_sleeves" id="sleeves_tidak" value="tidak" {{ old('full_length_sleeves') == 'tidak' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="sleeves_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Tool insulation satisfactory -->
-                                        <div class="row mb-2 align-items-center">
-                                            <div class="col-8">
-                                                <label style="font-size: 13px; margin-bottom: 0;">Tool insulation satisfactory</label>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="tool_insulation_satisfactory" id="tool_ya" value="ya" {{ old('tool_insulation_satisfactory') == 'ya' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="tool_ya" style="font-size: 12px;">Ya</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-2 text-center">
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input tes-listrik-field" type="radio" name="tool_insulation_satisfactory" id="tool_tidak" value="tidak" {{ old('tool_insulation_satisfactory') == 'tidak' ? 'checked' : '' }} disabled>
-                                                    <label class="form-check-label" for="tool_tidak" style="font-size: 12px;">Tidak</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Right Section -->
-                            <div class="col-md-6">
-                                <!-- Maximum voltage -->
-                                <div class="row mb-3">
-                                    <div class="col-8">
-                                        <label for="maximum_voltage" class="form-label" style="font-weight: 500;">maximum voltage?</label>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="input-group">
-                                            <input type="number" class="form-control tes-listrik-field" id="maximum_voltage" name="maximum_voltage" 
-                                                   value="{{ old('maximum_voltage') }}" placeholder="0" disabled>
-                                            <span class="input-group-text" style="font-size: 12px;">Volt</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Alasan untuk live test -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label for="alasan_live_test" class="form-label" style="font-weight: 500; color: #dc3545;">Alasan untuk live test: MANDATORY</label>
-                                        <textarea class="form-control tes-listrik-field" id="alasan_live_test" name="alasan_live_test" rows="4" 
-                                                  placeholder="Masukkan alasan mengapa live test diperlukan..." disabled>{{ old('alasan_live_test') }}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Isolasi Utility Card -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header" style="background: linear-gradient(135deg, #6f42c1 0%, #563d7c 100%); color: white; border: none;">
-                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            <i class="fas fa-wrench me-2"></i>Isolasi Utility (pilih yang relevan)
-                        </h5>
-                    </div>
-                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
-                        
-                        <!-- Utility Isolation Matrix -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" style="font-size: 14px;">
-                                        <thead style="background-color: #e9ecef;">
-                                            <tr>
-                                                <th style="width: 25%; font-weight: 600;">Medium</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">off</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">secured/locked</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">checked</th>
-                                                <th style="width: 18.75%; text-align: center; font-weight: 600;">tagged</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Listrik -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Listrik</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_listrik_off" value="1" {{ old('utility_listrik_off') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_listrik_secured" value="1" {{ old('utility_listrik_secured') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_listrik_checked" value="1" {{ old('utility_listrik_checked') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_listrik_tagged" value="1" {{ old('utility_listrik_tagged') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Cooling water -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Cooling water</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_cooling_water_off" value="1" {{ old('utility_cooling_water_off') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_cooling_water_secured" value="1" {{ old('utility_cooling_water_secured') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_cooling_water_checked" value="1" {{ old('utility_cooling_water_checked') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_cooling_water_tagged" value="1" {{ old('utility_cooling_water_tagged') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Oil Hidrolik -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Oil Hidrolik</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_oil_hidrolik_off" value="1" {{ old('utility_oil_hidrolik_off') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_oil_hidrolik_secured" value="1" {{ old('utility_oil_hidrolik_secured') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_oil_hidrolik_checked" value="1" {{ old('utility_oil_hidrolik_checked') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_oil_hidrolik_tagged" value="1" {{ old('utility_oil_hidrolik_tagged') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Kompresor -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Kompresor</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_kompresor_off" value="1" {{ old('utility_kompresor_off') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_kompresor_secured" value="1" {{ old('utility_kompresor_secured') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_kompresor_checked" value="1" {{ old('utility_kompresor_checked') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_kompresor_tagged" value="1" {{ old('utility_kompresor_tagged') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Vacuum -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Vacuum</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_vacuum_off" value="1" {{ old('utility_vacuum_off') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_vacuum_secured" value="1" {{ old('utility_vacuum_secured') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_vacuum_checked" value="1" {{ old('utility_vacuum_checked') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_vacuum_tagged" value="1" {{ old('utility_vacuum_tagged') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Gas -->
-                                            <tr>
-                                                <td style="font-weight: 500;">Gas</td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_gas_off" value="1" {{ old('utility_gas_off') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_gas_secured" value="1" {{ old('utility_gas_secured') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_gas_checked" value="1" {{ old('utility_gas_checked') ? 'checked' : '' }}>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input" name="utility_gas_tagged" value="1" {{ old('utility_gas_tagged') ? 'checked' : '' }}>
-                                                </td>
-                                            </tr>
-                                            
-                                            <!-- Lainnya -->
-                                            <tr>
-                                                <td style="font-weight: 500;">
-                                                    Lainnya: 
-                                                    <input type="text" class="form-control form-control-sm mt-1" id="utility_lainnya_nama" name="utility_lainnya_nama" 
-                                                           value="{{ old('utility_lainnya_nama') }}" placeholder="Sebutkan..." style="font-size: 12px;" 
-                                                           oninput="toggleLainnyaCheckboxes()">
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input utility-lainnya-checkbox" name="utility_lainnya_off" value="1" {{ old('utility_lainnya_off') ? 'checked' : '' }} disabled>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input utility-lainnya-checkbox" name="utility_lainnya_secured" value="1" {{ old('utility_lainnya_secured') ? 'checked' : '' }} disabled>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input utility-lainnya-checkbox" name="utility_lainnya_checked" value="1" {{ old('utility_lainnya_checked') ? 'checked' : '' }} disabled>
-                                                </td>
-                                                <td style="text-align: center;">
-                                                    <input type="checkbox" class="form-check-input utility-lainnya-checkbox" name="utility_lainnya_tagged" value="1" {{ old('utility_lainnya_tagged') ? 'checked' : '' }} disabled>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                <!-- Error message for utility lainnya validation -->
-                                @error('utility_lainnya_checkboxes')
-                                    <div class="alert alert-danger mt-2" style="font-size: 13px;">
-                                        <i class="fas fa-exclamation-triangle me-1"></i>{{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Line diisolasi dengan plat -->
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-6">
-                                <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Line diisolasi dengan plat?</label>
-                            </div>
-                            <div class="col-3 text-center">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="line_diisolasi_plat" id="line_plat_ya" value="ya" {{ old('line_diisolasi_plat') == 'ya' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="line_plat_ya" style="font-size: 12px;">Ya</label>
-                                </div>
-                            </div>
-                            <div class="col-3 text-center">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="line_diisolasi_plat" id="line_plat_tidak" value="tidak" {{ old('line_diisolasi_plat') == 'tidak' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="line_plat_tidak" style="font-size: 12px;">Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Alasan dan deskripsi isolasi -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <label for="alasan_deskripsi_isolasi" class="form-label" style="font-weight: 500;">Jika "Tidak" berikan alasannya dan deskripsikan bagaimana isolasi akan dilakukan:</label>
-                                <textarea class="form-control" id="alasan_deskripsi_isolasi" name="alasan_deskripsi_isolasi" rows="3" 
-                                          placeholder="Masukkan alasan dan deskripsi isolasi...">{{ old('alasan_deskripsi_isolasi') }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Area yang terdampak isolasi -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <label for="area_terdampak_isolasi" class="form-label" style="font-weight: 500;">Area yang terdampak isolasi?</label>
-                                <input type="text" class="form-control" id="area_terdampak_isolasi" name="area_terdampak_isolasi" 
-                                       value="{{ old('area_terdampak_isolasi') }}" placeholder="Sebutkan area yang terdampak...">
-                            </div>
-                        </div>
-
-                        <!-- Apakah area tersebut sudah diberitahu -->
-                        <div class="row mb-3 align-items-center">
-                            <div class="col-6">
-                                <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Apakah area tersebut sudah diberitahu?</label>
-                            </div>
-                            <div class="col-3 text-center">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="area_sudah_diberitahu" id="area_diberitahu_ya" value="ya" {{ old('area_sudah_diberitahu') == 'ya' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="area_diberitahu_ya" style="font-size: 12px;">Ya</label>
-                                </div>
-                            </div>
-                            <div class="col-3 text-center">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="area_sudah_diberitahu" id="area_diberitahu_tidak" value="tidak" {{ old('area_sudah_diberitahu') == 'tidak' ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="area_diberitahu_tidak" style="font-size: 12px;">Tidak</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mematikan Pipa Card -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none;">
-                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Mematikan Pipa
-                        </h5>
-                    </div>
-                    <div class="card-body" style="background: #f8f9fa; padding: 25px;">
-                        
-                        <!-- Isi dari line/pipa -->
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                <label for="isi_line_pipa" class="form-label" style="font-weight: 500;">Isi dari line/pipa:</label>
-                                <input type="text" class="form-control" id="isi_line_pipa" name="isi_line_pipa" 
-                                       value="{{ old('isi_line_pipa') }}" placeholder="Sebutkan isi dari line/pipa...">
-                            </div>
-                        </div>
-
-                        <!-- Left Section -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <!-- Tidak ada sisa tekanan dalam pipa -->
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-8">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Tidak ada sisa tekanan dalam pipa</label>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="tidak_ada_sisa_tekanan" id="sisa_tekanan_ya" value="ya" {{ old('tidak_ada_sisa_tekanan') == 'ya' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="sisa_tekanan_ya" style="font-size: 12px;">Ya</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="tidak_ada_sisa_tekanan" id="sisa_tekanan_tidak" value="tidak" {{ old('tidak_ada_sisa_tekanan') == 'tidak' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="sisa_tekanan_tidak" style="font-size: 12px;">Tidak</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Drain/bleed valves terbuka dan tidak terblok -->
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-8">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Drain/bleed valves terbuka dan tidak terblok</label>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="drain_bleed_valves" id="drain_valves_ya" value="ya" {{ old('drain_bleed_valves') == 'ya' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="drain_valves_ya" style="font-size: 12px;">Ya</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="drain_bleed_valves" id="drain_valves_tidak" value="tidak" {{ old('drain_bleed_valves') == 'tidak' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="drain_valves_tidak" style="font-size: 12px;">Tidak</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Pipa di-purged dengan -->
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 10px;">Pipa di-purged dengan:</label>
-                                        <div class="d-flex gap-3 flex-wrap">
+                                <!-- Question 3 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Emergency arrangements - showers, extinguisher</label>
+                                        <div class="d-flex gap-3">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="pipa_purged_udara" id="purged_udara" value="1" {{ old('pipa_purged_udara') ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="purged_udara" style="font-size: 13px;">Udara</label>
+                                                <input class="form-check-input" type="radio" name="lb_emergency_arrangements" id="lb_emergency_arrangements_ya" value="ya" {{ old('lb_emergency_arrangements') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_emergency_arrangements_ya">Ya</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="pipa_purged_air" id="purged_air" value="1" {{ old('pipa_purged_air') ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="purged_air" style="font-size: 13px;">Air</label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="pipa_purged_nitrogen" id="purged_nitrogen" value="1" {{ old('pipa_purged_nitrogen') ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="purged_nitrogen" style="font-size: 13px;">Nitrogen</label>
+                                                <input class="form-check-input" type="radio" name="lb_emergency_arrangements" id="lb_emergency_arrangements_tidak" value="tidak" {{ old('lb_emergency_arrangements') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_emergency_arrangements_tidak">Tidak</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Pipa diisolasi dengan plat -->
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-8">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Pipa diisolasi dengan plat</label>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="pipa_diisolasi_plat" id="pipa_plat_ya" value="ya" {{ old('pipa_diisolasi_plat') == 'ya' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="pipa_plat_ya" style="font-size: 12px;">Ya</label>
+                                <!-- Question 4 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Garis diisolasi dengan pelat atau sekop</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_line_isolated" id="lb_line_isolated_ya" value="ya" {{ old('lb_line_isolated') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_line_isolated_ya">Ya</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_line_isolated" id="lb_line_isolated_tidak" value="tidak" {{ old('lb_line_isolated') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_line_isolated_tidak">Tidak</label>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="pipa_diisolasi_plat" id="pipa_plat_tidak" value="tidak" {{ old('pipa_diisolasi_plat') == 'tidak' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="pipa_plat_tidak" style="font-size: 12px;">Tidak</label>
+                                </div>
+
+                                <!-- Question 5 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Garisnya kosong</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_line_empty" id="lb_line_empty_ya" value="ya" {{ old('lb_line_empty') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_line_empty_ya">Ya</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_line_empty" id="lb_line_empty_tidak" value="tidak" {{ old('lb_line_empty') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_line_empty_tidak">Tidak</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Question 6 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Garisnya bersih</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_line_clean" id="lb_line_clean_ya" value="ya" {{ old('lb_line_clean') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_line_clean_ya">Ya</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_line_clean" id="lb_line_clean_tidak" value="tidak" {{ old('lb_line_clean') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_line_clean_tidak">Tidak</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Right Column -->
                             <div class="col-md-6">
-                                <!-- Pipa Kosong -->
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-8">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Pipa Kosong</label>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="pipa_kosong" id="pipa_kosong_ya" value="ya" {{ old('pipa_kosong') == 'ya' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="pipa_kosong_ya" style="font-size: 12px;">Ya</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="pipa_kosong" id="pipa_kosong_tidak" value="tidak" {{ old('pipa_kosong') == 'tidak' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="pipa_kosong_tidak" style="font-size: 12px;">Tidak</label>
+                                <!-- Question 7 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Tidak ada serat asbes/keramik ex: gasket</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_no_asbestos" id="lb_no_asbestos_ya" value="ya" {{ old('lb_no_asbestos') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_no_asbestos_ya">Ya</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_no_asbestos" id="lb_no_asbestos_tidak" value="tidak" {{ old('lb_no_asbestos') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_no_asbestos_tidak">Tidak</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Pipa Bersih -->
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-8">
-                                        <label style="font-size: 14px; font-weight: 500; margin-bottom: 0;">Pipa Bersih</label>
-                                    </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="pipa_bersih" id="pipa_bersih_ya" value="ya" {{ old('pipa_bersih') == 'ya' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="pipa_bersih_ya" style="font-size: 12px;">Ya</label>
+                                <!-- Question 8 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">Saluran/pipa tidak butuh dukungan lebih lanjut</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_pipe_no_support_needed" id="lb_pipe_no_support_needed_ya" value="ya" {{ old('lb_pipe_no_support_needed') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_pipe_no_support_needed_ya">Ya</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_pipe_no_support_needed" id="lb_pipe_no_support_needed_tidak" value="tidak" {{ old('lb_pipe_no_support_needed') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_pipe_no_support_needed_tidak">Tidak</label>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-2 text-center">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="pipa_bersih" id="pipa_bersih_tidak" value="tidak" {{ old('pipa_bersih') == 'tidak' ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="pipa_bersih_tidak" style="font-size: 12px;">Tidak</label>
+                                </div>
+
+                                <!-- Question 9 -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <label class="form-label mb-0">LoToTo/ pengurasan reservoir/kontainer terkait</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_lototo_drainage" id="lb_lototo_drainage_ya" value="ya" {{ old('lb_lototo_drainage') == 'ya' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_lototo_drainage_ya">Ya</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="lb_lototo_drainage" id="lb_lototo_drainage_tidak" value="tidak" {{ old('lb_lototo_drainage') == 'tidak' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="lb_lototo_drainage_tidak">Tidak</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Line purged with -->
+                                <div class="mb-3">
+                                    <label class="form-label">Line purged with:</label>
+                                    <div class="d-flex gap-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="lb_purged_air" id="lb_purged_air" value="1" {{ old('lb_purged_air') ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="lb_purged_air">Air</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="lb_purged_water" id="lb_purged_water" value="1" {{ old('lb_purged_water') ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="lb_purged_water">Water</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="lb_purged_n2" id="lb_purged_n2" value="1" {{ old('lb_purged_n2') ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="lb_purged_n2">N2</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Alasan dan deskripsi isolasi pipa -->
-                        <div class="row mb-3">
+                        <!-- Additional Control -->
+                        <div class="row mt-3">
                             <div class="col-12">
-                                <label for="alasan_deskripsi_isolasi_pipa" class="form-label" style="font-weight: 500;">Jika "Tidak" berikan alasan dan deskripsikan bagaimana isolasi dilakukan:</label>
-                                <textarea class="form-control" id="alasan_deskripsi_isolasi_pipa" name="alasan_deskripsi_isolasi_pipa" rows="3" 
-                                          placeholder="Masukkan alasan dan deskripsi isolasi pipa...">{{ old('alasan_deskripsi_isolasi_pipa') }}</textarea>
+                                <label for="lb_additional_control" class="form-label">Jika "Tidak" untuk salah satu hal di atas, berikan alasan dan jelaskan kontrol tambahan:</label>
+                                <textarea class="form-control" id="lb_additional_control" name="lb_additional_control" rows="4" 
+                                          placeholder="Jelaskan alasan dan kontrol tambahan...">{{ old('lb_additional_control') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -1202,33 +982,6 @@ $(document).ready(function() {
     // Initialize end date and time on page load
     updateEndDate();
     updateEndTime();
-
-    // Handle datetime validation
-    $('#start_datetime').on('change', function() {
-        const startDateTime = this.value;
-        const endDateTimeInput = document.getElementById('end_datetime');
-        
-        if (startDateTime) {
-            // Set minimum end datetime to be same as start datetime
-            endDateTimeInput.min = startDateTime;
-            
-            // If end datetime is already set and is earlier than start, clear it
-            if (endDateTimeInput.value && endDateTimeInput.value < startDateTime) {
-                endDateTimeInput.value = '';
-                alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai. Silakan pilih ulang tanggal selesai.');
-            }
-        }
-    });
-
-    $('#end_datetime').on('change', function() {
-        const endDateTime = this.value;
-        const startDateTime = document.getElementById('start_datetime').value;
-        
-        if (startDateTime && endDateTime && endDateTime < startDateTime) {
-            alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai.');
-            this.value = '';
-        }
-    });
 });
 
 function updateWorkerPhone() {
@@ -1268,57 +1021,44 @@ function updateEndTime() {
     }
 }
 
-function toggleTestListrikFields() {
-    const tesListrikYa = document.getElementById('tes_listrik_ya');
-    const tesListrikFields = document.querySelectorAll('.tes-listrik-field');
-    const alasanTextarea = document.getElementById('alasan_live_test');
+// Toggle Isolation Cards
+function setupIsolationToggle(checkboxId, bodyId, requiredFields) {
+    const checkbox = document.getElementById(checkboxId);
+    const body = document.getElementById(bodyId);
     
-    if (tesListrikYa.checked) {
-        // Enable all fields when "Ya" is selected
-        tesListrikFields.forEach(field => {
-            field.disabled = false;
-        });
-        // Make alasan required when "Ya" is selected
-        alasanTextarea.required = true;
-    } else {
-        // Disable all fields when "Tidak" is selected or nothing is selected
-        tesListrikFields.forEach(field => {
-            field.disabled = true;
-            // Clear the field values when disabled
-            if (field.type === 'radio') {
-                field.checked = false;
-            } else {
-                field.value = '';
-            }
-        });
-        // Remove required attribute when "Tidak" is selected
-        alasanTextarea.required = false;
+    if (!checkbox || !body) return;
+    
+    function toggleSection() {
+        if (checkbox.checked) {
+            body.style.display = 'block';
+            // Add required to specific fields if needed
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) field.setAttribute('required', 'required');
+            });
+        } else {
+            body.style.display = 'none';
+            // Remove required from fields
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) field.removeAttribute('required');
+            });
+            // Also remove required from all inputs inside the body
+            body.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
+        }
     }
+    
+    checkbox.addEventListener('change', toggleSection);
+    // Run on page load
+    toggleSection();
 }
 
-function toggleLainnyaCheckboxes() {
-    const lainnyaInput = document.getElementById('utility_lainnya_nama');
-    const lainnyaCheckboxes = document.querySelectorAll('.utility-lainnya-checkbox');
-    
-    // Check if input has at least 5 characters
-    if (lainnyaInput.value.trim().length >= 5) {
-        // Enable all checkboxes when input has at least 5 characters
-        lainnyaCheckboxes.forEach(checkbox => {
-            checkbox.disabled = false;
-        });
-    } else {
-        // Disable all checkboxes and clear them when input is less than 5 characters
-        lainnyaCheckboxes.forEach(checkbox => {
-            checkbox.disabled = true;
-            checkbox.checked = false; // Clear the checkbox when disabled
-        });
-    }
-}
-
-// Initialize the state on page load
+// Initialize all toggles
 document.addEventListener('DOMContentLoaded', function() {
-    toggleTestListrikFields();
-    toggleLainnyaCheckboxes(); // Initialize lainnya checkboxes state
+    setupIsolationToggle('electrical_enabled', 'electrical_body', ['electrical_hv_ya']);
+    setupIsolationToggle('mechanical_enabled', 'mechanical_body', []);
+    setupIsolationToggle('process_enabled', 'process_body', []);
+    setupIsolationToggle('utility_enabled', 'utility_body', []);
 });
 </script>
 @endpush

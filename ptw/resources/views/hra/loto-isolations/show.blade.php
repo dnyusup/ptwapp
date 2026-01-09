@@ -130,799 +130,719 @@
                     <strong>Work Description:</strong>
                     <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->work_description }}</div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Isolasi Mesin/Tangki Card -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header" style="background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%); color: white; border: none;">
-            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                <i class="fas fa-cogs me-2"></i>Isolasi Mesin/Tangki
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 mb-3">
-                    <strong>Machine/Tank Name:</strong>
-                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->machine_tank_name ?? '-' }}</div>
-                </div>
-            </div>
-            
-            <!-- Equipment Isolation Matrix -->
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th style="background: #f8f9fa; font-weight: 600;">Equipment</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Mati</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Dikunci</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Diperiksa</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Dipasang Tag</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Panel Listrik</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->panel_listrik_mati)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->panel_listrik_dikunci)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->panel_listrik_diperiksa)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->panel_listrik_dipasang_tag)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Pneumatic</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->pneumatic_mati)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->pneumatic_dikunci)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->pneumatic_diperiksa)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->pneumatic_dipasang_tag)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Hydraulic</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->hydraulic_mati)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->hydraulic_dikunci)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->hydraulic_diperiksa)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->hydraulic_dipasang_tag)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Gravitasi</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->gravitasi_mati)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->gravitasi_dikunci)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->gravitasi_diperiksa)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->gravitasi_dipasang_tag)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Spring/Per</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->spring_per_mati)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->spring_per_dikunci)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->spring_per_diperiksa)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->spring_per_dipasang_tag)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Rotasi/Gerakan</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->rotasi_gerakan_mati)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->rotasi_gerakan_dikunci)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->rotasi_gerakan_diperiksa)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->rotasi_gerakan_dipasang_tag)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Isolasi Listrik Card -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white; border: none;">
-            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                <i class="fas fa-bolt me-2"></i>Isolasi Listrik
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Panel Listrik Section -->
-                <div class="col-md-6">
-                    <h6 class="text-primary mb-3"><i class="fas fa-cube me-2"></i>Panel Listrik</h6>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Bekerja Pada Panel Listrik</span>
-                        @if($hraLotoIsolation->bekerja_panel_listrik == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Referensi Manual</span>
-                        @if($hraLotoIsolation->referensi_manual_panel == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Saklar di Posisi OFF</span>
-                        @if($hraLotoIsolation->saklar_diposisi_off == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Tag Dipasang</span>
-                        @if($hraLotoIsolation->tag_dipasang_panel == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Sekring/CB Dimatikan</span>
-                        @if($hraLotoIsolation->sekring_cb_dimatikan == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Panel OFF</span>
-                        @if($hraLotoIsolation->panel_off_panel == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Sistem Mekanis Section -->
-                <div class="col-md-6">
-                    <h6 class="text-primary mb-3"><i class="fas fa-cog me-2"></i>Sistem Mekanis</h6>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Bekerja Pada Sistem Mekanis</span>
-                        @if($hraLotoIsolation->bekerja_sistem_mekanis == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Referensi Manual</span>
-                        @if($hraLotoIsolation->referensi_manual_sistem == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Safety Switch OFF</span>
-                        @if($hraLotoIsolation->safety_switch_off == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Tag Dipasang</span>
-                        @if($hraLotoIsolation->tag_dipasang_sistem == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Sekring/CB Dimatikan</span>
-                        @if($hraLotoIsolation->sekring_cb_sistem_dimatikan == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Sudah Dicoba Dinyalakan</span>
-                        @if($hraLotoIsolation->sudah_dicoba_dinyalakan == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tes Listrik Card -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none;">
-            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                <i class="fas fa-zap me-2"></i>Tes Listrik
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 mb-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong>Membutuhkan tes dengan listrik ON?</strong>
-                        @if($hraLotoIsolation->membutuhkan_tes_listrik_on == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                </div>
-
-                @if($hraLotoIsolation->membutuhkan_tes_listrik_on == 'ya')
-                <!-- Safety Equipment -->
-                <div class="col-12 mb-3">
-                    <h6 class="text-primary mb-3">Safety Equipment</h6>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Safety Barrier</span>
-                                @if($hraLotoIsolation->safety_barrier == 'ya')
-                                    <span class="badge badge-yes">Ya</span>
-                                @else
-                                    <span class="badge badge-no">Tidak</span>
-                                @endif
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Full Face Protection</span>
-                                @if($hraLotoIsolation->full_face_protection == 'ya')
-                                    <span class="badge badge-yes">Ya</span>
-                                @else
-                                    <span class="badge badge-no">Tidak</span>
-                                @endif
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Insulated Gloves</span>
-                                @if($hraLotoIsolation->insulated_gloves == 'ya')
-                                    <span class="badge badge-yes">Ya</span>
-                                @else
-                                    <span class="badge badge-no">Tidak</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Insulated Mat</span>
-                                @if($hraLotoIsolation->insulated_mat == 'ya')
-                                    <span class="badge badge-yes">Ya</span>
-                                @else
-                                    <span class="badge badge-no">Tidak</span>
-                                @endif
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Full Length Sleeves</span>
-                                @if($hraLotoIsolation->full_length_sleeves == 'ya')
-                                    <span class="badge badge-yes">Ya</span>
-                                @else
-                                    <span class="badge badge-no">Tidak</span>
-                                @endif
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Tool Insulation Satisfactory</span>
-                                @if($hraLotoIsolation->tool_insulation_satisfactory == 'ya')
-                                    <span class="badge badge-yes">Ya</span>
-                                @else
-                                    <span class="badge badge-no">Tidak</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Voltage and Reason -->
                 <div class="col-md-6 mb-3">
-                    <strong>Maximum Voltage (V):</strong>
-                    <div class="mt-1">{{ $hraLotoIsolation->maximum_voltage ?? '-' }}</div>
+                    <strong>Status:</strong>
+                    <div class="mt-1">
+                        @if($hraLotoIsolation->status == 'draft')
+                            <span class="badge bg-secondary">Draft</span>
+                        @elseif($hraLotoIsolation->status == 'active')
+                            <span class="badge bg-success">Active</span>
+                        @elseif($hraLotoIsolation->status == 'completed')
+                            <span class="badge bg-info">Completed</span>
+                        @elseif($hraLotoIsolation->status == 'cancelled')
+                            <span class="badge bg-danger">Cancelled</span>
+                        @endif
+                    </div>
                 </div>
-                <div class="col-12 mb-3">
-                    <strong>Alasan Live Test:</strong>
-                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->alasan_live_test ?? '-' }}</div>
+                <div class="col-md-6 mb-3">
+                    <strong>Created At:</strong>
+                    <div class="mt-1">{{ $hraLotoIsolation->created_at->format('d/m/Y H:i') }}</div>
                 </div>
-                @endif
             </div>
         </div>
     </div>
 
-    <!-- Isolasi Utility Card -->
+    <!-- Pre Isolation Card -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header" style="background: linear-gradient(135deg, #6f42c1 0%, #563d7c 100%); color: white; border: none;">
             <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                <i class="fas fa-tools me-2"></i>Isolasi Utility
+                <i class="fas fa-clipboard-check me-2"></i>Pre Isolation
             </h5>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th style="background: #f8f9fa; font-weight: 600;">Medium</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Off</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Secured/Locked</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Checked</th>
-                            <th class="text-center" style="background: #f8f9fa; font-weight: 600;">Tagged</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Listrik</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_listrik_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_listrik_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_listrik_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_listrik_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Cooling water</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_cooling_water_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_cooling_water_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_cooling_water_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_cooling_water_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Oil Hidrolik</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_oil_hidrolik_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_oil_hidrolik_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_oil_hidrolik_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_oil_hidrolik_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Kompresor</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_kompresor_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_kompresor_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_kompresor_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_kompresor_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Vacuum</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_vacuum_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_vacuum_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_vacuum_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_vacuum_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Gas</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_gas_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_gas_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_gas_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_gas_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>{{ $hraLotoIsolation->utility_lainnya_nama ?: 'Lainnya' }}</strong></td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_lainnya_off)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_lainnya_secured)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_lainnya_checked)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                @if($hraLotoIsolation->utility_lainnya_tagged)
-                                    <span class="badge badge-yes">✓</span>
-                                @else
-                                    <span class="badge badge-no">✗</span>
-                                @endif
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Additional Questions -->
-            <div class="row mt-4">
-                <div class="col-md-12 mb-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong>Line di isolasi dengan plat:</strong>
-                        @if($hraLotoIsolation->line_diisolasi_plat == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                </div>
+            <div class="row">
                 <div class="col-12 mb-3">
-                    <strong>Jika "Tidak" berikan alasan dan deskripsikan bagaimana isolasi dilakukan:</strong>
-                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->alasan_deskripsi_isolasi ?? '-' }}</div>
-                </div>
-                <div class="col-12 mb-3">
-                    <strong>Area yang terdampak isolasi:</strong>
-                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->area_terdampak_isolasi ?? '-' }}</div>
-                </div>
-                <div class="col-md-12 mb-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <strong>Area sudah diberitahu:</strong>
-                        @if($hraLotoIsolation->area_sudah_diberitahu == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
+                        <strong>Apakah P&ID dan/atau rencana kelistrikan yang sesuai telah ditinjau?</strong>
+                        <div>
+                            @if($hraLotoIsolation->pid_reviewed == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Mematikan Pipa Card -->
+    <!-- Electrical Isolation Card -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none;">
+        <div class="card-header" style="background: linear-gradient(135deg, #fd7e14 0%, #dc6a12 100%); color: white; border: none;">
             <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                <i class="fas fa-exclamation-triangle me-2"></i>Mematikan Pipa
+                <i class="fas fa-bolt me-2"></i>Electrical Isolation
             </h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-12 mb-3">
-                    <strong>Isi dari line/pipa:</strong>
-                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->isi_line_pipa ?? '-' }}</div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Tidak ada sisa tekanan dalam pipa</span>
-                        @if($hraLotoIsolation->tidak_ada_sisa_tekanan == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Drain/bleed valves terbuka dan tidak terblok</span>
-                        @if($hraLotoIsolation->drain_bleed_valves == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="mb-3">
-                        <strong>Pipa di-purged dengan:</strong>
-                        <div class="mt-2">
-                            @if($hraLotoIsolation->pipa_purged_udara)
-                                <span class="badge badge-info-custom me-2">Udara</span>
-                            @endif
-                            @if($hraLotoIsolation->pipa_purged_air)
-                                <span class="badge badge-info-custom me-2">Air</span>
-                            @endif
-                            @if($hraLotoIsolation->pipa_purged_nitrogen)
-                                <span class="badge badge-info-custom me-2">Nitrogen</span>
-                            @endif
-                            @if(!$hraLotoIsolation->pipa_purged_udara && !$hraLotoIsolation->pipa_purged_air && !$hraLotoIsolation->pipa_purged_nitrogen)
-                                <span class="text-muted">-</span>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Sedang mengerjakan instalasi HV?</strong>
+                        <div>
+                            @if($hraLotoIsolation->electrical_hv_installation == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
                             @endif
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Pipa diisolasi dengan plat</span>
-                        @if($hraLotoIsolation->pipa_diisolasi_plat == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Pipa Kosong</span>
-                        @if($hraLotoIsolation->pipa_kosong == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Pipa Bersih</span>
-                        @if($hraLotoIsolation->pipa_bersih == 'ya')
-                            <span class="badge badge-yes">Ya</span>
-                        @else
-                            <span class="badge badge-no">Tidak</span>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="col-12 mb-3">
-                    <strong>Jika "Tidak" berikan alasan dan deskripsikan bagaimana isolasi dilakukan:</strong>
-                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->alasan_deskripsi_isolasi_pipa ?? '-' }}</div>
                 </div>
             </div>
+
+            <!-- Electrical Isolation Table -->
+            @php
+                $electricalIsolations = json_decode($hraLotoIsolation->electrical_isolations, true) ?? [];
+            @endphp
+            @if(count(array_filter($electricalIsolations, function($item) { return !empty($item['description']); })) > 0)
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">No.</th>
+                            <th>Isolation Description</th>
+                            <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                            <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                            <th style="width: 100px;" class="text-center">Zero Energy</th>
+                            <th style="width: 100px;" class="text-center">Try Out</th>
+                            <th style="width: 100px;" class="text-center">Removal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($electricalIsolations as $index => $isolation)
+                            @if(!empty($isolation['description']))
+                            <tr>
+                                <td class="text-center"><strong>E{{ $index }}</strong></td>
+                                <td>{{ $isolation['description'] }}</td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['stop_isolate']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['lock_tag']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['zero_energy']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['try_out']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['removal']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p class="text-muted mb-3"><em>Tidak ada data isolasi</em></p>
+            @endif
+
+            @if($hraLotoIsolation->electrical_energy_control_method)
+            <div class="row">
+                <div class="col-12">
+                    <strong>Metode untuk mengendalikan energi yang tersimpan:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->electrical_energy_control_method }}</div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Mechanical Isolation Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%); color: white; border: none;">
+            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="fas fa-cogs me-2"></i>Mechanical Isolation
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Yes/No Questions in 2 columns -->
+            <div class="row mb-3">
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Gravitasi</strong>
+                        <div>
+                            @if($hraLotoIsolation->mechanical_gravitasi == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Hidrolik</strong>
+                        <div>
+                            @if($hraLotoIsolation->mechanical_hidrolik == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Kelembaman</strong>
+                        <div>
+                            @if($hraLotoIsolation->mechanical_kelembaman == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Spring</strong>
+                        <div>
+                            @if($hraLotoIsolation->mechanical_spring == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Pneumatik</strong>
+                        <div>
+                            @if($hraLotoIsolation->mechanical_pneumatik == 'ya')
+                                <span class="badge badge-yes">Ya</span>
+                            @else
+                                <span class="badge badge-no">Tidak</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @if($hraLotoIsolation->mechanical_lainnya)
+                <div class="col-md-6 mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>Lainnya</strong>
+                        <span>{{ $hraLotoIsolation->mechanical_lainnya }}</span>
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            <!-- Mechanical Isolation Table -->
+            @php
+                $mechanicalIsolations = json_decode($hraLotoIsolation->mechanical_isolations, true) ?? [];
+            @endphp
+            @if(count(array_filter($mechanicalIsolations, function($item) { return !empty($item['description']); })) > 0)
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">No.</th>
+                            <th>Isolation Description</th>
+                            <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                            <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                            <th style="width: 100px;" class="text-center">Zero Energy</th>
+                            <th style="width: 100px;" class="text-center">Try Out</th>
+                            <th style="width: 100px;" class="text-center">Removal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($mechanicalIsolations as $index => $isolation)
+                            @if(!empty($isolation['description']))
+                            <tr>
+                                <td class="text-center"><strong>M{{ $index }}</strong></td>
+                                <td>{{ $isolation['description'] }}</td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['stop_isolate']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['lock_tag']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['zero_energy']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['try_out']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['removal']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p class="text-muted mb-3"><em>Tidak ada data isolasi</em></p>
+            @endif
+
+            @if($hraLotoIsolation->mechanical_energy_control_method)
+            <div class="row">
+                <div class="col-12">
+                    <strong>Metode untuk mengendalikan energi yang tersimpan:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->mechanical_energy_control_method }}</div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Process Isolation Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #6610f2 0%, #4c0fb8 100%); color: white; border: none;">
+            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="fas fa-industry me-2"></i>Process Isolation
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Process Isolation Table -->
+            @php
+                $processIsolations = json_decode($hraLotoIsolation->process_isolations, true) ?? [];
+            @endphp
+            @if(count(array_filter($processIsolations, function($item) { return !empty($item['description']); })) > 0)
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">No.</th>
+                            <th>Isolation Description</th>
+                            <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                            <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                            <th style="width: 100px;" class="text-center">Zero Energy</th>
+                            <th style="width: 100px;" class="text-center">Try Out</th>
+                            <th style="width: 100px;" class="text-center">Removal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($processIsolations as $index => $isolation)
+                            @if(!empty($isolation['description']))
+                            <tr>
+                                <td class="text-center"><strong>P{{ $index }}</strong></td>
+                                <td>{{ $isolation['description'] }}</td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['stop_isolate']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['lock_tag']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['zero_energy']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['try_out']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['removal']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p class="text-muted mb-3"><em>Tidak ada data isolasi</em></p>
+            @endif
+
+            @if($hraLotoIsolation->process_energy_control_method)
+            <div class="row">
+                <div class="col-12">
+                    <strong>Metode untuk mengendalikan energi yang tersimpan:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->process_energy_control_method }}</div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Utility Isolation Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #e83e8c 0%, #c71d6f 100%); color: white; border: none;">
+            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="fas fa-plug me-2"></i>Utility Isolation
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Utility Isolation Table -->
+            @php
+                $utilityIsolations = json_decode($hraLotoIsolation->utility_isolations, true) ?? [];
+            @endphp
+            @if(count(array_filter($utilityIsolations, function($item) { return !empty($item['description']); })) > 0)
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">No.</th>
+                            <th>Isolation Description</th>
+                            <th style="width: 100px;" class="text-center">Stop & Isolate</th>
+                            <th style="width: 100px;" class="text-center">Lock & Tag</th>
+                            <th style="width: 100px;" class="text-center">Zero Energy</th>
+                            <th style="width: 100px;" class="text-center">Try Out</th>
+                            <th style="width: 100px;" class="text-center">Removal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($utilityIsolations as $index => $isolation)
+                            @if(!empty($isolation['description']))
+                            <tr>
+                                <td class="text-center"><strong>U{{ $index }}</strong></td>
+                                <td>{{ $isolation['description'] }}</td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['stop_isolate']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['lock_tag']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['zero_energy']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['try_out']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if(!empty($isolation['removal']))
+                                        <i class="fas fa-check text-success"></i>
+                                    @else
+                                        <i class="fas fa-times text-muted"></i>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <p class="text-muted mb-3"><em>Tidak ada data isolasi</em></p>
+            @endif
+
+            @if($hraLotoIsolation->utility_energy_control_method)
+            <div class="row">
+                <div class="col-12">
+                    <strong>Metode untuk mengendalikan energi yang tersimpan:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->utility_energy_control_method }}</div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Verification Isolasi Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #6f42c1 0%, #563d7c 100%); color: white; border: none;">
+            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="fas fa-clipboard-check me-2"></i>Verifikasi Isolasi
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Daerah yang akan terpengaruh oleh isolasi:</strong>
+                </div>
+                <div class="col-md-6">
+                    {{ $hraLotoIsolation->affected_area ?? 'N/A' }}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-9">
+                    <p class="mb-0">Semua individu yang terkena dampak (termasuk yang tidak berada di area terdekat) diberitahu tentang isolasi, untuk tetap menjauh dan tidak mencoba mengoperasikan peralatan</p>
+                </div>
+                <div class="col-md-3 text-end">
+                    @if($hraLotoIsolation->all_individuals_informed == 'ya')
+                        <span class="badge bg-success">Ya</span>
+                    @elseif($hraLotoIsolation->all_individuals_informed == 'tidak')
+                        <span class="badge bg-danger">Tidak</span>
+                    @else
+                        <span class="badge bg-secondary">N/A</span>
+                    @endif
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-9">
+                    <p class="mb-0">Semua orang yang bekerja pada peralatan <strong class="text-danger">HARUS</strong> LOTOTO secara individual dengan kunci pribadi dan merupakan satu-satunya yang berwenang untuk melepasnya.</p>
+                </div>
+                <div class="col-md-3 text-end">
+                    @if($hraLotoIsolation->individual_lototo_required == 'ya')
+                        <span class="badge bg-success">Ya</span>
+                    @elseif($hraLotoIsolation->individual_lototo_required == 'tidak')
+                        <span class="badge bg-danger">Tidak</span>
+                    @else
+                        <span class="badge bg-secondary">N/A</span>
+                    @endif
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-9">
+                    <p class="mb-0">PtW Issuer <strong class="text-danger">HARUS</strong> memiliki kunci LOTOTO pada setiap isolasi (atau kotak LoToTo terkait).</p>
+                </div>
+                <div class="col-md-3 text-end">
+                    @if($hraLotoIsolation->ptw_issuer_lototo_key == 'ya')
+                        <span class="badge bg-success">Ya</span>
+                    @elseif($hraLotoIsolation->ptw_issuer_lototo_key == 'tidak')
+                        <span class="badge bg-danger">Tidak</span>
+                    @else
+                        <span class="badge bg-secondary">N/A</span>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line Breaking Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #fd7e14 0%, #dc6a12 100%); color: white; border: none;">
+            <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                <i class="fas fa-unlink me-2"></i>Line Breaking
+            </h5>
+        </div>
+        <div class="card-body">
+            <!-- Konten baris sebelumnya -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <strong>Konten baris sebelumnya:</strong>
+                </div>
+                <div class="col-md-6">
+                    {{ $hraLotoIsolation->line_content_before ?? 'N/A' }}
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6">
+                    <div class="row mb-2">
+                        <div class="col-8">Tidak ada tekanan sisa di saluran</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_no_residual_pressure == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_no_residual_pressure == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">Katup pembuangan terbuka dan tidak tersumbat</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_drain_valve_open == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_drain_valve_open == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">Emergency arrangements - showers, extinguisher</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_emergency_arrangements == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_emergency_arrangements == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">Garis diisolasi dengan pelat atau sekop</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_line_isolated == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_line_isolated == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">Garisnya kosong</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_line_empty == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_line_empty == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">Garisnya bersih</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_line_clean == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_line_clean == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <div class="row mb-2">
+                        <div class="col-8">Tidak ada serat asbes/keramik ex: gasket</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_no_asbestos == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_no_asbestos == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">Saluran/pipa tidak butuh dukungan lebih lanjut</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_pipe_no_support_needed == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_pipe_no_support_needed == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">LoToTo/ pengurasan reservoir/kontainer terkait</div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_lototo_drainage == 'ya')
+                                <span class="badge bg-success">Ya</span>
+                            @elseif($hraLotoIsolation->lb_lototo_drainage == 'tidak')
+                                <span class="badge bg-danger">Tidak</span>
+                            @else
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-8">
+                            <strong>Line purged with:</strong>
+                        </div>
+                        <div class="col-4 text-end">
+                            @if($hraLotoIsolation->lb_purged_air)
+                                <span class="badge bg-info">Air</span>
+                            @endif
+                            @if($hraLotoIsolation->lb_purged_water)
+                                <span class="badge bg-primary">Water</span>
+                            @endif
+                            @if($hraLotoIsolation->lb_purged_n2)
+                                <span class="badge bg-secondary">N2</span>
+                            @endif
+                            @if(!$hraLotoIsolation->lb_purged_air && !$hraLotoIsolation->lb_purged_water && !$hraLotoIsolation->lb_purged_n2)
+                                <span class="badge bg-secondary">N/A</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if($hraLotoIsolation->lb_additional_control)
+            <div class="row mt-3">
+                <div class="col-12">
+                    <strong>Alasan dan kontrol tambahan:</strong>
+                    <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->lb_additional_control }}</div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>
