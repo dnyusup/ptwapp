@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRA Hot Work Approval Request</title>
+    <title>HRA {{ $hraType ?? 'Hot Work' }} Approval Request</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -163,23 +163,23 @@
                     <!-- Header -->
                     <tr>
                         <td class="email-header">
-                            <h1>🔥 HRA Hot Work Approval Request</h1>
+                            <h1>{{ $hraType === 'LOTO/Isolation' ? '🔒' : '🔥' }} HRA {{ $hraType ?? 'Hot Work' }} Approval Request</h1>
                         </td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
                         <td class="email-content">
-                            <p style="font-size: 16px; margin-bottom: 20px;">Dear Location Owner & EHS Team,</p>
+                            <p style="font-size: 16px; margin-bottom: 20px;">Dear EHS Team,</p>
                             
-                            <p style="font-size: 16px; margin-bottom: 20px;">A new HRA Hot Work permit has been submitted and requires your approval. Please review the details below and take the necessary action.</p>
+                            <p style="font-size: 16px; margin-bottom: 20px;">A new HRA {{ $hraType ?? 'Hot Work' }} permit has been submitted and requires your approval. Please review the details below and take the necessary action.</p>
                             
-                            <!-- HRA Hot Work Details Section -->
-                            <div class="section-header">🔥 HRA Hot Work Details</div>
+                            <!-- HRA Details Section -->
+                            <div class="section-header">{{ $hraType === 'LOTO/Isolation' ? '🔒' : '🔥' }} HRA {{ $hraType ?? 'Hot Work' }} Details</div>
                             <table class="info-table" role="presentation" cellspacing="0" cellpadding="0" border="0">
                                 <tr>
                                     <td class="info-label">HRA Number:</td>
-                                    <td class="info-value"><strong>{{ $hraHotWork->hra_permit_number }}</strong></td>
+                                    <td class="info-value"><strong>{{ $hra->hra_permit_number }}</strong></td>
                                 </tr>
                                 <tr>
                                     <td class="info-label">Main Permit:</td>
@@ -187,23 +187,23 @@
                                 </tr>
                                 <tr>
                                     <td class="info-label">Worker Name:</td>
-                                    <td class="info-value">{{ $hraHotWork->worker_name }}</td>
+                                    <td class="info-value">{{ $hra->worker_name }}</td>
                                 </tr>
                                 <tr>
                                     <td class="info-label">Supervisor:</td>
-                                    <td class="info-value">{{ $hraHotWork->supervisor_name }}</td>
+                                    <td class="info-value">{{ $hra->supervisor_name }}</td>
                                 </tr>
                                 <tr>
                                     <td class="info-label">Work Location:</td>
-                                    <td class="info-value">{{ $hraHotWork->work_location }}</td>
+                                    <td class="info-value">{{ $hra->work_location }}</td>
                                 </tr>
                                 <tr>
                                     <td class="info-label">Work Period:</td>
-                                    <td class="info-value">{{ $hraHotWork->start_datetime->format('d/m/Y H:i') }} - {{ $hraHotWork->end_datetime->format('d/m/Y H:i') }}</td>
+                                    <td class="info-value">{{ $hra->start_datetime->format('d/m/Y H:i') }} - {{ $hra->end_datetime->format('d/m/Y H:i') }}</td>
                                 </tr>
                                 <tr>
                                     <td class="info-label">Work Description:</td>
-                                    <td class="info-value">{{ $hraHotWork->work_description }}</td>
+                                    <td class="info-value">{{ $hra->work_description }}</td>
                                 </tr>
                                 <tr>
                                     <td class="info-label">Requested by:</td>
@@ -211,7 +211,7 @@
                                 </tr>
                                 <tr>
                                     <td class="info-label">Request Date:</td>
-                                    <td class="info-value">{{ $hraHotWork->approval_requested_at->format('d/m/Y H:i') }}</td>
+                                    <td class="info-value">{{ $hra->approval_requested_at ? $hra->approval_requested_at->format('d/m/Y H:i') : now()->format('d/m/Y H:i') }}</td>
                                 </tr>
                             </table>
                             
@@ -241,9 +241,9 @@
                                 <tr>
                                     <td class="important-note">
                                         <h4 style="margin-top: 0; color: #856404; font-size: 16px;">⚠️ Important Notes:</h4>
-                                        <p style="margin: 10px 0; font-size: 16px;">• Both Location Owner and EHS Team approval are required for this HRA Hot Work permit</p>
-                                        <p style="margin: 10px 0; font-size: 16px;">• Please review all safety checklist items and fire safety equipment before approving</p>
-                                        <p style="margin-bottom: 0; font-size: 16px;">• Work cannot commence until both approvals are received</p>
+                                        <p style="margin: 10px 0; font-size: 16px;">• EHS Team approval is required for this HRA {{ $hraType ?? 'Hot Work' }} permit</p>
+                                        <p style="margin: 10px 0; font-size: 16px;">• Please review all safety checklist items before approving</p>
+                                        <p style="margin-bottom: 0; font-size: 16px;">• Work cannot commence until approval is received</p>
                                     </td>
                                 </tr>
                             </table>
@@ -253,17 +253,17 @@
                                 <tr>
                                     <td class="action-section">
                                         <p style="margin-top: 0; font-size: 16px; color: #856404; font-weight: bold;">Click the button below to review and process this HRA approval:</p>
-                                        <a href="{{ route('hra.hot-works.show', [$permit, $hraHotWork]) }}" class="action-button">
-                                            🔗 Open HRA Hot Work - Review & Approve
+                                        <a href="{{ $approvalUrl }}" class="action-button">
+                                            🔗 Open HRA {{ $hraType ?? 'Hot Work' }} - Review & Approve
                                         </a>
                                     </td>
                                 </tr>
                             </table>
                             
                             <p style="font-size: 16px; margin: 20px 0;"><strong>To approve or reject this HRA:</strong><br>
-                            1. Click the button above to open the HRA Hot Work page<br>
+                            1. Click the button above to open the HRA {{ $hraType ?? 'Hot Work' }} page<br>
                             2. Review all safety requirements and checklist items<br>
-                            3. Use the approval buttons on the web page based on your role</p>
+                            3. Use the approval buttons on the web page</p>
                             
                             <p style="font-size: 16px; margin: 20px 0;">If you have any questions or concerns, please contact the requestor or EHS team immediately.</p>
                             

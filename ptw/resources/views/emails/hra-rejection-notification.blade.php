@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRA Hot Work Rejected</title>
+    <title>HRA {{ $hraType ?? 'Hot Work' }} Rejected</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -168,16 +168,16 @@
     <div class="email-container">
         <!-- Header -->
         <div class="email-header">
-            <h1>🚫 HRA Hot Work Rejected</h1>
-            <div class="subtitle">{{ $hraHotWork->hra_permit_number }}</div>
+            <h1>🚫 HRA {{ $hraType ?? 'Hot Work' }} Rejected</h1>
+            <div class="subtitle">{{ $hra->hra_permit_number }}</div>
         </div>
 
         <!-- Body -->
         <div class="email-body">
-            <div class="greeting">Dear {{ $hraHotWork->user->name }},</div>
+            <div class="greeting">Dear {{ $hra->user->name ?? 'User' }},</div>
             
             <div class="message">
-                Your HRA Hot Work permit has been <strong>rejected</strong> and requires revision before it can be approved. 
+                Your HRA {{ $hraType ?? 'Hot Work' }} permit has been <strong>rejected</strong> and requires revision before it can be approved. 
                 Please review the rejection reason below and make the necessary corrections.
             </div>
 
@@ -187,7 +187,7 @@
                 <table class="info-table">
                     <tr>
                         <td>Rejected By:</td>
-                        <td><strong>{{ $rejectedBy }}</strong></td>
+                        <td><strong>EHS Team</strong></td>
                     </tr>
                     <tr>
                         <td>Rejection Date:</td>
@@ -202,11 +202,11 @@
 
             <!-- HRA Details -->
             <div class="details-section">
-                <div class="details-title">📋 HRA Hot Work Details</div>
+                <div class="details-title">📋 HRA {{ $hraType ?? 'Hot Work' }} Details</div>
                 <table class="info-table">
                     <tr>
                         <td>HRA Number:</td>
-                        <td><strong>{{ $hraHotWork->hra_permit_number }}</strong></td>
+                        <td><strong>{{ $hra->hra_permit_number }}</strong></td>
                     </tr>
                     <tr>
                         <td>Main Permit:</td>
@@ -218,15 +218,15 @@
                     </tr>
                     <tr>
                         <td>Work Location:</td>
-                        <td>{{ $permit->work_location }}</td>
+                        <td>{{ $hra->work_location ?? $permit->work_location }}</td>
                     </tr>
                     <tr>
                         <td>Worker Name:</td>
-                        <td>{{ $hraHotWork->worker_name }}</td>
+                        <td>{{ $hra->worker_name }}</td>
                     </tr>
                     <tr>
                         <td>Work Period:</td>
-                        <td>{{ $hraHotWork->start_datetime->format('d M Y, H:i') }} to {{ $hraHotWork->end_datetime->format('d M Y, H:i') }}</td>
+                        <td>{{ $hra->start_datetime->format('d M Y, H:i') }} to {{ $hra->end_datetime->format('d M Y, H:i') }}</td>
                     </tr>
                 </table>
             </div>
@@ -236,23 +236,29 @@
                 <div class="next-steps-title">📝 Next Steps</div>
                 <ul>
                     <li>Review the rejection reason carefully</li>
-                    <li>Edit your HRA Hot Work to address the issues mentioned</li>
+                    <li>Edit your HRA {{ $hraType ?? 'Hot Work' }} to address the issues mentioned</li>
                     <li>Resubmit the HRA for approval once corrections are made</li>
-                    <li>Contact the Location Owner or EHS Team if you need clarification</li>
+                    <li>Contact the EHS Team if you need clarification</li>
                 </ul>
             </div>
 
             <!-- Action Button -->
             <div class="action-section">
-                <a href="{{ route('hra.hot-works.show', [$permit, $hraHotWork]) }}" class="btn">
-                    🔧 Edit HRA Hot Work
+                @if(($hraType ?? 'Hot Work') === 'LOTO/Isolation')
+                <a href="{{ route('hra.loto-isolations.show', [$permit, $hra]) }}" class="btn">
+                    🔧 Edit HRA LOTO/Isolation
                 </a>
+                @else
+                <a href="{{ route('hra.hot-works.show', [$permit, $hra]) }}" class="btn">
+                    🔧 Edit HRA {{ $hraType ?? 'Hot Work' }}
+                </a>
+                @endif
             </div>
 
             <!-- Additional Info -->
             <div class="message">
-                <strong>Important:</strong> After making the necessary corrections, you can resubmit your HRA Hot Work for approval. 
-                Both Location Owner and EHS Team approval are required for this permit.
+                <strong>Important:</strong> After making the necessary corrections, you can resubmit your HRA {{ $hraType ?? 'Hot Work' }} for approval. 
+                EHS Team approval is required for this permit.
             </div>
         </div>
 

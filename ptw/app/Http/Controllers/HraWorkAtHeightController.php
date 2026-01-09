@@ -6,7 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\PermitToWork;
 use App\Models\HraWorkAtHeight;
 use App\Models\User;
+use App\Mail\HraApprovalRequest;
+use App\Mail\HraApprovalNotification;
+use App\Mail\HraRejectionNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HraWorkAtHeightController extends Controller
 {
@@ -176,7 +180,18 @@ class HraWorkAtHeightController extends Controller
      */
     public function edit(PermitToWork $permit, HraWorkAtHeight $hraWorkAtHeight)
     {
-        return view('hra.work-at-heights.edit', compact('permit', 'hraWorkAtHeight'));
+        // Load permit with receiver relationship
+        $permit->load('receiver');
+        
+        // Get users from the same company as permit receiver
+        $users = collect();
+        if ($permit->receiver_company_name) {
+            $users = User::whereHas('company', function($query) use ($permit) {
+                $query->where('company_name', $permit->receiver_company_name);
+            })->select('id', 'name', 'email', 'phone')->orderBy('name')->get();
+        }
+        
+        return view('hra.work-at-heights.edit', compact('permit', 'hraWorkAtHeight', 'users'));
     }
 
     /**
@@ -190,8 +205,10 @@ class HraWorkAtHeightController extends Controller
             'worker_phone' => 'nullable|string|max:20',
             'supervisor_name' => 'required|string|max:255',
             'work_location' => 'required|string|max:255',
-            'start_datetime' => 'required|date',
-            'end_datetime' => 'required|date|after:start_datetime',
+            'start_date' => 'required|date',
+            'start_time' => 'required',
+            'end_date' => 'required|date',
+            'end_time' => 'required',
             'work_description' => 'required|string',
             
             // Overhead Hazards
@@ -262,6 +279,13 @@ class HraWorkAtHeightController extends Controller
             'additional_controls' => 'nullable|string|max:2000',
         ]);
         
+        // Combine date and time fields into datetime
+        $validated['start_datetime'] = $validated['start_date'] . ' ' . $validated['start_time'];
+        $validated['end_datetime'] = $validated['end_date'] . ' ' . $validated['end_time'];
+        
+        // Remove the separate date and time fields as they're not needed in database
+        unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
+        
         $hraWorkAtHeight->update($validated);
         
         return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
@@ -315,5 +339,186 @@ class HraWorkAtHeightController extends Controller
         $pdf = \PDF::loadView('hra.work-at-heights.pdf', compact('permit', 'hraWorkAtHeight', 'qrCode', 'permitQrCode'));
         
         return $pdf->download('hra-' . $hraWorkAtHeight->hra_permit_number . '.pdf');
+    }
+
+    /**
+     * Request approval for HRA Work at Height
+     */
+    public function requestApproval(PermitToWork $permit, HraWorkAtHeight $hraWorkAtHeight)
+    {
+        // Load the locationOwner relationship
+        $permit->load('locationOwner');
+        
+        // Check if user is the creator
+        if ($hraWorkAtHeight->user_id !== auth()->id()) {
+            return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+                ->with('error', 'Only the creator can request approval.');
+        }
+
+        // Check if already pending or approved
+        if (!in_array($hraWorkAtHeight->approval_status ?? 'draft', ['draft', 'rejected'])) {
+            return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+                ->with('error', 'Approval has already been requested.');
+        }
+
+        // Update status to pending (only EHS approval required)
+        $hraWorkAtHeight->update([
+            'approval_status' => 'pending',
+            'approval_requested_at' => now(),
+            'ehs_approval' => 'pending',
+        ]);
+
+        // Get Location Owner email for CC
+        $locationOwner = $permit->locationOwner;
+        $ccEmails = [];
+        if ($locationOwner && $locationOwner->email) {
+            $ccEmails[] = $locationOwner->email;
+        }
+
+        // Get all EHS users (role = bekaert, department = EHS)
+        $ehsUsers = User::where('role', 'bekaert')
+                        ->where('department', 'EHS')
+                        ->pluck('email')
+                        ->toArray();
+
+        // Build approval URL
+        $approvalUrl = route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight]);
+
+        // Send notification to all EHS users (with Location Owner CCed)
+        foreach ($ehsUsers as $ehsEmail) {
+            try {
+                $mail = Mail::to($ehsEmail);
+                if (!empty($ccEmails)) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new HraApprovalRequest(
+                    $hraWorkAtHeight,
+                    $permit,
+                    'Work at Height',
+                    $approvalUrl
+                ));
+                $hraWorkAtHeight->update(['ehs_notified' => true]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send HRA Work at Height approval email to EHS: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+            ->with('success', 'Approval request has been sent to EHS team.');
+    }
+
+    /**
+     * Process approval/rejection
+     */
+    public function processApproval(Request $request, PermitToWork $permit, HraWorkAtHeight $hraWorkAtHeight)
+    {
+        // Load permit with locationOwner
+        $permit->load('locationOwner');
+
+        // Only EHS can approve/reject
+        $user = auth()->user();
+        $isEHS = $user->role === 'bekaert' && $user->department === 'EHS';
+
+        if (!$isEHS) {
+            return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+                ->with('error', 'Only EHS team members can process this HRA.');
+        }
+
+        if (!$hraWorkAtHeight->canBeApproved()) {
+            return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+                ->with('error', 'This HRA cannot be processed at this time.');
+        }
+
+        $action = $request->input('action'); // 'approve' or 'reject'
+        $comments = $request->input('comments');
+
+        if ($action === 'approve') {
+            // Process EHS approval
+            $hraWorkAtHeight->update([
+                'ehs_approval' => 'approved',
+                'ehs_approved_at' => now(),
+                'ehs_approved_by' => $user->id,
+                'ehs_comments' => $comments,
+                'approval_status' => 'approved',
+                'final_approved_at' => now(),
+                'status' => 'active',
+            ]);
+
+            // Send approval notification to creator (CC Location Owner and EHS)
+            $creator = $hraWorkAtHeight->user;
+            if ($creator) {
+                try {
+                    $ccEmails = [];
+                    if ($permit->locationOwner) {
+                        $ccEmails[] = $permit->locationOwner->email;
+                    }
+                    $ehsEmails = User::where('role', 'bekaert')
+                                    ->where('department', 'EHS')
+                                    ->pluck('email')
+                                    ->toArray();
+                    $ccEmails = array_merge($ccEmails, $ehsEmails);
+                    $ccEmails = array_unique(array_filter($ccEmails));
+
+                    $mail = Mail::to($creator->email);
+                    if (!empty($ccEmails)) {
+                        $mail->cc($ccEmails);
+                    }
+                    $mail->send(new HraApprovalNotification(
+                        $hraWorkAtHeight,
+                        $permit,
+                        'Work at Height'
+                    ));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send HRA Work at Height approval notification: ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+                ->with('success', 'HRA Work at Height has been approved by EHS.');
+
+        } else {
+            // Process rejection
+            $request->validate(['rejection_reason' => 'required|string|min:10']);
+            
+            $rejectionReason = $request->input('rejection_reason');
+
+            $hraWorkAtHeight->update([
+                'ehs_approval' => 'rejected',
+                'ehs_approved_at' => now(),
+                'ehs_approved_by' => $user->id,
+                'ehs_comments' => $rejectionReason,
+                'approval_status' => 'rejected',
+                'rejection_reason' => $rejectionReason,
+                'rejected_at' => now(),
+                'rejected_by' => $user->id,
+            ]);
+
+            // Send rejection notification to creator (CC Location Owner)
+            $creator = $hraWorkAtHeight->user;
+            if ($creator) {
+                try {
+                    $ccEmails = [];
+                    if ($permit->locationOwner) {
+                        $ccEmails[] = $permit->locationOwner->email;
+                    }
+                    
+                    $mail = Mail::to($creator->email);
+                    if (!empty($ccEmails)) {
+                        $mail->cc($ccEmails);
+                    }
+                    $mail->send(new HraRejectionNotification(
+                        $hraWorkAtHeight,
+                        $permit,
+                        'Work at Height',
+                        $rejectionReason
+                    ));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send HRA Work at Height rejection notification: ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
+                ->with('info', 'HRA Work at Height has been rejected.');
+        }
     }
 }

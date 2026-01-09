@@ -8,23 +8,27 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\HraHotWork;
 use App\Models\PermitToWork;
 
 class HraApprovalRequest extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $hraHotWork;
+    public $hra;
     public $permit;
+    public $hraType;
+    public $approvalUrl;
 
     /**
      * Create a new message instance.
+     * Accepts any HRA model type (HraHotWork, HraLotoIsolation, etc.)
      */
-    public function __construct(HraHotWork $hraHotWork, PermitToWork $permit)
+    public function __construct($hra, PermitToWork $permit, string $hraType = 'Hot Work', string $approvalUrl = '')
     {
-        $this->hraHotWork = $hraHotWork;
+        $this->hra = $hra;
         $this->permit = $permit;
+        $this->hraType = $hraType;
+        $this->approvalUrl = $approvalUrl;
     }
 
     /**
@@ -33,7 +37,7 @@ class HraApprovalRequest extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'HRA Hot Work Approval Request - ' . $this->hraHotWork->hra_permit_number,
+            subject: 'HRA ' . $this->hraType . ' Approval Request - ' . $this->hra->hra_permit_number,
         );
     }
 

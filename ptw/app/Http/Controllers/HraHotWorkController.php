@@ -295,11 +295,11 @@ class HraHotWorkController extends Controller
             return redirect()->back()->with('error', 'Approval can only be requested for draft or rejected HRA.');
         }
 
-        // Update approval status
+        // Update approval status (only EHS approval required)
         $hraHotWork->update([
             'approval_status' => 'pending',
             'approval_requested_at' => now(),
-            'area_owner_approval' => 'pending',
+            'area_owner_approval' => null, // Location Owner is only CCed, not required to approve
             'ehs_approval' => 'pending',
             'area_owner_notified' => false,
             'ehs_notified' => false,
@@ -307,9 +307,12 @@ class HraHotWorkController extends Controller
 
         // Send email notification
         try {
-            // Get location owner email
+            // Get location owner email for CC
             $locationOwner = $permit->locationOwner;
-            $areaOwnerEmail = $locationOwner ? $locationOwner->email : null;
+            $ccEmails = [];
+            if ($locationOwner && $locationOwner->email) {
+                $ccEmails[] = $locationOwner->email;
+            }
             
             // Get all EHS users (role = bekaert, department = EHS)
             $ehsUsers = \App\Models\User::where('role', 'bekaert')
@@ -317,22 +320,23 @@ class HraHotWorkController extends Controller
                                       ->pluck('email')
                                       ->toArray();
             
-            // Combine all recipient emails
-            $recipients = array_filter(array_merge(
-                $areaOwnerEmail ? [$areaOwnerEmail] : [],
-                $ehsUsers
-            ));
+            // Build approval URL
+            $approvalUrl = route('hra.hot-works.show', [$permit, $hraHotWork]);
             
-            if (!empty($recipients)) {
-                \Mail::to($recipients)->send(new \App\Mail\HraApprovalRequest($hraHotWork, $permit));
-                
-                $hraHotWork->update([
-                    'area_owner_notified' => !empty($areaOwnerEmail),
-                    'ehs_notified' => !empty($ehsUsers),
-                ]);
+            // Send email to EHS users with Location Owner CCed
+            foreach ($ehsUsers as $ehsEmail) {
+                $mail = \Mail::to($ehsEmail);
+                if (!empty($ccEmails)) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new \App\Mail\HraApprovalRequest($hraHotWork, $permit, 'Hot Work', $approvalUrl));
             }
             
-            return redirect()->back()->with('success', 'Approval request sent successfully to Area Owner and EHS Team!');
+            $hraHotWork->update([
+                'ehs_notified' => !empty($ehsUsers),
+            ]);
+            
+            return redirect()->back()->with('success', 'Approval request sent successfully to EHS Team!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Approval request updated but email notification failed: ' . $e->getMessage());
         }
@@ -375,105 +379,32 @@ class HraHotWorkController extends Controller
             return redirect()->back()->with('error', 'This HRA cannot be processed at this time.');
         }
 
-        // Determine user role for this approval
-        $isLocationOwner = $permit->locationOwner && $permit->locationOwner->id === auth()->id();
+        // Only EHS can approve/reject
         $isEHS = auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS';
         
-        if (!$isLocationOwner && !$isEHS) {
-            return redirect()->back()->with('error', 'You are not authorized to approve this HRA.');
+        if (!$isEHS) {
+            return redirect()->back()->with('error', 'Only EHS team members can approve this HRA.');
         }
 
         if ($action === 'approve') {
-            // Process approval based on user role
-            if ($isLocationOwner && $hraHotWork->area_owner_approval === 'pending') {
-                $hraHotWork->update([
-                    'area_owner_approval' => 'approved',
-                    'area_owner_approved_at' => now(),
-                    'area_owner_approved_by' => auth()->id(),
-                ]);
-                $approverType = 'Location Owner';
-            } elseif ($isEHS && $hraHotWork->ehs_approval === 'pending') {
+            // Process EHS approval
+            if ($hraHotWork->ehs_approval === 'pending') {
                 $hraHotWork->update([
                     'ehs_approval' => 'approved',
                     'ehs_approved_at' => now(),
                     'ehs_approved_by' => auth()->id(),
                 ]);
-                $approverType = 'EHS Team';
             } else {
-                return redirect()->back()->with('error', 'Your approval is not required or has already been given.');
+                return redirect()->back()->with('error', 'Your approval has already been given.');
             }
             
-            // Check if fully approved
-            $hraHotWork->updateFinalApprovalStatus();
-            
-            // Send notification email if fully approved
-            if ($hraHotWork->approval_status === 'approved') {
-                try {
-                    // Get HRA creator
-                    $hraCreator = $hraHotWork->user;
-                    
-                    // Get CC recipients: Location Owner and EHS Team
-                    $ccRecipients = [];
-                    
-                    // Add Location Owner to CC
-                    if ($permit->locationOwner && $permit->locationOwner->email) {
-                        $ccRecipients[] = $permit->locationOwner->email;
-                    }
-                    
-                    // Add EHS Team to CC
-                    $ehsUsers = \App\Models\User::where('role', 'bekaert')
-                                                ->where('department', 'EHS')
-                                                ->pluck('email')
-                                                ->toArray();
-                    $ccRecipients = array_merge($ccRecipients, $ehsUsers);
-                    
-                    // Remove duplicates and filter out empty emails
-                    $ccRecipients = array_unique(array_filter($ccRecipients));
-                    
-                    // Send email to HRA creator with CC to Location Owner and EHS
-                    if ($hraCreator && $hraCreator->email) {
-                        $mail = \Mail::to($hraCreator->email);
-                        
-                        if (!empty($ccRecipients)) {
-                            $mail->cc($ccRecipients);
-                        }
-                        
-                        $mail->send(new \App\Mail\HraApprovalNotification($hraHotWork, $permit));
-                    }
-                } catch (\Exception $e) {
-                    // Log error but don't fail the approval process
-                    \Log::error('Failed to send HRA approval notification: ' . $e->getMessage());
-                }
-            }
-            
-            return redirect()->route('hra.hot-works.show', [$permit, $hraHotWork])
-                ->with('success', "HRA Hot Work approved by {$approverType} successfully!");
-                
-        } elseif ($action === 'reject') {
-            // Process rejection
-            if (!$rejectionReason) {
-                return redirect()->back()->with('error', 'Rejection reason is required.');
-            }
-            
-            $rejectorType = $isLocationOwner ? 'Location Owner' : 'EHS Team';
-            $rejectorName = auth()->user()->name . ' (' . $rejectorType . ')';
-            
-            // Update HRA status to rejected
+            // EHS approval is the only required approval
             $hraHotWork->update([
-                'approval_status' => 'rejected',
-                'area_owner_approval' => 'pending',  // Reset approvals for resubmission
-                'ehs_approval' => 'pending',
-                'area_owner_approved_at' => null,
-                'area_owner_approved_by' => null,
-                'ehs_approved_at' => null,
-                'ehs_approved_by' => null,
-                'final_approved_at' => null,
-                'rejection_reason' => $rejectionReason,
-                'rejected_at' => now(),
-                'rejected_by' => auth()->id(),
+                'approval_status' => 'approved',
+                'final_approved_at' => now(),
             ]);
             
-            // Send rejection notification email
+            // Send notification email
             try {
                 // Get HRA creator
                 $hraCreator = $hraHotWork->user;
@@ -504,7 +435,59 @@ class HraHotWorkController extends Controller
                         $mail->cc($ccRecipients);
                     }
                     
-                    $mail->send(new \App\Mail\HraRejectionNotification($hraHotWork, $permit, $rejectionReason, $rejectorName));
+                    $mail->send(new \App\Mail\HraApprovalNotification($hraHotWork, $permit, 'Hot Work'));
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the approval process
+                \Log::error('Failed to send HRA approval notification: ' . $e->getMessage());
+            }
+            
+            return redirect()->route('hra.hot-works.show', [$permit, $hraHotWork])
+                ->with('success', 'HRA Hot Work approved by EHS successfully!');
+                
+        } elseif ($action === 'reject') {
+            // Process rejection
+            if (!$rejectionReason) {
+                return redirect()->back()->with('error', 'Rejection reason is required.');
+            }
+            
+            // Update HRA status to rejected
+            $hraHotWork->update([
+                'approval_status' => 'rejected',
+                'ehs_approval' => 'rejected',
+                'ehs_approved_at' => now(),
+                'ehs_approved_by' => auth()->id(),
+                'final_approved_at' => null,
+                'rejection_reason' => $rejectionReason,
+                'rejected_at' => now(),
+                'rejected_by' => auth()->id(),
+            ]);
+            
+            // Send rejection notification email
+            try {
+                // Get HRA creator
+                $hraCreator = $hraHotWork->user;
+                
+                // Get CC recipients: Location Owner
+                $ccRecipients = [];
+                
+                // Add Location Owner to CC
+                if ($permit->locationOwner && $permit->locationOwner->email) {
+                    $ccRecipients[] = $permit->locationOwner->email;
+                }
+                
+                // Remove duplicates and filter out empty emails
+                $ccRecipients = array_unique(array_filter($ccRecipients));
+                
+                // Send email to HRA creator with CC to Location Owner
+                if ($hraCreator && $hraCreator->email) {
+                    $mail = \Mail::to($hraCreator->email);
+                    
+                    if (!empty($ccRecipients)) {
+                        $mail->cc($ccRecipients);
+                    }
+                    
+                    $mail->send(new \App\Mail\HraRejectionNotification($hraHotWork, $permit, 'Hot Work', $rejectionReason));
                 }
             } catch (\Exception $e) {
                 // Log error but don't fail the rejection process
@@ -512,7 +495,7 @@ class HraHotWorkController extends Controller
             }
             
             return redirect()->route('hra.hot-works.show', [$permit, $hraHotWork])
-                ->with('success', "HRA Hot Work rejected by {$rejectorType}. The creator can now edit and resubmit.");
+                ->with('success', 'HRA Hot Work rejected by EHS. The creator can now edit and resubmit.');
         }
 
         return redirect()->back()->with('error', 'Invalid action.');

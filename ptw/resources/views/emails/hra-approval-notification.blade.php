@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRA Hot Work Approved</title>
+    <title>HRA {{ $hraType ?? 'Hot Work' }} Approved</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -190,7 +190,7 @@
         <!-- Header -->
         <tr>
             <td class="email-header">
-                <h1>✅ HRA Hot Work Approved</h1>
+                <h1>✅ HRA {{ $hraType ?? 'Hot Work' }} Approved</h1>
             </td>
         </tr>
         
@@ -199,23 +199,23 @@
             <td class="email-content">
                 <p style="font-size: 16px; margin-bottom: 20px;">Dear HRA Creator,</p>
                 
-                <p>Good news! Your HRA Hot Work permit has been <strong>fully approved</strong> and is now ready for work execution.</p>
+                <p>Good news! Your HRA {{ $hraType ?? 'Hot Work' }} permit has been <strong>approved</strong> and is now ready for work execution.</p>
                 
                 <div class="notice">
                     <strong>🎉 Approval Completed!</strong><br>
-                    Both Location Owner and EHS Team have approved this HRA Hot Work permit. You may now proceed with the hot work activities as outlined in the permit.
+                    EHS Team has approved this HRA {{ $hraType ?? 'Hot Work' }} permit. You may now proceed with the work activities as outlined in the permit.
                 </div>
                 
                 <!-- HRA Details Section -->
                 <table class="info-table">
                     <tr>
                         <td colspan="2">
-                            <div class="section-title">📋 HRA Hot Work Details</div>
+                            <div class="section-title">📋 HRA {{ $hraType ?? 'Hot Work' }} Details</div>
                         </td>
                     </tr>
                     <tr>
                         <td class="info-label">HRA Number:</td>
-                        <td class="info-value">{{ $hraHotWork->hra_permit_number }}</td>
+                        <td class="info-value">{{ $hra->hra_permit_number }}</td>
                     </tr>
                     <tr>
                         <td class="info-label">Main Permit:</td>
@@ -227,18 +227,18 @@
                     </tr>
                     <tr>
                         <td class="info-label">Work Location:</td>
-                        <td class="info-value">{{ $hraHotWork->work_location }}</td>
+                        <td class="info-value">{{ $hra->work_location }}</td>
                     </tr>
                     <tr>
                         <td class="info-label">Worker Name:</td>
-                        <td class="info-value">{{ $hraHotWork->worker_name }}</td>
+                        <td class="info-value">{{ $hra->worker_name }}</td>
                     </tr>
                     <tr>
                         <td class="info-label">Work Period:</td>
                         <td class="info-value">
-                            {{ $hraHotWork->start_datetime ? $hraHotWork->start_datetime->format('d M Y H:i') : 'Not specified' }}
-                            @if($hraHotWork->end_datetime)
-                                <br>to {{ $hraHotWork->end_datetime->format('d M Y H:i') }}
+                            {{ $hra->start_datetime ? $hra->start_datetime->format('d M Y H:i') : 'Not specified' }}
+                            @if($hra->end_datetime)
+                                <br>to {{ $hra->end_datetime->format('d M Y H:i') }}
                             @endif
                         </td>
                     </tr>
@@ -261,22 +261,17 @@
                         <td class="info-label">Location Owner:</td>
                         <td class="info-value">
                             {{ $permit->locationOwner ? $permit->locationOwner->name : 'Not specified' }}
-                            @if($hraHotWork->area_owner_approval === 'approved')
-                                <br><span style="color: #28a745; font-weight: bold;">✅ Approved</span>
-                                @if($hraHotWork->area_owner_approved_at)
-                                    <br><small>{{ $hraHotWork->area_owner_approved_at->format('d M Y H:i') }}</small>
-                                @endif
-                            @endif
+                            <br><small style="color: #6c757d;">(CC only)</small>
                         </td>
                     </tr>
                     <tr>
                         <td class="info-label">EHS Team:</td>
                         <td class="info-value">
                             EHS Department
-                            @if($hraHotWork->ehs_approval === 'approved')
+                            @if($hra->ehs_approval === 'approved')
                                 <br><span style="color: #28a745; font-weight: bold;">✅ Approved</span>
-                                @if($hraHotWork->ehs_approved_at)
-                                    <br><small>{{ $hraHotWork->ehs_approved_at->format('d M Y H:i') }}</small>
+                                @if($hra->ehs_approved_at)
+                                    <br><small>{{ $hra->ehs_approved_at->format('d M Y H:i') }}</small>
                                 @endif
                             @endif
                         </td>
@@ -284,9 +279,9 @@
                     <tr>
                         <td class="info-label">Final Approval:</td>
                         <td class="info-value">
-                            <span style="color: #28a745; font-weight: bold;">✅ Fully Approved</span>
-                            @if($hraHotWork->final_approved_at)
-                                <br><small>{{ $hraHotWork->final_approved_at->format('d M Y H:i') }}</small>
+                            <span style="color: #28a745; font-weight: bold;">✅ Approved</span>
+                            @if($hra->final_approved_at)
+                                <br><small>{{ $hra->final_approved_at->format('d M Y H:i') }}</small>
                             @endif
                         </td>
                     </tr>
@@ -294,9 +289,15 @@
                 
                 <!-- Action Button -->
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="{{ route('hra.hot-works.show', [$permit, $hraHotWork]) }}" class="btn-view">
-                        🔍 View HRA Hot Work Details
+                    @if(($hraType ?? 'Hot Work') === 'LOTO/Isolation')
+                    <a href="{{ route('hra.loto-isolations.show', [$permit, $hra]) }}" class="btn-view">
+                        🔍 View HRA LOTO/Isolation Details
                     </a>
+                    @else
+                    <a href="{{ route('hra.hot-works.show', [$permit, $hra]) }}" class="btn-view">
+                        🔍 View HRA {{ $hraType ?? 'Hot Work' }} Details
+                    </a>
+                    @endif
                 </div>
                 
                 <!-- Important Notes -->
@@ -304,8 +305,13 @@
                     <h4 style="margin: 0 0 10px 0; color: #856404;">⚠️ Important Reminders:</h4>
                     <ul style="margin: 0; padding-left: 20px;">
                         <li>Ensure all safety requirements outlined in the HRA are followed during work execution</li>
+                        @if(($hraType ?? 'Hot Work') === 'Hot Work')
                         <li>Keep fire watch personnel and firefighting equipment readily available</li>
                         <li>Monitor gas levels if gas monitoring is required</li>
+                        @elseif(($hraType ?? 'Hot Work') === 'LOTO/Isolation')
+                        <li>Ensure all isolation points are properly locked and tagged</li>
+                        <li>Verify zero energy state before starting work</li>
+                        @endif
                         <li>Stop work immediately if conditions change or safety concerns arise</li>
                         <li>Complete work within the approved time period</li>
                     </ul>

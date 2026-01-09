@@ -70,26 +70,126 @@
                     HRA Permit: <strong>{{ $hraWorkAtHeight->hra_permit_number }}</strong>
                 </p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <!-- Status Badge -->
+                @if(($hraWorkAtHeight->approval_status ?? 'draft') === 'draft')
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                        <i class="fas fa-file-alt me-2"></i>Draft
+                    </span>
+                @elseif($hraWorkAtHeight->approval_status === 'pending')
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-clock me-2"></i>Waiting for Approval
+                    </span>
+                @elseif($hraWorkAtHeight->approval_status === 'approved')
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        <i class="fas fa-check-circle me-2"></i>Approved
+                    </span>
+                @elseif($hraWorkAtHeight->approval_status === 'rejected')
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="fas fa-times-circle me-2"></i>Rejected
+                    </span>
+                @endif
+                
+                <!-- Back Button -->
                 <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
                 </a>
-                <a href="{{ route('hra.work-at-heights.download-pdf', [$permit, $hraWorkAtHeight]) }}" class="btn btn-danger">
-                    <i class="fas fa-file-pdf me-2"></i>Download PDF
+                
+                <!-- Download PDF Button - only visible when approved -->
+                @if($hraWorkAtHeight->approval_status === 'approved')
+                <a href="{{ route('hra.work-at-heights.download-pdf', [$permit, $hraWorkAtHeight]) }}" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Download PDF
                 </a>
-                @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
-                <a href="{{ route('hra.work-at-heights.edit', [$permit, $hraWorkAtHeight]) }}" class="btn btn-warning">
+                @endif
+                
+                <!-- Action Buttons -->
+                @if(($hraWorkAtHeight->approval_status ?? 'draft') === 'draft')
+                    @if($hraWorkAtHeight->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <button type="button" class="btn btn-info" onclick="requestApproval()">
+                        <i class="fas fa-paper-plane me-2"></i>Request Approval
+                    </button>
+                    @endif
+                @elseif($hraWorkAtHeight->approval_status === 'rejected')
+                    @if($hraWorkAtHeight->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
+                        <i class="fas fa-redo me-2"></i>Re-request Approval
+                    </button>
+                    @endif
+                @endif
+
+                <!-- Edit Button - only visible when not pending or approved -->
+                @if((auth()->user()->role === 'administrator' || auth()->user()->id === $hraWorkAtHeight->user_id) && 
+                    !in_array($hraWorkAtHeight->approval_status ?? 'draft', ['pending', 'approved']))
+                <a href="{{ route('hra.work-at-heights.edit', [$permit, $hraWorkAtHeight]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>
                 @endif
             </div>
         </div>
+        
+        <!-- Approval Actions Section -->
+        @if($hraWorkAtHeight->approval_status === 'pending')
+            @php
+                $canApproveAsEHS = auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS' && $hraWorkAtHeight->ehs_approval === 'pending';
+            @endphp
+            
+            @if($canApproveAsEHS)
+            <div class="mt-3 p-3 bg-light border rounded">
+                <div class="alert alert-info mb-2">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Your approval is required as EHS Team Member</strong>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success" onclick="approveHRA()">
+                        <i class="fas fa-check me-2"></i>Approve
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="rejectHRA()">
+                        <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                </div>
+            </div>
+            @endif
+        @endif
     </div>
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    
+    @if(session('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Rejection Information -->
+    @if($hraWorkAtHeight->approval_status === 'rejected' && $hraWorkAtHeight->rejection_reason)
+        <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5 class="alert-heading mb-2">
+                        <i class="fas fa-times-circle me-2"></i>HRA Work at Height Rejected
+                    </h5>
+                    <p class="mb-2">
+                        <strong>Rejected by:</strong> {{ $hraWorkAtHeight->rejector->name ?? 'System' }} 
+                        @if($hraWorkAtHeight->rejected_at)
+                        <small class="text-muted">on {{ $hraWorkAtHeight->rejected_at->format('d M Y, H:i') }}</small>
+                        @endif
+                    </p>
+                    <div class="rejection-reason bg-white p-3 rounded border-start border-danger border-3">
+                        <strong>Reason for Rejection:</strong><br>
+                        <span class="text-dark">{{ $hraWorkAtHeight->rejection_reason }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
 
@@ -527,5 +627,109 @@
 
 </div>
 
+<!-- Approval Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="approveForm" method="POST" action="{{ route('hra.work-at-heights.process', [$permit, $hraWorkAtHeight]) }}">
+                @csrf
+                <input type="hidden" name="action" value="approve">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i>Approve HRA Work at Height</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to approve HRA Work at Height <strong>{{ $hraWorkAtHeight->hra_permit_number }}</strong>.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Comments (Optional)</label>
+                        <textarea name="comments" class="form-control" rows="3" placeholder="Add any comments..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Approve
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="rejectForm" method="POST" action="{{ route('hra.work-at-heights.process', [$permit, $hraWorkAtHeight]) }}">
+                @csrf
+                <input type="hidden" name="action" value="reject">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Reject HRA Work at Height</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to reject HRA Work at Height <strong>{{ $hraWorkAtHeight->hra_permit_number }}</strong>.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                        <textarea name="rejection_reason" class="form-control" rows="3" required placeholder="Please provide a reason for rejection..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @include('layouts.sidebar-scripts')
+
+@push('scripts')
+<script>
+// Request Approval
+function requestApproval() {
+    Swal.fire({
+        title: 'Request Approval',
+        text: 'Are you sure you want to submit this HRA Work at Height for approval?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Request Approval',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Create and submit form
+            let form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("hra.work-at-heights.request-approval", [$permit, $hraWorkAtHeight]) }}';
+            
+            let csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+// Approve HRA
+function approveHRA() {
+    let modal = new bootstrap.Modal(document.getElementById('approvalModal'));
+    modal.show();
+}
+
+// Reject HRA
+function rejectHRA() {
+    let modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+    modal.show();
+}
+</script>
+@endpush
 @endsection

@@ -8,6 +8,10 @@ use App\Models\PermitToWork;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\HraApprovalRequest;
+use App\Mail\HraApprovalNotification;
+use App\Mail\HraRejectionNotification;
 
 class HraLotoIsolationController extends Controller
 {
@@ -343,5 +347,246 @@ class HraLotoIsolationController extends Controller
         $pdf = \PDF::loadView('hra.loto-isolations.pdf', compact('permit', 'hraLotoIsolation', 'qrCode', 'permitQrCode'));
         
         return $pdf->download('hra-' . $hraLotoIsolation->hra_permit_number . '.pdf');
+    }
+
+    /**
+     * Request approval for HRA LOTO
+     */
+    public function requestApproval(PermitToWork $permit, $hraLotoIsolationId)
+    {
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
+
+        // Check if user is the creator
+        if ($hraLotoIsolation->user_id !== auth()->id()) {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'Only the creator can request approval.');
+        }
+
+        // Check if already pending or approved
+        if ($hraLotoIsolation->approval_status !== 'draft') {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'Approval has already been requested.');
+        }
+
+        // Update status to pending (only EHS approval required)
+        $hraLotoIsolation->update([
+            'approval_status' => 'pending',
+            'approval_requested_at' => now(),
+            'area_owner_approval' => null, // Location Owner is only CCed, not required to approve
+            'ehs_approval' => 'pending',
+        ]);
+
+        // Get Location Owner email for CC
+        $locationOwner = $permit->locationOwner;
+        $locationOwnerEmail = $locationOwner ? $locationOwner->email : null;
+
+        // Get all EHS users (role = bekaert, department = EHS)
+        $ehsUsers = User::where('role', 'bekaert')
+                        ->where('department', 'EHS')
+                        ->pluck('email')
+                        ->toArray();
+
+        // Build approval URL
+        $approvalUrl = route('hra.loto-isolations.approve', [$permit, $hraLotoIsolation]);
+
+        // Prepare CC list (Location Owner)
+        $ccEmails = [];
+        if ($locationOwnerEmail) {
+            $ccEmails[] = $locationOwnerEmail;
+        }
+
+        // Send notification to all EHS users (with Location Owner CCed)
+        foreach ($ehsUsers as $ehsEmail) {
+            try {
+                $mail = Mail::to($ehsEmail);
+                if (!empty($ccEmails)) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new HraApprovalRequest(
+                    $hraLotoIsolation,
+                    $permit,
+                    'LOTO/Isolation',
+                    $approvalUrl
+                ));
+                $hraLotoIsolation->update(['ehs_notified' => true]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send HRA LOTO approval email to EHS: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+            ->with('success', 'Approval request has been sent to EHS team.');
+    }
+
+    /**
+     * Show approval form
+     */
+    public function approve(PermitToWork $permit, $hraLotoIsolationId)
+    {
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
+
+        // Check if user can approve (only EHS team can approve)
+        $user = auth()->user();
+        $isLocationOwner = false; // Location Owner is only CCed, not approver
+        $isEHS = $user->role === 'bekaert' && $user->department === 'EHS';
+
+        if (!$isEHS) {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'Only EHS team members can approve this HRA.');
+        }
+
+        if ($hraLotoIsolation->approval_status !== 'pending') {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'This HRA is not pending approval.');
+        }
+
+        return view('hra.loto-isolations.approve', compact('permit', 'hraLotoIsolation', 'isLocationOwner', 'isEHS'));
+    }
+
+    /**
+     * Show rejection form
+     */
+    public function reject(PermitToWork $permit, $hraLotoIsolationId)
+    {
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
+
+        // Check if user can reject (only EHS team can reject)
+        $user = auth()->user();
+        $isLocationOwner = false; // Location Owner is only CCed, not approver
+        $isEHS = $user->role === 'bekaert' && $user->department === 'EHS';
+
+        if (!$isEHS) {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'Only EHS team members can reject this HRA.');
+        }
+
+        if ($hraLotoIsolation->approval_status !== 'pending') {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'This HRA is not pending approval.');
+        }
+
+        return view('hra.loto-isolations.reject', compact('permit', 'hraLotoIsolation', 'isLocationOwner', 'isEHS'));
+    }
+
+    /**
+     * Process approval/rejection
+     */
+    public function processApproval(Request $request, PermitToWork $permit, $hraLotoIsolationId)
+    {
+        $hraLotoIsolation = HraLotoIsolation::where('id', $hraLotoIsolationId)
+            ->where('permit_to_work_id', $permit->id)
+            ->firstOrFail();
+
+        $user = auth()->user();
+        $isLocationOwner = false; // Location Owner is only CCed, not approver
+        $isEHS = $user->role === 'bekaert' && $user->department === 'EHS';
+
+        if (!$isEHS) {
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('error', 'Only EHS team members can process this HRA.');
+        }
+
+        $action = $request->input('action'); // 'approve' or 'reject'
+        $comments = $request->input('comments');
+
+        if ($action === 'approve') {
+            // Process EHS approval
+            if ($isEHS && $hraLotoIsolation->ehs_approval === 'pending') {
+                $hraLotoIsolation->update([
+                    'ehs_approval' => 'approved',
+                    'ehs_approved_at' => now(),
+                    'ehs_approved_by' => $user->id,
+                    'ehs_comments' => $comments,
+                ]);
+            }
+
+            // Refresh model
+            $hraLotoIsolation->refresh();
+
+            // EHS approval is the only required approval, so mark as fully approved
+            $hraLotoIsolation->update([
+                'approval_status' => 'approved',
+                'final_approved_at' => now(),
+                'status' => 'active',
+            ]);
+
+            // Send approval notification to creator (CC Location Owner and EHS)
+            $creator = $hraLotoIsolation->user;
+            if ($creator) {
+                try {
+                    $ccEmails = [];
+                    if ($permit->locationOwner) {
+                        $ccEmails[] = $permit->locationOwner->email;
+                    }
+                    $ehsEmails = User::where('role', 'bekaert')
+                                    ->where('department', 'EHS')
+                                    ->pluck('email')
+                                    ->toArray();
+                    $ccEmails = array_merge($ccEmails, $ehsEmails);
+
+                    Mail::to($creator->email)
+                        ->cc($ccEmails)
+                        ->send(new HraApprovalNotification(
+                                $hraLotoIsolation,
+                                $permit,
+                                'LOTO/Isolation'
+                            ));
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to send HRA LOTO approval notification: ' . $e->getMessage());
+                    }
+                }
+
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('success', 'HRA LOTO/Isolation has been approved by EHS.');
+
+        } else {
+            // Process rejection
+            $request->validate(['comments' => 'required|string|min:10']);
+
+            // EHS rejection
+            $hraLotoIsolation->update([
+                'ehs_approval' => 'rejected',
+                'ehs_approved_at' => now(),
+                'ehs_approved_by' => $user->id,
+                'ehs_comments' => $comments,
+                'approval_status' => 'rejected',
+                'rejection_reason' => $comments,
+                'rejected_at' => now(),
+                'rejected_by' => $user->id,
+            ]);
+
+            // Send rejection notification to creator (CC Location Owner)
+            $creator = $hraLotoIsolation->user;
+            if ($creator) {
+                try {
+                    $ccEmails = [];
+                    if ($permit->locationOwner) {
+                        $ccEmails[] = $permit->locationOwner->email;
+                    }
+                    
+                    $mail = Mail::to($creator->email);
+                    if (!empty($ccEmails)) {
+                        $mail->cc($ccEmails);
+                    }
+                    $mail->send(new HraRejectionNotification(
+                        $hraLotoIsolation,
+                        $permit,
+                        'LOTO/Isolation',
+                        $comments
+                    ));
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send HRA LOTO rejection notification: ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
+                ->with('info', 'HRA LOTO/Isolation has been rejected.');
+        }
     }
 }

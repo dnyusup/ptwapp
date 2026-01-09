@@ -149,25 +149,15 @@
             <!-- Approval Actions Section - Moved outside for better organization -->
             @if($hraHotWork->approval_status === 'pending')
                 @php
-                    $canApproveAsLocationOwner = $permit->locationOwner && $permit->locationOwner->id === auth()->id() && $hraHotWork->area_owner_approval === 'pending';
                     $canApproveAsEHS = auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS' && $hraHotWork->ehs_approval === 'pending';
                 @endphp
                 
-                @if($canApproveAsLocationOwner || $canApproveAsEHS)
+                @if($canApproveAsEHS)
                 <div class="mt-3 p-3 bg-light border rounded">
-                    @if($canApproveAsLocationOwner)
-                    <div class="alert alert-info mb-2">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Your approval is required as Location Owner</strong>
-                    </div>
-                    @endif
-                    
-                    @if($canApproveAsEHS)
                     <div class="alert alert-info mb-2">
                         <i class="fas fa-info-circle me-2"></i>
                         <strong>Your approval is required as EHS Team Member</strong>
                     </div>
-                    @endif
                     
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-success" onclick="approveHRA()">
@@ -905,10 +895,36 @@
     </div>
 </div>
 
+@include('layouts.sidebar-scripts')
+
+@push('scripts')
 <script>
 function requestApproval() {
-    const modal = new bootstrap.Modal(document.getElementById('requestApprovalModal'));
-    modal.show();
+    Swal.fire({
+        title: 'Request Approval',
+        text: 'Are you sure you want to submit this HRA Hot Work for approval?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Request Approval',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("hra.hot-works.request-approval", [$permit, $hraHotWork]) }}';
+            
+            let csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
 function approveHRA() {
@@ -921,6 +937,5 @@ function rejectHRA() {
     modal.show();
 }
 </script>
-
-@include('layouts.sidebar-scripts')
+@endpush
 @endsection

@@ -544,123 +544,32 @@
         @endif
     </div>
 
-    <!-- Approval Section -->
-    @if($hraHotWork->approval_status === 'approved')
+    <!-- Main Permit & Approval -->
     <div class="section approval-section">
-        <div class="section-title approval-title">APPROVAL STATUS</div>
+        <div class="section-title approval-title">MAIN PERMIT & APPROVAL</div>
         <div class="two-column">
             <div class="column">
-                <div class="row">
-                    <span class="label">Location Owner:</span>
-                    {{ $permit->locationOwner->name ?? 'N/A' }}
-                </div>
-                <div class="row">
-                    <span class="label">Approval Status:</span>
-                    <span style="color: green; font-weight: bold;">{{ strtoupper($hraHotWork->area_owner_approval) }}</span>
-                </div>
-                <div class="row">
-                    <span class="label">Approved By:</span>
-                    {{ $hraHotWork->areaOwnerApprovedBy->name ?? 'N/A' }}
-                </div>
-                <div class="row">
-                    <span class="label">Approved At:</span>
-                    {{ $hraHotWork->area_owner_approved_at ? $hraHotWork->area_owner_approved_at->format('d/m/Y H:i') : 'N/A' }}
-                </div>
+                <div class="row"><span class="label">Permit Number:</span> {{ $permit->permit_number }}</div>
+                <div class="row"><span class="label">Work Title:</span> {{ $permit->work_title }}</div>
+                <div class="row"><span class="label">Department:</span> {{ $permit->department ?? 'N/A' }}</div>
+                <div class="row"><span class="label">Location:</span> {{ $permit->work_location }}</div>
+                <div class="row"><span class="label">Valid Period:</span> {{ $permit->start_date->format('d/m/Y') }} - {{ $permit->end_date->format('d/m/Y') }}</div>
             </div>
             <div class="column">
-                <div class="row">
-                    <span class="label">EHS Team:</span>
-                    EHS Department
-                </div>
-                <div class="row">
-                    <span class="label">Approval Status:</span>
-                    <span style="color: green; font-weight: bold;">{{ strtoupper($hraHotWork->ehs_approval) }}</span>
-                </div>
-                <div class="row">
-                    <span class="label">Approved By:</span>
-                    {{ $hraHotWork->ehsApprovedBy->name ?? 'N/A' }}
-                </div>
-                <div class="row">
-                    <span class="label">Approved At:</span>
-                    {{ $hraHotWork->ehs_approved_at ? $hraHotWork->ehs_approved_at->format('d/m/Y H:i') : 'N/A' }}
-                </div>
-            </div>
-        </div>
-        <div style="margin-top: 10px; text-align: center; font-weight: bold; color: green;">
-            FINAL APPROVAL: {{ $hraHotWork->final_approved_at ? $hraHotWork->final_approved_at->format('d/m/Y H:i') : 'N/A' }}
-        </div>
-    </div>
-    @endif
-
-    <!-- Main Permit Information -->
-    <div class="section">
-        <div class="section-title">MAIN PERMIT INFORMATION</div>
-        <div style="display: table; width: 100%; margin-bottom: 10px;">
-            <div style="display: table-cell; width: 75%; vertical-align: top; padding-right: 15px;">
-                <div class="two-column">
-                    <div class="column" style="padding-right: 15px;">
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Permit Number:</span>
-                            <span style="word-wrap: break-word; word-break: break-all; max-width: 150px; display: inline-block; vertical-align: top;">{{ $permit->permit_number }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Work Title:</span>
-                            <span style="word-wrap: break-word; max-width: 150px; display: inline-block; vertical-align: top;">{{ $permit->work_title }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Department:</span>
-                            {{ $permit->department }}
-                        </div>
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Location:</span>
-                            <span style="word-wrap: break-word; max-width: 150px; display: inline-block; vertical-align: top;">{{ $permit->work_location }}</span>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Permit Issuer:</span>
-                            <span style="word-wrap: break-word; max-width: 150px; display: inline-block; vertical-align: top;">{{ $permit->permitIssuer->name ?? 'N/A' }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Authorizer:</span>
-                            <span style="word-wrap: break-word; max-width: 150px; display: inline-block; vertical-align: top;">{{ $permit->authorizer->name ?? 'N/A' }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Receiver:</span>
-                            <span style="word-wrap: break-word; max-width: 150px; display: inline-block; vertical-align: top;">{{ $permit->receiver->name ?? 'N/A' }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label" style="width: 120px;">Valid Period:</span>
-                            <span style="white-space: nowrap;">{{ $permit->start_date->format('d/m/Y') }} - {{ $permit->end_date->format('d/m/Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="display: table-cell; width: 25%; text-align: center; vertical-align: middle; border-left: 1px solid #ccc; padding-left: 15px;">
-                @if(isset($permitQrCode))
-                    <div style="font-weight: bold; font-size: 10px; margin-bottom: 8px; color: #666;">Main Permit QR</div>
-                    <img src="data:image/svg+xml;base64,{{ $permitQrCode }}" alt="Main Permit QR Code" style="width: 80px; height: 80px; border: 1px solid #ddd;">
-                @else
-                    <div style="width: 80px; height: 80px; border: 2px solid #666; margin: 0 auto; text-align: center; font-size: 7px; padding: 5px; background: #f9f9f9;">
-                        <div style="font-weight: bold; margin-bottom: 3px;">MAIN PERMIT</div>
-                        <div style="font-size: 6px; word-wrap: break-word;">{{ $permit->permit_number }}</div>
-                    </div>
+                <div class="row"><span class="label">HRA Status:</span> <span style="font-weight: bold; color: {{ $hraHotWork->approval_status === 'approved' ? 'green' : 'orange' }};">{{ strtoupper($hraHotWork->approval_status ?? 'draft') }}</span></div>
+                @if($hraHotWork->approval_status === 'approved' || $hraHotWork->ehs_approval === 'approved')
+                <div class="row"><span class="label">EHS Approved By:</span> {{ $hraHotWork->ehsApprovedBy->name ?? 'N/A' }}</div>
+                <div class="row"><span class="label">Approved At:</span> {{ $hraHotWork->ehs_approved_at ? $hraHotWork->ehs_approved_at->format('d/m/Y H:i') : 'N/A' }}</div>
                 @endif
-                                <div style="font-size: 8px; color: #666; margin-top: 5px;">Scan untuk detail permit utama</div>
+                <div class="row"><span class="label">Permit Issuer:</span> {{ $permit->permitIssuer->name ?? 'N/A' }}</div>
+                <div class="row"><span class="label">Receiver:</span> {{ $permit->receiver->name ?? 'N/A' }}</div>
             </div>
         </div>
     </div>
 
-    <!-- Footer for page 2 -->
-    <div style="text-align: center; margin-top: 20px; font-size: 10px; color: #666;">
-        Generated on {{ date('d/m/Y H:i:s') }} | HRA Hot Work Assessment | Page 2 of 2
+    <!-- Footer -->
+    <div style="margin-top: 4px; text-align: center; font-size: 7px; color: #666;">
+        Generated {{ date('d/m/Y H:i') }} | {{ $hraHotWork->hra_permit_number }}
     </div>
-</body>
-</html>
-            </div>
-        </div>
-    </div>
-
-
 </body>
 </html>

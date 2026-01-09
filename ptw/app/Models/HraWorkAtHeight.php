@@ -96,12 +96,29 @@ class HraWorkAtHeight extends Model
         'receiver_signature',
         'issue_date',
         'issue_time',
-        'status'
+        'status',
+        // Approval Fields
+        'approval_status',
+        'approval_requested_at',
+        'ehs_approval',
+        'ehs_approved_at',
+        'ehs_approved_by',
+        'ehs_comments',
+        'final_approved_at',
+        'ehs_notified',
+        'rejection_reason',
+        'rejected_at',
+        'rejected_by',
     ];
 
     protected $casts = [
         'start_datetime' => 'datetime',
         'end_datetime' => 'datetime',
+        'approval_requested_at' => 'datetime',
+        'ehs_approved_at' => 'datetime',
+        'final_approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'ehs_notified' => 'boolean',
         'fixed_scaffolding_checked' => 'boolean',
         'fixed_scaffolding_approved_by_she' => 'boolean',
         'fixed_scaffolding_operator_trained' => 'boolean',
@@ -171,6 +188,46 @@ class HraWorkAtHeight extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relationship with EHS approver
+     */
+    public function ehsApprover()
+    {
+        return $this->belongsTo(User::class, 'ehs_approved_by');
+    }
+
+    /**
+     * Relationship with rejector
+     */
+    public function rejector()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    /**
+     * Check if HRA can be approved
+     */
+    public function canBeApproved()
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    /**
+     * Check if HRA is fully approved (only EHS approval required)
+     */
+    public function isFullyApproved()
+    {
+        return $this->ehs_approval === 'approved';
+    }
+
+    /**
+     * Check if HRA is rejected
+     */
+    public function isRejected()
+    {
+        return $this->ehs_approval === 'rejected';
     }
 
     /**

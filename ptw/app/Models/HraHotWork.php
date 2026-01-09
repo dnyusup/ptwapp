@@ -180,11 +180,11 @@ class HraHotWork extends Model
     }
 
     /**
-     * Check if both approvals are completed
+     * Check if both approvals are completed (only EHS approval required)
      */
     public function isFullyApproved()
     {
-        return $this->area_owner_approval === 'approved' && $this->ehs_approval === 'approved';
+        return $this->ehs_approval === 'approved';
     }
 
     /**
@@ -192,7 +192,7 @@ class HraHotWork extends Model
      */
     public function isRejected()
     {
-        return $this->area_owner_approval === 'rejected' || $this->ehs_approval === 'rejected';
+        return $this->ehs_approval === 'rejected';
     }
 
     /**

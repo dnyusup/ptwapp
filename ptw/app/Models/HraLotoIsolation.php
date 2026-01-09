@@ -68,11 +68,35 @@ class HraLotoIsolation extends Model
         'lb_purged_water',
         'lb_purged_n2',
         'lb_additional_control',
+        // Approval Fields
+        'approval_status',
+        'approval_requested_at',
+        'area_owner_approval',
+        'area_owner_approved_at',
+        'area_owner_approved_by',
+        'area_owner_comments',
+        'ehs_approval',
+        'ehs_approved_at',
+        'ehs_approved_by',
+        'ehs_comments',
+        'final_approved_at',
+        'area_owner_notified',
+        'ehs_notified',
+        'rejection_reason',
+        'rejected_at',
+        'rejected_by',
     ];
 
     protected $casts = [
         'start_datetime' => 'datetime',
         'end_datetime' => 'datetime',
+        'approval_requested_at' => 'datetime',
+        'area_owner_approved_at' => 'datetime',
+        'ehs_approved_at' => 'datetime',
+        'final_approved_at' => 'datetime',
+        'rejected_at' => 'datetime',
+        'area_owner_notified' => 'boolean',
+        'ehs_notified' => 'boolean',
     ];
 
     /**
@@ -101,5 +125,68 @@ class HraLotoIsolation extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Relationship with Area Owner approver
+     */
+    public function areaOwnerApprover()
+    {
+        return $this->belongsTo(User::class, 'area_owner_approved_by');
+    }
+
+    /**
+     * Relationship with EHS approver
+     */
+    public function ehsApprover()
+    {
+        return $this->belongsTo(User::class, 'ehs_approved_by');
+    }
+
+    /**
+     * Relationship with rejector
+     */
+    public function rejector()
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    /**
+     * Check if HRA can be approved
+     */
+    public function canBeApproved()
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    /**
+     * Check if HRA is fully approved (only EHS approval required)
+     */
+    public function isFullyApproved()
+    {
+        return $this->ehs_approval === 'approved';
+    }
+
+    /**
+     * Check if HRA is rejected
+     */
+    public function isRejected()
+    {
+        return $this->ehs_approval === 'rejected';
+    }
+
+    /**
+     * Update final approval status
+     */
+    public function updateFinalApprovalStatus()
+    {
+        if ($this->isRejected()) {
+            $this->approval_status = 'rejected';
+            $this->final_approved_at = null;
+        } elseif ($this->isFullyApproved()) {
+            $this->approval_status = 'approved';
+            $this->final_approved_at = now();
+        }
+        $this->save();
     }
 }

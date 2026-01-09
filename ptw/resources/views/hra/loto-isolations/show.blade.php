@@ -70,26 +70,134 @@
                     HRA Permit: <strong>{{ $hraLotoIsolation->hra_permit_number }}</strong>
                 </p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <!-- Status Badge -->
+                @if(($hraLotoIsolation->approval_status ?? 'draft') === 'draft')
+                    <span class="badge bg-secondary fs-6 px-3 py-2">
+                        <i class="fas fa-file-alt me-2"></i>Draft
+                    </span>
+                @elseif($hraLotoIsolation->approval_status === 'pending')
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-clock me-2"></i>Waiting for Approval
+                    </span>
+                @elseif($hraLotoIsolation->approval_status === 'approved')
+                    <span class="badge bg-success fs-6 px-3 py-2">
+                        <i class="fas fa-check-circle me-2"></i>Approved
+                    </span>
+                @elseif($hraLotoIsolation->approval_status === 'rejected')
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="fas fa-times-circle me-2"></i>Rejected
+                    </span>
+                @endif
+                
+                <!-- Back Button -->
                 <a href="{{ route('permits.show', $permit) }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
                 </a>
-                <a href="{{ route('hra.loto-isolations.download-pdf', [$permit, $hraLotoIsolation]) }}" class="btn btn-danger">
-                    <i class="fas fa-file-pdf me-2"></i>Download PDF
+                
+                <!-- Download PDF Button - only visible when approved -->
+                @if($hraLotoIsolation->approval_status === 'approved')
+                <a href="{{ route('hra.loto-isolations.download-pdf', [$permit, $hraLotoIsolation]) }}" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i>Download PDF
                 </a>
-                @if(auth()->user()->role === 'administrator' || auth()->user()->id === $permit->user_id)
-                <a href="{{ route('hra.loto-isolations.edit', [$permit, $hraLotoIsolation]) }}" class="btn btn-warning">
+                @endif
+                
+                <!-- Action Buttons -->
+                @if(($hraLotoIsolation->approval_status ?? 'draft') === 'draft')
+                    @if($hraLotoIsolation->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <button type="button" class="btn btn-info" onclick="requestApproval()">
+                        <i class="fas fa-paper-plane me-2"></i>Request Approval
+                    </button>
+                    @endif
+                @elseif($hraLotoIsolation->approval_status === 'rejected')
+                    @if($hraLotoIsolation->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
+                        <i class="fas fa-redo me-2"></i>Re-request Approval
+                    </button>
+                    @endif
+                @endif
+
+                <!-- Edit Button - only visible when not pending or approved -->
+                @if(($hraLotoIsolation->user_id == auth()->id() || auth()->user()->role === 'administrator') && 
+                    !in_array($hraLotoIsolation->approval_status ?? 'draft', ['pending', 'approved']))
+                <a href="{{ route('hra.loto-isolations.edit', [$permit, $hraLotoIsolation]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>
                 @endif
             </div>
         </div>
+        
+        <!-- Approval Actions Section -->
+        @if($hraLotoIsolation->approval_status === 'pending')
+            @php
+                $canApproveAsEHS = auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS' && $hraLotoIsolation->ehs_approval === 'pending';
+            @endphp
+            
+            @if($canApproveAsEHS)
+            <div class="mt-3 p-3 bg-light border rounded">
+                <div class="alert alert-info mb-2">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Your approval is required as EHS Team Member</strong>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-success" onclick="approveHRA()">
+                        <i class="fas fa-check me-2"></i>Approve
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="rejectHRA()">
+                        <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                </div>
+            </div>
+            @endif
+        @endif
     </div>
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+    
+    @if(session('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    <!-- Rejection Information -->
+    @if($hraLotoIsolation->approval_status === 'rejected' && $hraLotoIsolation->rejection_reason)
+        <div class="alert alert-danger border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <h5 class="alert-heading mb-2">
+                        <i class="fas fa-times-circle me-2"></i>HRA LOTO/Isolation Rejected
+                    </h5>
+                    <p class="mb-2">
+                        <strong>Rejected by:</strong> {{ $hraLotoIsolation->rejector->name ?? 'System' }} 
+                        @if($hraLotoIsolation->rejected_at)
+                        <small class="text-muted">on {{ $hraLotoIsolation->rejected_at->format('d M Y, H:i') }}</small>
+                        @endif
+                    </p>
+                    <div class="rejection-reason bg-white p-3 rounded border-start border-danger border-3">
+                        <strong>Reason for Rejection:</strong><br>
+                        <span class="text-dark">{{ $hraLotoIsolation->rejection_reason }}</span>
+                    </div>
+                    @if($hraLotoIsolation->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            You can edit this HRA to address the issues mentioned above and then resubmit for approval.
+                        </small>
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
     @endif
 
@@ -846,4 +954,139 @@
         </div>
     </div>
 </div>
+
+<!-- Request Approval Modal -->
+<div class="modal fade" id="requestApprovalModal" tabindex="-1" aria-labelledby="requestApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestApprovalModalLabel">Request Approval</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Anda akan mengirim permintaan approval untuk HRA LOTO/Isolation ini kepada:</p>
+                <ul>
+                    <li><strong>Pemilik Area:</strong> {{ $permit->locationOwner ? $permit->locationOwner->name : 'Belum ditentukan' }}</li>
+                    <li><strong>Tim EHS</strong></li>
+                </ul>
+                <p class="text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Setelah approval diminta, HRA tidak dapat diedit sampai mendapat persetujuan atau penolakan.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('hra.loto-isolations.request-approval', [$permit, $hraLotoIsolation]) }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-paper-plane me-2"></i>Send Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveModalLabel">Approve HRA LOTO/Isolation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve this HRA LOTO/Isolation?</p>
+                <p class="text-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    By approving, you confirm that all safety requirements have been reviewed and are acceptable.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ route('hra.loto-isolations.process-approval', [$permit, $hraLotoIsolation]) }}" method="POST" style="display: inline;">
+                    @csrf
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check me-2"></i>Approve
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject HRA LOTO/Isolation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectForm" action="{{ route('hra.loto-isolations.process-approval', [$permit, $hraLotoIsolation]) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="action" value="reject">
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Reason for Rejection <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="comments" id="comments" rows="4" required 
+                                  placeholder="Please provide a detailed reason for rejecting this HRA LOTO/Isolation..."></textarea>
+                        <small class="text-muted">Minimum 10 characters required</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="rejectForm" class="btn btn-danger">
+                    <i class="fas fa-times me-2"></i>Reject
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@include('layouts.sidebar-scripts')
+
+@push('scripts')
+<script>
+function requestApproval() {
+    Swal.fire({
+        title: 'Request Approval',
+        text: 'Are you sure you want to submit this HRA LOTO/Isolation for approval?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, Request Approval',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("hra.loto-isolations.request-approval", [$permit, $hraLotoIsolation]) }}';
+            
+            let csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+function approveHRA() {
+    const modal = new bootstrap.Modal(document.getElementById('approveModal'));
+    modal.show();
+}
+
+function rejectHRA() {
+    const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+    modal.show();
+}
+</script>
+@endpush
 @endsection

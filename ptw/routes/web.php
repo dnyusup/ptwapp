@@ -208,6 +208,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/permits/{permit}/hra/work-at-heights/{hraWorkAtHeight}', [HraWorkAtHeightController::class, 'update'])->name('hra.work-at-heights.update');
     Route::delete('/permits/{permit}/hra/work-at-heights/{hraWorkAtHeight}', [HraWorkAtHeightController::class, 'destroy'])->name('hra.work-at-heights.destroy');
     Route::get('/permits/{permit}/hra/work-at-heights/{hraWorkAtHeight}/download-pdf', [HraWorkAtHeightController::class, 'downloadPdf'])->name('hra.work-at-heights.download-pdf');
+    // HRA Work at Heights Approval routes
+    Route::post('/permits/{permit}/hra/work-at-heights/{hraWorkAtHeight}/request-approval', [HraWorkAtHeightController::class, 'requestApproval'])->name('hra.work-at-heights.request-approval');
+    Route::post('/permits/{permit}/hra/work-at-heights/{hraWorkAtHeight}/process', [HraWorkAtHeightController::class, 'processApproval'])->name('hra.work-at-heights.process');
     
     // HRA Hot Work routes
     Route::get('/permits/{permit}/hra/hot-works', [HraHotWorkController::class, 'index'])->name('hra.hot-works.index');
@@ -234,6 +237,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}', [HraLotoIsolationController::class, 'update'])->name('hra.loto-isolations.update');
     Route::delete('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}', [HraLotoIsolationController::class, 'destroy'])->name('hra.loto-isolations.destroy');
     Route::get('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/download-pdf', [HraLotoIsolationController::class, 'downloadPdf'])->name('hra.loto-isolations.download-pdf');
+    
+    // HRA LOTO/Isolation approval routes
+    Route::post('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/request-approval', [HraLotoIsolationController::class, 'requestApproval'])->name('hra.loto-isolations.request-approval');
+    Route::get('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/approve', [HraLotoIsolationController::class, 'approve'])->name('hra.loto-isolations.approve');
+    Route::get('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/reject', [HraLotoIsolationController::class, 'reject'])->name('hra.loto-isolations.reject');
+    Route::post('/permits/{permit}/hra/loto-isolations/{hraLotoIsolation}/process', [HraLotoIsolationController::class, 'processApproval'])->name('hra.loto-isolations.process-approval');
     
     // HRA Line Breaking routes
     Route::get('/permits/{permit}/hra/line-breakings', [HraLineBreakingController::class, 'index'])->name('hra.line-breakings.index');

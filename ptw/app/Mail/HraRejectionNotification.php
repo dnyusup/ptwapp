@@ -8,27 +8,27 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use App\Models\HraHotWork;
 use App\Models\PermitToWork;
 
 class HraRejectionNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $hraHotWork;
+    public $hra;
     public $permit;
+    public $hraType;
     public $rejectionReason;
-    public $rejectedBy;
 
     /**
      * Create a new message instance.
+     * Accepts any HRA model type (HraHotWork, HraLotoIsolation, etc.)
      */
-    public function __construct(HraHotWork $hraHotWork, PermitToWork $permit, $rejectionReason, $rejectedBy)
+    public function __construct($hra, PermitToWork $permit, string $hraType = 'Hot Work', string $rejectionReason = '')
     {
-        $this->hraHotWork = $hraHotWork;
+        $this->hra = $hra;
         $this->permit = $permit;
+        $this->hraType = $hraType;
         $this->rejectionReason = $rejectionReason;
-        $this->rejectedBy = $rejectedBy;
     }
 
     /**
@@ -37,7 +37,7 @@ class HraRejectionNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'HRA Hot Work Rejected - ' . $this->hraHotWork->hra_permit_number,
+            subject: 'HRA ' . $this->hraType . ' Rejected - ' . $this->hra->hra_permit_number,
         );
     }
 
