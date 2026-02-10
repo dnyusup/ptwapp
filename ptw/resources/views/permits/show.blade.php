@@ -264,36 +264,36 @@
                 
                 @php
                     $currentUser = auth()->user();
-                    $isEHS = $currentUser->role === 'bekaert' && $currentUser->department === 'EHS';
+                    $isEHS = $currentUser && $currentUser->role === 'bekaert' && $currentUser->department === 'EHS';
+                    
+                    // Simplified conditions for Request Approval button
+                    $hasMethodStatement = $permit->methodStatement ? true : false;
+                    $hasEmergencyPlan = $permit->emergencyPlan ? true : false;
+                    $msCompleted = $hasMethodStatement && $permit->methodStatement->status === 'completed';
+                    $epCompleted = $hasEmergencyPlan && $permit->emergencyPlan->status === 'completed';
+                    $isCreatorOrAdmin = ($permit->permit_issuer_id == auth()->id()) || ($currentUser && $currentUser->role === 'administrator');
+                    $isDraft = $permit->status === 'draft';
+                    
+                    $canRequestApproval = $msCompleted && $epCompleted && $isCreatorOrAdmin && $isDraft;
                 @endphp
 
                 {{-- Request Approval Button --}}
-                @if(
-                    $permit->methodStatement // Pastikan method statement sudah dibuat
-                    && $permit->emergencyPlan // Pastikan emergency plan sudah dibuat
-                    && $permit->methodStatement->status === 'completed'
-                    && $permit->emergencyPlan->status === 'completed'
-                    && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
-                    && in_array($permit->status, ['draft'])
-                )
+                @if($canRequestApproval)
                     <form method="POST" action="{{ route('permits.request-approval', $permit) }}" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to request approval for this permit? EHS department will be notified via email.')">
                             <i class="fas fa-paper-plane me-2"></i>Request Approval
                         </button>
                     </form>
-                @elseif(!$permit->methodStatement || $permit->methodStatement->status !== 'completed')
+                @elseif(!$msCompleted)
                     <button type="button" class="btn btn-outline-secondary" disabled title="Method Statement must be completed first">
                         <i class="fas fa-lock me-2"></i>Request Approval (Method Statement Required)
                     </button>
-                @elseif(!$permit->emergencyPlan || $permit->emergencyPlan->status !== 'completed')
+                @elseif(!$epCompleted)
                     <button type="button" class="btn btn-outline-secondary" disabled title="Emergency & Escape Plan must be completed first">
                         <i class="fas fa-lock me-2"></i>Request Approval (Emergency Plan Required)
                     </button>
-                @elseif(($permit->methodStatement && $permit->methodStatement->status === 'completed' &&
-                        $permit->emergencyPlan && $permit->emergencyPlan->status === 'completed') &&
-                        !in_array($permit->status, ['approved', 'active', 'rejected', 'pending_approval']) &&
-                        auth()->id() !== $permit->permit_issuer_id)
+                @elseif($msCompleted && $epCompleted && !$isCreatorOrAdmin && $isDraft)
                     <button type="button" class="btn btn-outline-secondary" disabled title="Only permit creator can request approval">
                         <i class="fas fa-lock me-2"></i>Request Approval (Access Denied)
                     </button>
