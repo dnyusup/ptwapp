@@ -43,6 +43,7 @@ class UserController extends Controller
         $search = $request->get('search');
         $roleFilter = $request->get('role');
         $companyFilter = $request->get('company_id');
+        $statusFilter = $request->get('status');
         
         $users = User::with('company')
             ->when($search, function ($query, $search) {
@@ -57,6 +58,9 @@ class UserController extends Controller
             ->when($companyFilter, function ($query, $companyFilter) {
                 return $query->where('company_id', $companyFilter);
             })
+            ->when($statusFilter, function ($query, $statusFilter) {
+                return $query->where('status', $statusFilter);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -65,7 +69,7 @@ class UserController extends Controller
             ->orderBy('company_name')
             ->get();
 
-        return view('users.index', compact('users', 'search', 'roleFilter', 'companyFilter', 'companies'));
+        return view('users.index', compact('users', 'search', 'roleFilter', 'companyFilter', 'statusFilter', 'companies'));
     }
 
     /**

@@ -22,7 +22,7 @@
         <div class="card-body">
             <form method="GET" action="{{ route('users.index') }}" id="filterForm">
                 <div class="row g-3 align-items-end">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label small text-muted">Search</label>
                         <input type="text" class="form-control" name="search" 
                                placeholder="Search by name or email..." value="{{ $search ?? '' }}">
@@ -36,7 +36,7 @@
                             <option value="contractor" {{ ($roleFilter ?? '') == 'contractor' ? 'selected' : '' }}>Contractor</option>
                         </select>
                     </div>
-                    <div class="col-md-3" id="companyFilterContainer" style="{{ ($roleFilter ?? '') == 'contractor' ? '' : 'display: none;' }}">
+                    <div class="col-md-2" id="companyFilterContainer" style="{{ ($roleFilter ?? '') == 'contractor' ? '' : 'display: none;' }}">
                         <label class="form-label small text-muted">Company</label>
                         <select name="company_id" id="companyFilter" class="form-select">
                             <option value="">All Companies</option>
@@ -47,11 +47,20 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="active" {{ ($statusFilter ?? '') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="pending" {{ ($statusFilter ?? '') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="inactive" {{ ($statusFilter ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
                     <div class="col-md-3">
                         <button class="btn btn-primary" type="submit">
                             <i class="fas fa-filter me-1"></i> Filter
                         </button>
-                        @if(($search ?? '') || ($roleFilter ?? '') || ($companyFilter ?? ''))
+                        @if(($search ?? '') || ($roleFilter ?? '') || ($companyFilter ?? '') || ($statusFilter ?? ''))
                             <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-1"></i> Reset
                             </a>
