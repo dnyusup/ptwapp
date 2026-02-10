@@ -238,6 +238,26 @@
     font-weight: 600;
     font-size: 14px;
 }
+
+/* Fix horizontal scrollbar - make it always visible without scrolling down */
+.table-responsive {
+    max-height: calc(100vh - 320px);
+    overflow: auto;
+}
+
+/* Sticky table header */
+.table-responsive thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f8f9fa;
+}
+
+/* Make table cells not wrap to reduce horizontal scroll need */
+.table-responsive table th,
+.table-responsive table td {
+    white-space: nowrap;
+}
 </style>
 
 @include('layouts.sidebar-styles')
