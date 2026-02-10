@@ -279,9 +279,9 @@
 
                 {{-- Request Approval Button --}}
                 @if($canRequestApproval)
-                    <form method="POST" action="{{ route('permits.request-approval', $permit) }}" class="d-inline">
+                    <form id="request-approval-form" method="POST" action="{{ route('permits.request-approval', $permit) }}" class="d-inline">
                         @csrf
-                        <button type="submit" class="btn btn-info" onclick="return confirm('Are you sure you want to request approval for this permit? EHS department will be notified via email.')">
+                        <button type="submit" class="btn btn-info">
                             <i class="fas fa-paper-plane me-2"></i>Request Approval
                         </button>
                     </form>

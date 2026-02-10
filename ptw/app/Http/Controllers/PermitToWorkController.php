@@ -524,56 +524,85 @@ class PermitToWorkController extends Controller
      */
     public function requestApproval(PermitToWork $permit)
     {
-        // Check if user is the permit creator
-        if (Auth::id() !== $permit->permit_issuer_id) {
+        // Add logging for debugging
+        \Log::info('Request Approval started', [
+            'permit_id' => $permit->id,
+            'user_id' => Auth::id(),
+            'permit_issuer_id' => $permit->permit_issuer_id,
+            'status' => $permit->status
+        ]);
+
+        // Check if user is the permit creator or admin
+        $isCreator = Auth::id() == $permit->permit_issuer_id;
+        $isAdmin = Auth::user() && Auth::user()->role === 'administrator';
+        
+        if (!$isCreator && !$isAdmin) {
+            \Log::warning('Request Approval access denied', ['user_id' => Auth::id()]);
             return redirect()->back()
                 ->with('error', 'Access denied. Only the permit creator can request approval.');
         }
 
         // Check if permit can be submitted for approval
         if (!in_array($permit->status, ['draft', 'rejected', 'resubmitted'])) {
+            \Log::warning('Request Approval invalid status', ['status' => $permit->status]);
             return redirect()->back()
                 ->with('error', 'This permit cannot be submitted for approval in its current status.');
         }
 
         // Check if method statement exists and is completed
-        if (!$permit->methodStatement || $permit->methodStatement->status !== 'completed') {
+        $hasMS = $permit->methodStatement ? true : false;
+        $msCompleted = $hasMS && $permit->methodStatement->status === 'completed';
+        
+        if (!$msCompleted) {
+            \Log::warning('Request Approval MS not completed', ['hasMS' => $hasMS]);
             return redirect()->back()
                 ->with('error', 'Method Statement must be completed before requesting approval.');
         }
 
         // Check if emergency plan exists and is completed
-        if (!$permit->emergencyPlan || $permit->emergencyPlan->status !== 'completed') {
+        $hasEP = $permit->emergencyPlan ? true : false;
+        $epCompleted = $hasEP && $permit->emergencyPlan->status === 'completed';
+        
+        if (!$epCompleted) {
+            \Log::warning('Request Approval EP not completed', ['hasEP' => $hasEP]);
             return redirect()->back()
                 ->with('error', 'Emergency & Escape Plan must be completed before requesting approval.');
         }
 
-        try {
-            // Update permit status
-            $permit->update([
-                'status' => 'pending_approval'
-            ]);
+        // Update permit status first
+        $permit->update([
+            'status' => 'pending_approval'
+        ]);
+        
+        \Log::info('Request Approval status updated to pending_approval');
 
-            // Get all EHS users
+        // Try to send email, but don't fail if email fails
+        $emailSent = false;
+        $ehsCount = 0;
+        
+        try {
             $ehsUsers = User::where('role', 'bekaert')
                           ->where('department', 'EHS')
                           ->get();
             $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
+            $ehsCount = $ehsUsers->count();
+            
             if (count($ehsEmails) > 0) {
                 Mail::to($ehsEmails)->send(new PermitApprovalRequest($permit));
+                $emailSent = true;
+                \Log::info('Request Approval email sent', ['recipients' => $ehsEmails]);
             }
-
-            $ehsCount = $ehsUsers->count();
-            return redirect()->route('permits.show', $permit)
-                ->with('success', "Approval request sent successfully! {$ehsCount} EHS member(s) have been notified via email.");
-
         } catch (\Exception $e) {
-            // Rollback status change if email failed
-            $permit->update(['status' => 'draft']);
-            
-            return redirect()->back()
-                ->with('error', 'Failed to send approval request. Please try again later. Error: ' . $e->getMessage());
+            \Log::error('Request Approval email failed', ['error' => $e->getMessage()]);
+            // Continue without email - don't rollback
         }
+
+        $message = $emailSent 
+            ? "Approval request sent successfully! {$ehsCount} EHS member(s) have been notified via email."
+            : "Approval request submitted successfully! (Email notification may have failed)";
+
+        return redirect()->route('permits.show', $permit)
+            ->with('success', $message);
     }
 
     /**
