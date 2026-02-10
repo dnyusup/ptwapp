@@ -41,15 +41,31 @@ class UserController extends Controller
         $this->checkAdministrator();
         
         $search = $request->get('search');
+        $roleFilter = $request->get('role');
+        $companyFilter = $request->get('company_id');
         
-        $users = User::with('company')->when($search, function ($query, $search) {
-            return $query->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(15);
+        $users = User::with('company')
+            ->when($search, function ($query, $search) {
+                return $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->when($roleFilter, function ($query, $roleFilter) {
+                return $query->where('role', $roleFilter);
+            })
+            ->when($companyFilter, function ($query, $companyFilter) {
+                return $query->where('company_id', $companyFilter);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
-        return view('users.index', compact('users', 'search'));
+        // Get companies for filter dropdown
+        $companies = \App\Models\KontraktorList::where('is_active', true)
+            ->orderBy('company_name')
+            ->get();
+
+        return view('users.index', compact('users', 'search', 'roleFilter', 'companyFilter', 'companies'));
     }
 
     /**

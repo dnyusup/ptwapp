@@ -18,20 +18,45 @@
     </div>
 
     <!-- Search and Filter -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <form method="GET" action="{{ route('users.index') }}">
-                <div class="input-group">
-                    <input type="text" class="form-control" name="search" 
-                           placeholder="Search by name or email..." value="{{ $search }}">
-                    <button class="btn btn-outline-secondary" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    @if($search)
-                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    @endif
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('users.index') }}" id="filterForm">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted">Search</label>
+                        <input type="text" class="form-control" name="search" 
+                               placeholder="Search by name or email..." value="{{ $search ?? '' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Role</label>
+                        <select name="role" id="roleFilter" class="form-select">
+                            <option value="">All Roles</option>
+                            <option value="administrator" {{ ($roleFilter ?? '') == 'administrator' ? 'selected' : '' }}>Administrator</option>
+                            <option value="bekaert" {{ ($roleFilter ?? '') == 'bekaert' ? 'selected' : '' }}>Bekaert</option>
+                            <option value="contractor" {{ ($roleFilter ?? '') == 'contractor' ? 'selected' : '' }}>Contractor</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3" id="companyFilterContainer" style="{{ ($roleFilter ?? '') == 'contractor' ? '' : 'display: none;' }}">
+                        <label class="form-label small text-muted">Company</label>
+                        <select name="company_id" id="companyFilter" class="form-select">
+                            <option value="">All Companies</option>
+                            @foreach($companies ?? [] as $company)
+                                <option value="{{ $company->id }}" {{ ($companyFilter ?? '') == $company->id ? 'selected' : '' }}>
+                                    {{ $company->company_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-filter me-1"></i> Filter
+                        </button>
+                        @if(($search ?? '') || ($roleFilter ?? '') || ($companyFilter ?? ''))
+                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Reset
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </form>
         </div>
@@ -241,7 +266,7 @@
 
 /* Fix horizontal scrollbar - make it always visible without scrolling down */
 .table-responsive {
-    max-height: calc(100vh - 320px);
+    max-height: calc(100vh - 380px);
     overflow: auto;
 }
 
@@ -262,4 +287,26 @@
 
 @include('layouts.sidebar-styles')
 @include('layouts.sidebar-scripts')
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleFilter = document.getElementById('roleFilter');
+    const companyContainer = document.getElementById('companyFilterContainer');
+    const companyFilter = document.getElementById('companyFilter');
+
+    function toggleCompanyFilter() {
+        if (roleFilter.value === 'contractor') {
+            companyContainer.style.display = '';
+        } else {
+            companyContainer.style.display = 'none';
+            companyFilter.value = ''; // Reset company selection when hiding
+        }
+    }
+
+    roleFilter.addEventListener('change', toggleCompanyFilter);
+    
+    // Initial check
+    toggleCompanyFilter();
+});
+</script>
 @endsection
