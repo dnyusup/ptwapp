@@ -21,6 +21,30 @@ use App\Http\Controllers\HraExplosiveAtmosphereController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\ContractorUserController;
 
+// Debug route - hapus setelah testing
+Route::get('/debug-storage/{permitId}', function ($permitId) {
+    $permit = \App\Models\PermitToWork::find($permitId);
+    
+    if (!$permit) {
+        return 'Permit not found';
+    }
+    
+    $photoPath = $permit->work_area_photo;
+    $storagePath = storage_path('app/public/' . $photoPath);
+    $basePath = base_path();
+    $publicPath = public_path();
+    
+    return [
+        'photo_path_in_db' => $photoPath,
+        'full_storage_path' => $storagePath,
+        'file_exists' => file_exists($storagePath) ? 'YES' : 'NO',
+        'base_path' => $basePath,
+        'public_path' => $publicPath,
+        'storage_path' => storage_path(),
+        'url_generated' => url('storage/' . $photoPath),
+    ];
+});
+
 // Route untuk serve file storage (bypass symlink issue di shared hosting)
 Route::get('/storage/{path}', function ($path) {
     $fullPath = storage_path('app/public/' . $path);
