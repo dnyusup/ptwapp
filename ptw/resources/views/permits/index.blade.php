@@ -12,9 +12,11 @@
                 <h4 class="mb-1">Permits to Work</h4>
                 <p class="text-muted mb-0">Manage your permits to work</p>
             </div>
+            @if(auth()->user()->role !== 'contractor')
             <a href="{{ route('permits.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus me-2"></i>New Permit
             </a>
+            @endif
         </div>
     </div>
 
@@ -153,7 +155,7 @@
                                            class="btn btn-outline-primary" title="View">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        @if($permit->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                                        @if(auth()->user()->role !== 'contractor' && ($permit->user_id == auth()->id() || auth()->user()->role === 'administrator'))
                                             <a href="{{ route('permits.edit', $permit) }}" 
                                                class="btn btn-outline-secondary" title="Edit">
                                                 <i class="fas fa-edit"></i>
@@ -185,10 +187,14 @@
                 <div class="text-center py-5">
                     <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">No permits found</h5>
-                    <p class="text-muted">Create your first permit to work to get started.</p>
-                    <a href="{{ route('permits.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i>Create New Permit
-                    </a>
+                    @if(auth()->user()->role === 'contractor')
+                        <p class="text-muted">There are no permits assigned to your company yet.</p>
+                    @else
+                        <p class="text-muted">Create your first permit to work to get started.</p>
+                        <a href="{{ route('permits.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create New Permit
+                        </a>
+                    @endif
                 </div>
             @endif
         </div>

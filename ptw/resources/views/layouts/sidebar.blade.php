@@ -17,21 +17,30 @@
     </div>
     
     <nav class="nav flex-column sidebar-nav">
+        @if(auth()->user()->role !== 'contractor')
         <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
             <i class="fas fa-chart-line"></i>Dashboard
         </a>
+        @endif
         <a class="nav-link {{ Request::routeIs('permits.*') ? 'active' : '' }}" href="{{ route('permits.index') }}">
             <i class="fas fa-clipboard-list"></i>Permits
         </a>
+        @if(auth()->user()->role !== 'contractor')
         <a class="nav-link {{ Request::routeIs('permits.create') ? 'active' : '' }}" href="{{ route('permits.create') }}">
             <i class="fas fa-plus-circle"></i>New Permit
         </a>
+        @endif
         @if(auth()->user()->role === 'administrator' || (auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS'))
         <a class="nav-link {{ Request::routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
             <i class="fas fa-users-cog"></i>Users
         </a>
         <a class="nav-link {{ Request::routeIs('kontraktor-lists.*') ? 'active' : '' }}" href="{{ route('kontraktor-lists.index') }}">
             <i class="fas fa-building"></i>Kontraktors
+        </a>
+        @endif
+        @if(auth()->user()->role === 'contractor' && auth()->user()->company_id)
+        <a class="nav-link {{ Request::routeIs('contractor-users.*') ? 'active' : '' }}" href="{{ route('contractor-users.index') }}">
+            <i class="fas fa-users"></i>Team
         </a>
         @endif
         @if(auth()->user()->role === 'administrator')

@@ -344,10 +344,10 @@
                 } else if ($permit->methodStatement->responsible_persons && is_array($permit->methodStatement->responsible_persons)) {
                     // Fallback to method statement data
                     foreach ($permit->methodStatement->responsible_persons as $person) {
-                        if (is_array($person) && isset($person['email'])) {
+                        if (is_array($person) && isset($person['name']) && !empty($person['name'])) {
                             $personsData[] = [
-                                'name' => (string)($person['name'] ?? $person['email']),
-                                'email' => (string)$person['email'],
+                                'name' => (string)$person['name'],
+                                'email' => !empty($person['email']) ? (string)$person['email'] : null,
                                 'phone' => 'N/A'
                             ];
                         }

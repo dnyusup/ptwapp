@@ -113,10 +113,19 @@
         <!-- Responsible Persons -->
         <div class="card mb-4">
             <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Responsible Persons</h5>
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Personil Yang Bertanggung Jawab</h5>
             </div>
             <div class="card-body">
                 <p class="text-muted mb-3">Nama bertanggung jawab memaparkan kepastian pada Method Statement</p>
+                
+                <!-- Toggle for Free Text Mode -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="freeTextPersonToggle" role="switch">
+                    <label class="form-check-label" for="freeTextPersonToggle">
+                        <i class="fas fa-keyboard me-1"></i> Input Manual (Free Text)
+                    </label>
+                    <small class="text-muted d-block">Aktifkan untuk mengisi nama personil secara manual tanpa memilih dari daftar</small>
+                </div>
                 
                 <div id="responsible-persons-table">
                     <div class="table-responsive">
@@ -393,24 +402,78 @@ document.addEventListener('DOMContentLoaded', function() {
     // Responsible Persons functionality
     const addPersonButton = document.getElementById('add-person-row');
     const personTbody = document.getElementById('responsible-persons-tbody');
+    const freeTextToggle = document.getElementById('freeTextPersonToggle');
+
+    // Function to get dropdown HTML
+    function getPersonDropdownHtml(selectedName = '') {
+        let html = `
+            <select class="form-select responsible-person-select" name="responsible_persons[]" data-placeholder="Pilih responsible person...">
+                <option value="">Pilih responsible person...</option>
+                @foreach($users as $user)
+                    <option value="{{ json_encode(['name' => $user->name, 'email' => $user->email]) }}" data-email="{{ $user->email }}">
+                        {{ $user->name }}
+                    </option>
+                @endforeach
+            </select>
+        `;
+        return html;
+    }
+
+    // Function to get free text input HTML
+    function getPersonFreeTextHtml(value = '') {
+        return `
+            <input type="text" class="form-control responsible-person-text" name="responsible_persons[]" placeholder="Masukkan nama personil..." value="${value}">
+        `;
+    }
+
+    // Toggle event handler
+    if (freeTextToggle) {
+        freeTextToggle.addEventListener('change', function() {
+            const isFreeText = this.checked;
+            const rows = personTbody.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const inputCell = row.querySelector('td:nth-child(2)');
+                const currentSelect = inputCell.querySelector('select');
+                const currentInput = inputCell.querySelector('input');
+                
+                if (isFreeText) {
+                    // Switch to free text
+                    if (currentSelect) {
+                        // Get current selected name
+                        let currentName = '';
+                        if (currentSelect.selectedIndex > 0) {
+                            currentName = currentSelect.options[currentSelect.selectedIndex].text;
+                        }
+                        // Destroy Select2 if initialized
+                        if ($(currentSelect).hasClass('select2-hidden-accessible')) {
+                            $(currentSelect).select2('destroy');
+                        }
+                        inputCell.innerHTML = getPersonFreeTextHtml(currentName);
+                    }
+                } else {
+                    // Switch to dropdown
+                    if (currentInput) {
+                        inputCell.innerHTML = getPersonDropdownHtml();
+                        const newSelect = inputCell.querySelector('.responsible-person-select');
+                        window.initializeSelect2(newSelect);
+                    }
+                }
+            });
+        });
+    }
 
     if (addPersonButton && personTbody) {
         addPersonButton.addEventListener('click', function() {
             const currentRows = personTbody.querySelectorAll('tr').length;
             const newRowNumber = currentRows + 1;
+            const isFreeText = freeTextToggle && freeTextToggle.checked;
             
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
                 <td>${newRowNumber}</td>
                 <td>
-                    <select class="form-select responsible-person-select" name="responsible_persons[]" data-placeholder="Pilih responsible person...">
-                        <option value="">Pilih responsible person...</option>
-                        @foreach($users as $user)
-                            <option value="{{ json_encode(['name' => $user->name, 'email' => $user->email]) }}" data-email="{{ $user->email }}">
-                                {{ $user->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    ${isFreeText ? getPersonFreeTextHtml() : getPersonDropdownHtml()}
                 </td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger remove-person-row">
@@ -420,9 +483,11 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             personTbody.appendChild(newRow);
             
-            // Initialize Select2 for the new select with same configuration as existing ones
-            const newSelect = $(newRow).find('.responsible-person-select');
-            window.initializeSelect2(newSelect[0]);
+            // Initialize Select2 for the new select if using dropdown mode
+            if (!isFreeText) {
+                const newSelect = $(newRow).find('.responsible-person-select');
+                window.initializeSelect2(newSelect[0]);
+            }
             
             updateRemovePersonButtons();
             updatePersonRowNumbers();

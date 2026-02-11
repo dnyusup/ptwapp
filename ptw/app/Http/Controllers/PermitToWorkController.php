@@ -30,6 +30,16 @@ class PermitToWorkController extends Controller
         
         $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver']);
         
+        // Contractors can only see permits from their company
+        $currentUser = auth()->user();
+        if ($currentUser->role === 'contractor' && $currentUser->company_id) {
+            // Get the company name from the contractor's company
+            $companyName = $currentUser->company->company_name ?? null;
+            if ($companyName) {
+                $query->where('receiver_company_name', $companyName);
+            }
+        }
+        
         // Filter by status
         if ($request->filled('status')) {
             $status = $request->get('status');
@@ -71,6 +81,11 @@ class PermitToWorkController extends Controller
      */
     public function create()
     {
+        // Contractors cannot create permits
+        if (auth()->user()->role === 'contractor') {
+            abort(403, 'Contractors are not allowed to create permits.');
+        }
+        
         $users = User::where('role', '!=', 'contractor')->get();
         $contractors = User::where('role', 'contractor')->with('company')->get();
         $bekaertUsers = User::where('role', 'bekaert')->select('id', 'name', 'email')->orderBy('name')->get();
@@ -82,6 +97,11 @@ class PermitToWorkController extends Controller
      */
     public function store(Request $request)
     {
+        // Contractors cannot create permits
+        if (auth()->user()->role === 'contractor') {
+            abort(403, 'Contractors are not allowed to create permits.');
+        }
+        
         $validated = $request->validate([
             'work_title' => 'nullable|string|max:255',
             'department' => 'required|string|max:255', 
@@ -171,6 +191,11 @@ class PermitToWorkController extends Controller
      */
     public function edit(PermitToWork $permit)
     {
+        // Contractors cannot edit permits
+        if (auth()->user()->role === 'contractor') {
+            abort(403, 'Contractors are not allowed to edit permits.');
+        }
+        
         //if (!in_array($permit->status, ['draft', 'rejected'])) {
         //    return redirect()->route('permits.show', $permit)
         //        ->with('error', 'Only draft and rejected permits can be edited.');
@@ -193,6 +218,11 @@ class PermitToWorkController extends Controller
      */
     public function update(Request $request, PermitToWork $permit)
     {
+        // Contractors cannot update permits
+        if (auth()->user()->role === 'contractor') {
+            abort(403, 'Contractors are not allowed to update permits.');
+        }
+        
         // Debug logging
         \Log::info('Update attempt', [
             'permit_id' => $permit->id,
@@ -325,6 +355,11 @@ class PermitToWorkController extends Controller
      */
     public function destroy(PermitToWork $permit)
     {
+        // Contractors cannot delete permits
+        if (auth()->user()->role === 'contractor') {
+            abort(403, 'Contractors are not allowed to delete permits.');
+        }
+        
         if ($permit->status !== 'draft') {
             return redirect()->route('permits.index')
                 ->with('error', 'Only draft permits can be deleted.');

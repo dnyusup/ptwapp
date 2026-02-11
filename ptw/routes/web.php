@@ -17,6 +17,7 @@ use App\Http\Controllers\HraExcavationController;
 use App\Http\Controllers\HraConfinedSpaceController;
 use App\Http\Controllers\HraExplosiveAtmosphereController;
 use App\Http\Controllers\InspectionController;
+use App\Http\Controllers\ContractorUserController;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -175,6 +176,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     // Activation route for pending users (EHS only)
     Route::post('/users/{user}/activate', [UserController::class, 'activate'])->name('users.activate');
+    
+    // Contractor User management routes (Contractor role only - manage their team)
+    Route::resource('contractor-users', ContractorUserController::class);
     
     // Kontraktor List management routes (Administrator and Bekaert EHS only)
     Route::resource('kontraktor-lists', KontraktorListController::class);

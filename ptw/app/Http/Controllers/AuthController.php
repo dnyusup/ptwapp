@@ -39,6 +39,12 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             Auth::user()->update(['last_login_at' => now()]);
+            
+            // Redirect contractors to permits list instead of dashboard
+            if (Auth::user()->role === 'contractor') {
+                return redirect()->route('permits.index');
+            }
+            
             return redirect()->intended('/dashboard');
         }
 

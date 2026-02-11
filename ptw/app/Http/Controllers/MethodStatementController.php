@@ -71,9 +71,16 @@ class MethodStatementController extends Controller
             $responsiblePersons = [];
             foreach ($validatedData['responsible_persons'] as $personData) {
                 if (!empty($personData)) {
+                    // Try to decode as JSON (from dropdown)
                     $decodedPerson = json_decode($personData, true);
                     if ($decodedPerson && isset($decodedPerson['name']) && isset($decodedPerson['email'])) {
                         $responsiblePersons[] = $decodedPerson;
+                    } else {
+                        // Plain text input (free text mode) - store name only
+                        $responsiblePersons[] = [
+                            'name' => trim($personData),
+                            'email' => null
+                        ];
                     }
                 }
             }
@@ -167,9 +174,16 @@ class MethodStatementController extends Controller
             $responsiblePersons = [];
             foreach ($validatedData['responsible_persons'] as $personData) {
                 if (!empty($personData)) {
+                    // Try to decode as JSON (from dropdown)
                     $decodedPerson = json_decode($personData, true);
                     if ($decodedPerson && isset($decodedPerson['name']) && isset($decodedPerson['email'])) {
                         $responsiblePersons[] = $decodedPerson;
+                    } else {
+                        // Plain text input (free text mode) - store name only
+                        $responsiblePersons[] = [
+                            'name' => trim($personData),
+                            'email' => null
+                        ];
                     }
                 }
             }

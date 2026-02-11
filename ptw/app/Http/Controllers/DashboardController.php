@@ -13,6 +13,11 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         
+        // Contractors should not access dashboard, redirect to permits
+        if ($user->role === 'contractor') {
+            return redirect()->route('permits.index');
+        }
+        
         // Update expired permits when dashboard is accessed
         PermitToWork::updateExpiredPermits();
         
