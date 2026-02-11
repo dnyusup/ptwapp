@@ -109,6 +109,7 @@ class PermitToWorkController extends Controller
             'work_location' => 'required|string|max:255',
             'location_owner_id' => 'nullable|exists:users,id',
             'equipment_tools' => 'required|string',
+            'work_area_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'work_description' => 'nullable|string',
             'responsible_person' => 'required|string|max:255',
             'responsible_person_email' => 'nullable|email|max:255',
@@ -157,6 +158,14 @@ class PermitToWorkController extends Controller
         $validated['explosive_atmosphere'] = $request->boolean('explosive_atmosphere');
         $validated['form_y_n'] = $request->form_y_n;
         $validated['form_detail'] = $request->form_detail;
+
+        // Handle work area photo upload
+        if ($request->hasFile('work_area_photo')) {
+            $photo = $request->file('work_area_photo');
+            $filename = 'work_area_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $path = $photo->storeAs('work_area_photos', $filename, 'public');
+            $validated['work_area_photo'] = $path;
+        }
 
         $permit = PermitToWork::create($validated);
 
@@ -267,6 +276,7 @@ class PermitToWorkController extends Controller
             'work_location' => 'required|string|max:255',
             'location_owner_id' => 'nullable|exists:users,id',
             'equipment_tools' => 'required|string',
+            'work_area_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'work_description' => 'nullable|string',
             'responsible_person' => 'required|string|max:255',
             'responsible_person_email' => 'nullable|email|max:255',
@@ -310,6 +320,19 @@ class PermitToWorkController extends Controller
         $validated['explosive_atmosphere'] = $request->boolean('explosive_atmosphere');
         $validated['form_y_n'] = $request->form_y_n;
         $validated['form_detail'] = $request->form_detail;
+
+        // Handle work area photo upload
+        if ($request->hasFile('work_area_photo')) {
+            // Delete old photo if exists
+            if ($permit->work_area_photo && \Storage::disk('public')->exists($permit->work_area_photo)) {
+                \Storage::disk('public')->delete($permit->work_area_photo);
+            }
+            
+            $photo = $request->file('work_area_photo');
+            $filename = 'work_area_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $path = $photo->storeAs('work_area_photos', $filename, 'public');
+            $validated['work_area_photo'] = $path;
+        }
 
         // Debug: Log data before update
         \Log::info('Data to update', ['validated' => $validated]);

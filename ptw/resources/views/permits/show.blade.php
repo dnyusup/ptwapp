@@ -612,6 +612,27 @@
                         </div>
                     </div>
 
+                    <!-- Work Area Photo -->
+                    @if($permit->work_area_photo)
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <div class="info-item border-start border-info border-3 ps-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="icon-box bg-info bg-opacity-10 text-info me-3 rounded-3">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <label class="form-label fw-bold text-dark mb-0 fs-6">Foto Area Kerja</label>
+                                </div>
+                                <div class="ms-5">
+                                    <a href="{{ asset('storage/' . $permit->work_area_photo) }}" target="_blank" data-bs-toggle="tooltip" title="Klik untuk melihat ukuran penuh">
+                                        <img src="{{ asset('storage/' . $permit->work_area_photo) }}" alt="Work Area Photo" class="img-fluid rounded shadow-sm" style="max-height: 300px; cursor: pointer;">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Dates -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">

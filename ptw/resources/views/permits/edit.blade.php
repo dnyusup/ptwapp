@@ -131,7 +131,7 @@
                     <h5 class="mb-0">Permit Details</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('permits.update', $permit) }}">
+                    <form method="POST" action="{{ route('permits.update', $permit) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -210,6 +210,33 @@
                                 @error('equipment_tools')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <!-- Work Area Photo Upload -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="work_area_photo" class="form-label fw-semibold">
+                                    <i class="fas fa-camera me-2 text-secondary"></i>Foto Area Kerja
+                                </label>
+                                @if($permit->work_area_photo)
+                                    <div class="mb-2">
+                                        <img src="{{ asset('storage/' . $permit->work_area_photo) }}" alt="Current Work Area Photo" class="img-fluid rounded" style="max-height: 200px;">
+                                        <p class="text-muted mt-1 mb-0"><small>Foto saat ini. Upload foto baru untuk mengganti.</small></p>
+                                    </div>
+                                @endif
+                                <input type="file" class="form-control @error('work_area_photo') is-invalid @enderror" 
+                                       id="work_area_photo" name="work_area_photo" 
+                                       accept="image/*">
+                                <div class="form-text">
+                                    <small class="text-muted">Upload foto area kerja (format: JPG, PNG, max 2MB)</small>
+                                </div>
+                                @error('work_area_photo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div id="photo-preview" class="mt-2" style="display: none;">
+                                    <img id="preview-image" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                </div>
                             </div>
                         </div>
 
@@ -937,6 +964,43 @@ $(document).ready(function() {
                     endDateInput.focus();
                     return false;
                 }
+            }
+        });
+    }
+
+    // Image preview for work area photo
+    const workAreaPhotoInput = document.getElementById('work_area_photo');
+    const photoPreview = document.getElementById('photo-preview');
+    const previewImage = document.getElementById('preview-image');
+
+    if (workAreaPhotoInput) {
+        workAreaPhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file maksimal 2MB');
+                    this.value = '';
+                    photoPreview.style.display = 'none';
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('File harus berupa gambar');
+                    this.value = '';
+                    photoPreview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                photoPreview.style.display = 'none';
             }
         });
     }

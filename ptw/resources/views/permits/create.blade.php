@@ -260,7 +260,7 @@
     <!-- Form Content -->
     <div class="row">
         <div class="col-lg-8">
-            <form method="POST" action="{{ route('permits.store') }}">
+            <form method="POST" action="{{ route('permits.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Basic Information Card -->
@@ -354,6 +354,27 @@
                                 @error('equipment_tools')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+                        </div>
+
+                        <!-- Work Area Photo Upload -->
+                        <div class="row g-4 mt-2">
+                            <div class="col-12">
+                                <label for="work_area_photo" class="form-label fw-semibold">
+                                    <i class="fas fa-camera me-2 text-secondary"></i>Foto Area Kerja
+                                </label>
+                                <input type="file" class="form-control @error('work_area_photo') is-invalid @enderror" 
+                                       id="work_area_photo" name="work_area_photo" 
+                                       accept="image/*">
+                                <div class="form-text">
+                                    <small class="text-muted">Upload foto area kerja (format: JPG, PNG, max 2MB)</small>
+                                </div>
+                                @error('work_area_photo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div id="photo-preview" class="mt-2" style="display: none;">
+                                    <img id="preview-image" src="" alt="Preview" class="img-fluid rounded" style="max-height: 200px;">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1022,6 +1043,43 @@ $(document).ready(function() {
 
     // Initialize constraints on page load
     updateEndDateConstraints();
+
+    // Image preview for work area photo
+    const workAreaPhotoInput = document.getElementById('work_area_photo');
+    const photoPreview = document.getElementById('photo-preview');
+    const previewImage = document.getElementById('preview-image');
+
+    if (workAreaPhotoInput) {
+        workAreaPhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Ukuran file maksimal 2MB');
+                    this.value = '';
+                    photoPreview.style.display = 'none';
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('File harus berupa gambar');
+                    this.value = '';
+                    photoPreview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                photoPreview.style.display = 'none';
+            }
+        });
+    }
 });
 </script>
 @endpush

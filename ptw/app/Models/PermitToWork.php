@@ -15,6 +15,7 @@ class PermitToWork extends Model
         'work_location',
         'location',
         'equipment_tools',
+        'work_area_photo',
         'work_description',
         'department',
         'responsible_person',
