@@ -221,7 +221,7 @@
                                 </label>
                                 @if($permit->work_area_photo)
                                     <div class="mb-2">
-                                        <img src="{{ url('storage/' . $permit->work_area_photo) }}" alt="Current Work Area Photo" class="img-fluid rounded" style="max-height: 200px;" onerror="this.style.display='none';">
+                                        <img src="{{ url('media/' . $permit->work_area_photo) }}" alt="Current Work Area Photo" class="img-fluid rounded" style="max-height: 200px;" onerror="this.style.display='none';">
                                         <p class="text-muted mt-1 mb-0"><small>Foto saat ini. Upload foto baru untuk mengganti.</small></p>
                                     </div>
                                 @endif

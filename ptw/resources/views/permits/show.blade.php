@@ -625,7 +625,7 @@
                                 </div>
                                 <div class="ms-5">
                                     @php
-                                        $photoUrl = url('storage/' . $permit->work_area_photo);
+                                        $photoUrl = url('media/' . $permit->work_area_photo);
                                     @endphp
                                     <a href="{{ $photoUrl }}" target="_blank" data-bs-toggle="tooltip" title="Klik untuk melihat ukuran penuh">
                                         <img src="{{ $photoUrl }}" alt="Work Area Photo" class="img-fluid rounded shadow-sm" style="max-height: 300px; cursor: pointer;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-muted\'>Foto tidak dapat dimuat</span>';">

@@ -41,12 +41,12 @@ Route::get('/debug-storage/{permitId}', function ($permitId) {
         'base_path' => $basePath,
         'public_path' => $publicPath,
         'storage_path' => storage_path(),
-        'url_generated' => url('storage/' . $photoPath),
+        'url_generated' => url('media/' . $photoPath),
     ];
 });
 
 // Route untuk serve file storage (bypass symlink issue di shared hosting)
-Route::get('/storage/{path}', function ($path) {
+Route::get('/media/{path}', function ($path) {
     $fullPath = storage_path('app/public/' . $path);
     
     if (!file_exists($fullPath)) {
