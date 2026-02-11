@@ -457,14 +457,14 @@
         <!-- Kemungkinan Kontaminasi -->
         @if($permit->emergencyPlan->kontaminasi_keadaan)
         <div style="margin-bottom: 15px;">
-            <strong>Kemungkinan kontaminasi:</strong> {{ $permit->emergencyPlan->kontaminasi_keadaan }}
+            <strong>Kemungkinan kontaminan yang timbul:</strong> {{ $permit->emergencyPlan->kontaminasi_keadaan }}
         </div>
         @endif
         
         <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10px;">
                 <thead>
                     <tr style="background-color: #f5f5f5;">
-                        <th style="border: 1px solid #ddd; padding: 4px; text-align: left; width: 80%;">Keadaan darurat Perencanaan harus mencakup</th>
+                        <th style="border: 1px solid #ddd; padding: 4px; text-align: left; width: 80%;">Perencanaan Keadaan Darurat harus mencakup:</th>
                         <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 10%;">Ya</th>
                         <th style="border: 1px solid #ddd; padding: 4px; text-align: center; width: 10%;">Tidak</th>
                     </tr>
@@ -473,18 +473,18 @@
                     @php
                         $emergencyChecklist = [
                             'petugas_tanggap_darurat' => 'Petugas tanggap darurat memiliki kompetensi yang diperlukan, dan bukti yang tercatat',
-                            'cara_meminta_bantuan' => 'Cara meminta bantuan tanpa meninggalkan ruang area',
-                            'sarana_akses_aman' => 'Sarana akses yang aman (tangga/perancah, dll.)',
-                            'orang_diselamatkan_aman' => 'Orang dapat diselamatkan dengan aman jika diperlukan',
-                            'tata_graha_keadaan_baik' => 'Tata graha dalam keadaan baik sehingga memungkinkan penyelamatan efektif dan efisien',
-                            'lokasi_titik_panggilan' => 'Lokasi titik panggilan darurat terdekat, pancuran keselamatan dan pancuran mata',
-                            'ketersediaan_petugas_pertolongan' => 'Ketersediaan petugas pertolongan pertama yang terlatih',
-                            'ketersediaan_defibrilator' => 'Ketersediaan Defibrilator Eksternal Otomatis',
-                            'ketersediaan_media_pemadam' => 'Ketersediaan media pemadam kebakaran yang sesuai - alat pemadam api, selimut, dll.',
-                            'kebutuhan_alat_pernapasan' => 'Kebutuhan Alat Pernapasan Khusus',
+                            'cara_meminta_bantuan' => 'Cara meminta bantuan (komunikasi) tanpa meninggalkan ruang/area',
+                            'sarana_akses_aman' => 'Akses yang aman (tangga/perancah, dll.)',
+                            'orang_diselamatkan_aman' => 'Korban bisa diselamatkan dengan aman, jika diperlukan',
+                            'tata_graha_keadaan_baik' => 'Kondisi housekeeping baik sehingga memungkinkan penyelamatan efektif dan efisien',
+                            'lokasi_titik_panggilan' => 'Manual call point (breakglass) terdekat, eyewash, emergency shower, alat komunikasi',
+                            'ketersediaan_petugas_pertolongan' => 'Petugas P3K yang terlatih',
+                            'ketersediaan_defibrilator' => 'AED tersedia dalam jangkauan 2 menit',
+                            'ketersediaan_media_pemadam' => 'Ketersediaan APAR yang sesuai, fire blanket, sprinkler, dll.',
+                            'kebutuhan_alat_pernapasan' => 'Kebutuhan Alat Pernapasan Khusus (respirator, SCBA)',
                             'apd_khusus_lainnya' => 'APD khusus lainnya',
-                            'alat_ukur_gas_dikalibrasi' => 'Diperlukan alat ukur gas yang dikalibrasi?',
-                            'peralatan_keselamatan_khusus' => 'Peralatan keselamatan khusus yang akan digunakan (tandu/harness/lifeline/hoist/lampu dll.)'
+                            'alat_ukur_gas_dikalibrasi' => 'Tes gas diperlukan dan alat dikalibrasi?',
+                            'peralatan_keselamatan_khusus' => 'Peralatan keselamatan khusus yang akan digunakan (tandu/harness/lifeline/hoist/lampu/dll.)'
                         ];
                     @endphp
                     
@@ -529,7 +529,7 @@
         @if($permit->emergencyPlan->deskripsi_rencana_penyelamatan)
         <div class="section">
             <div class="section-title">Rencana Penyelamatan</div>
-            <strong>Deskripsi rencana penyelamatan dan penanggung jawab:</strong>
+            <strong>Deskripsi rencana penyelamatan dan/atau referensi ke Rencana Darurat/Alarm di lokasi (termasuk poin-poin dari atas) dan HARUS jelas peran/tanggung jawab per orang yang ditunjuk.</strong>
             <div style="padding: 8px; background-color: #f5f5f5; border-left: 3px solid #666; font-size: 11px; margin-top: 5px;">
                 {{ $permit->emergencyPlan->deskripsi_rencana_penyelamatan }}
             </div>

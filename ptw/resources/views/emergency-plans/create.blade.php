@@ -42,14 +42,14 @@
             <div class="card-body">
                 <!-- Kemungkinan Kontaminasi -->
                 <div class="row mb-4">
-                    <label for="kontaminasi_keadaan" class="col-sm-4 col-form-label fw-bold">Kemungkinan kontaminasi:</label>
+                    <label for="kontaminasi_keadaan" class="col-sm-4 col-form-label fw-bold">Kemungkinan kontaminan yang timbul:</label>
                     <div class="col-sm-8">
                         <input type="text" class="form-control" id="kontaminasi_keadaan" name="kontaminasi_keadaan" value="{{ old('kontaminasi_keadaan') }}" placeholder="Jelaskan kemungkinan kontaminasi...">
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <p class="fw-bold mb-3">Keadaan darurat Perencanaan harus mencakup:</p>
+                    <p class="fw-bold mb-3">Perencanaan Keadaan Darurat harus mencakup:</p>
                     
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -71,7 +71,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Cara meminta bantuan tanpa meninggalkan ruang area</td>
+                                    <td>Cara meminta bantuan (komunikasi) tanpa meninggalkan ruang/area</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="cara_meminta_bantuan" value="1" {{ old('cara_meminta_bantuan') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -80,7 +80,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Sarana akses yang aman (tangga/perancah, dll.)</td>
+                                    <td>Akses yang aman (tangga/perancah, dll.)</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="sarana_akses_aman" value="1" {{ old('sarana_akses_aman') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -89,7 +89,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Orang dapat diselamatkan dengan aman jika diperlukan</td>
+                                    <td>Korban bisa diselamatkan dengan aman, jika diperlukan</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="orang_diselamatkan_aman" value="1" {{ old('orang_diselamatkan_aman') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -98,7 +98,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Tata graha dalam keadaan baik sehingga memungkinkan penyelamatan efektif dan efisien</td>
+                                    <td>Kondisi housekeeping baik sehingga memungkinkan penyelamatan efektif dan efisien</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="tata_graha_keadaan_baik" value="1" {{ old('tata_graha_keadaan_baik') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -107,7 +107,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Lokasi titik panggilan darurat terdekat, pancuran keselamatan dan pancuran mata</td>
+                                    <td>Manual call point (breakglass) terdekat, eyewash, emergency shower, alat komunikasi</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="lokasi_titik_panggilan" value="1" {{ old('lokasi_titik_panggilan') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -116,7 +116,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Ketersediaan petugas pertolongan pertama yang terlatih</td>
+                                    <td>Petugas P3K yang terlatih</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="ketersediaan_petugas_pertolongan" value="1" {{ old('ketersediaan_petugas_pertolongan') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -125,7 +125,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Ketersediaan Defibrilator Eksternal Otomatis</td>
+                                    <td>AED tersedia dalam jangkauan 2 menit</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="ketersediaan_defibrilator" value="1" {{ old('ketersediaan_defibrilator') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -134,7 +134,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Ketersediaan media pemadam kebakaran yang sesuai - alat pemadam api, selimut, dll.</td>
+                                    <td>Ketersediaan APAR yang sesuai, fire blanket, sprinkler, dll.</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="ketersediaan_media_pemadam" value="1" {{ old('ketersediaan_media_pemadam') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -143,7 +143,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Kebutuhan Alat Pernapasan Khusus</td>
+                                    <td>Kebutuhan Alat Pernapasan Khusus (respirator, SCBA)</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="kebutuhan_alat_pernapasan" value="1" {{ old('kebutuhan_alat_pernapasan') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -166,7 +166,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Diperlukan alat ukur gas yang dikalibrasi?</td>
+                                    <td>Tes gas diperlukan dan alat dikalibrasi?</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="alat_ukur_gas_dikalibrasi" value="1" {{ old('alat_ukur_gas_dikalibrasi') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -175,7 +175,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Peralatan keselamatan khusus yang akan digunakan (tandu/harness/lifeline/hoist/lampudll.)</td>
+                                    <td>Peralatan keselamatan khusus yang akan digunakan (tandu/harness/lifeline/hoist/lampu/dll.)</td>
                                     <td class="text-center">
                                         <input type="radio" class="form-check-input" name="peralatan_keselamatan_khusus" value="1" {{ old('peralatan_keselamatan_khusus') == '1' ? 'checked' : '' }}>
                                     </td>
@@ -194,7 +194,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="deskripsi_rencana_penyelamatan" class="form-label">Deskripsi rencana penyelamatan dan/atau referensi ke Rencana Darurat/Alarm di lokasi (termasuk poin-poin dari atas) HARUS jelas perantanggung jawabnya:</label>
+                    <label for="deskripsi_rencana_penyelamatan" class="form-label">Deskripsi rencana penyelamatan dan/atau referensi ke Rencana Darurat/Alarm di lokasi (termasuk
+poin-poin dari atas) dan HARUS jelas peran/tanggung jawab per orang yang ditunjuk.</label>
                     <textarea class="form-control" id="deskripsi_rencana_penyelamatan" name="deskripsi_rencana_penyelamatan" rows="4" placeholder="Jelaskan rencana penyelamatan dan penanggung jawab yang terlibat...">{{ old('deskripsi_rencana_penyelamatan') }}</textarea>
                 </div>
             </div>
