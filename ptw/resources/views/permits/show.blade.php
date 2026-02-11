@@ -624,8 +624,11 @@
                                     <label class="form-label fw-bold text-dark mb-0 fs-6">Foto Area Kerja</label>
                                 </div>
                                 <div class="ms-5">
-                                    <a href="{{ Storage::url($permit->work_area_photo) }}" target="_blank" data-bs-toggle="tooltip" title="Klik untuk melihat ukuran penuh">
-                                        <img src="{{ Storage::url($permit->work_area_photo) }}" alt="Work Area Photo" class="img-fluid rounded shadow-sm" style="max-height: 300px; cursor: pointer;">
+                                    @php
+                                        $photoUrl = url('storage/' . $permit->work_area_photo);
+                                    @endphp
+                                    <a href="{{ $photoUrl }}" target="_blank" data-bs-toggle="tooltip" title="Klik untuk melihat ukuran penuh">
+                                        <img src="{{ $photoUrl }}" alt="Work Area Photo" class="img-fluid rounded shadow-sm" style="max-height: 300px; cursor: pointer;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-muted\'>Foto tidak dapat dimuat</span>';">
                                     </a>
                                 </div>
                             </div>

@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermitToWorkController;
@@ -18,6 +20,18 @@ use App\Http\Controllers\HraConfinedSpaceController;
 use App\Http\Controllers\HraExplosiveAtmosphereController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\ContractorUserController;
+
+// Route untuk serve file storage (bypass symlink issue di shared hosting)
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    
+    if (!file_exists($fullPath)) {
+        abort(404);
+    }
+    
+    $mimeType = mime_content_type($fullPath);
+    return Response::file($fullPath, ['Content-Type' => $mimeType]);
+})->where('path', '.*')->name('storage.serve');
 
 // Redirect root to login
 Route::get('/', function () {
