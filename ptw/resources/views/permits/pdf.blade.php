@@ -329,7 +329,11 @@
 
         <div class="signature-grid">
             <div class="signature-row">
-                <div class="signature-cell">
+                @php
+                    $hasLocationOwnerApproval = $permit->location_owner_as_approver && $permit->location_owner_id;
+                    $cellWidth = $hasLocationOwnerApproval ? '25%' : '33.33%';
+                @endphp
+                <div class="signature-cell" style="width: {{ $cellWidth }};">
                     <div class="signature-title">PERMIT ISSUER</div>
                     <div class="signature-name">{{ $permit->permitIssuer->name ?? 'N/A' }}</div>
                     <div class="signature-line">Digitally Signed</div>
@@ -337,7 +341,7 @@
                         {{ $permit->created_at ? $permit->created_at->format('d M Y H:i') : 'N/A' }}
                     </div>
                 </div>
-                <div class="signature-cell">
+                <div class="signature-cell" style="width: {{ $cellWidth }};">
                     <div class="signature-title">WORK RECEIVER</div>
                     <div class="signature-name">
                         @if($permit->receiver && $permit->receiver->name)
@@ -353,14 +357,24 @@
                         {{ $permit->methodStatement && $permit->methodStatement->created_at ? $permit->methodStatement->created_at->format('d M Y H:i') : 'N/A' }}
                     </div>
                 </div>
-                <div class="signature-cell">
-                    <div class="signature-title">AUTHORIZER/SHE</div>
+                <div class="signature-cell" style="width: {{ $cellWidth }};">
+                    <div class="signature-title">AUTHORIZER / EHS</div>
                     <div class="signature-name">{{ $permit->authorizer->name ?? 'N/A' }}</div>
                     <div class="signature-line">Digitally Signed</div>
                     <div class="signature-date">
-                        {{ $permit->authorized_at ? $permit->authorized_at->format('d M Y H:i') : 'N/A' }}
+                        {{ $permit->ehs_approved_at ? $permit->ehs_approved_at->format('d M Y H:i') : ($permit->authorized_at ? $permit->authorized_at->format('d M Y H:i') : 'N/A') }}
                     </div>
                 </div>
+                @if($hasLocationOwnerApproval)
+                <div class="signature-cell" style="width: {{ $cellWidth }};">
+                    <div class="signature-title">LOCATION OWNER</div>
+                    <div class="signature-name">{{ $permit->locationOwner->name ?? 'N/A' }}</div>
+                    <div class="signature-line">Digitally Signed</div>
+                    <div class="signature-date">
+                        {{ $permit->location_owner_approved_at ? $permit->location_owner_approved_at->format('d M Y H:i') : 'N/A' }}
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

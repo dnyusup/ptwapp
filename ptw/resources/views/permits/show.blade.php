@@ -265,6 +265,7 @@
                 @php
                     $currentUser = auth()->user();
                     $isEHS = $currentUser && $currentUser->role === 'bekaert' && $currentUser->department === 'EHS';
+                    $isLocationOwner = $currentUser && $permit->location_owner_id && $currentUser->id == $permit->location_owner_id;
                     
                     // Simplified conditions for Request Approval button
                     $hasMethodStatement = $permit->methodStatement ? true : false;
@@ -279,12 +280,9 @@
 
                 {{-- Request Approval Button --}}
                 @if($canRequestApproval)
-                    <form id="request-approval-form" method="POST" action="{{ route('permits.request-approval', $permit) }}" class="d-inline">
-                        @csrf
-                        <button type="submit" class="btn btn-info">
-                            <i class="fas fa-paper-plane me-2"></i>Request Approval
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#requestApprovalModal">
+                        <i class="fas fa-paper-plane me-2"></i>Request Approval
+                    </button>
                 @elseif(!$msCompleted)
                     <button type="button" class="btn btn-outline-secondary" disabled title="Method Statement must be completed first">
                         <i class="fas fa-lock me-2"></i>Request Approval (Method Statement Required)
@@ -299,16 +297,30 @@
                     </button>
                 @endif
 
-                {{-- Single Approval Button for Both Permit and Method Statement --}}
-                @if($isEHS && in_array($permit->status, ['pending_approval', 'resubmitted']))
+                {{-- Approval Button for EHS --}}
+                @if($isEHS && in_array($permit->status, ['pending_approval', 'resubmitted']) && $permit->ehs_approval_status !== 'approved')
                     <form method="POST" action="{{ route('permits.approve', $permit) }}" class="d-inline">
                         @csrf
                         <button type="submit" class="btn btn-success" 
                                 onclick="return confirm('Are you sure you want to approve this permit{{ $permit->methodStatement ? ' and method statement' : '' }}?')">
-                            <i class="fas fa-check me-2"></i>Approve{{ $permit->methodStatement ? ' All' : '' }}
+                            <i class="fas fa-check me-2"></i>Approve
                         </button>
                     </form>
                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                        <i class="fas fa-times me-2"></i>Reject
+                    </button>
+                @endif
+
+                {{-- Approval Button for Location Owner --}}
+                @if($permit->location_owner_as_approver && $isLocationOwner && in_array($permit->status, ['pending_approval', 'resubmitted']) && $permit->location_owner_approval_status !== 'approved')
+                    <form method="POST" action="{{ route('permits.approve-location-owner', $permit) }}" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn btn-success" 
+                                onclick="return confirm('Are you sure you want to approve this permit?')">
+                            <i class="fas fa-check me-2"></i>Approve
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectLocationOwnerModal">
                         <i class="fas fa-times me-2"></i>Reject
                     </button>
                 @endif
@@ -419,6 +431,95 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Approval Status Tracking Card -->
+            @if(in_array($permit->status, ['pending_approval', 'resubmitted', 'active', 'approved']) || $permit->ehs_approval_status || $permit->location_owner_approval_status)
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0 text-white">
+                        <i class="fas fa-clipboard-check me-2"></i>Status Persetujuan
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- EHS Approval Status -->
+                        <div class="col-md-6">
+                            <div class="approval-status-box p-3 rounded-3 border {{ $permit->ehs_approval_status === 'approved' ? 'border-success bg-success bg-opacity-10' : 'bg-light' }}">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="icon-box {{ $permit->ehs_approval_status === 'approved' ? 'bg-success text-white' : 'bg-secondary bg-opacity-10 text-secondary' }} me-3">
+                                        <i class="fas fa-hard-hat"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">EHS Team</h6>
+                                        <small class="text-muted">Environment, Health & Safety</small>
+                                    </div>
+                                </div>
+                                <div class="ms-5 mt-2">
+                                    @if($permit->ehs_approval_status === 'approved')
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Approved
+                                        </span>
+                                        @if($permit->ehs_approved_at)
+                                            <small class="text-muted d-block mt-1">{{ $permit->ehs_approved_at->format('d M Y, H:i') }}</small>
+                                        @endif
+                                        @if($permit->authorizer)
+                                            <small class="text-muted d-block">oleh {{ $permit->authorizer->name }}</small>
+                                        @endif
+                                    @elseif($permit->ehs_approval_status === 'pending')
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Menunggu Persetujuan
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-minus me-1"></i>Belum Diminta
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Location Owner Approval Status -->
+                        @if($permit->location_owner_as_approver && $permit->location_owner_id)
+                        <div class="col-md-6">
+                            <div class="approval-status-box p-3 rounded-3 border {{ $permit->location_owner_approval_status === 'approved' ? 'border-success bg-success bg-opacity-10' : 'bg-light' }}">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="icon-box {{ $permit->location_owner_approval_status === 'approved' ? 'bg-success text-white' : 'bg-secondary bg-opacity-10 text-secondary' }} me-3">
+                                        <i class="fas fa-user-cog"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">Location Owner</h6>
+                                        <small class="text-muted">{{ $permit->locationOwner->name ?? 'N/A' }}</small>
+                                    </div>
+                                </div>
+                                <div class="ms-5 mt-2">
+                                    @if($permit->location_owner_approval_status === 'approved')
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Approved
+                                        </span>
+                                        @if($permit->location_owner_approved_at)
+                                            <small class="text-muted d-block mt-1">{{ $permit->location_owner_approved_at->format('d M Y, H:i') }}</small>
+                                        @endif
+                                    @elseif($permit->location_owner_approval_status === 'pending')
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock me-1"></i>Menunggu Persetujuan
+                                        </span>
+                                    @elseif($permit->location_owner_approval_status === 'rejected')
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Ditolak
+                                        </span>
+                                    @else
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-minus me-1"></i>Belum Diminta
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Completion Information Card -->
             @if($permit->status === 'completed' && $permit->completed_at)
@@ -1640,6 +1741,46 @@
     </div>
 </div>
 
+<!-- Reject Location Owner Modal -->
+<div class="modal fade" id="rejectLocationOwnerModal" tabindex="-1" aria-labelledby="rejectLocationOwnerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('permits.reject-location-owner', $permit) }}">
+                @csrf
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="rejectLocationOwnerModalLabel">
+                        <i class="fas fa-times-circle me-2"></i>Reject Permit (Location Owner)
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning:</strong> This permit will be rejected as Location Owner.
+                    </div>
+                    <div class="mb-3">
+                        <label for="location_owner_rejection_reason" class="form-label fw-bold">
+                            <span class="text-danger">*</span> Reason for Rejection:
+                        </label>
+                        <textarea name="rejection_reason" id="location_owner_rejection_reason" class="form-control" rows="4" 
+                                  placeholder="Please provide a detailed reason for rejecting this permit..." 
+                                  required minlength="10" maxlength="1000"></textarea>
+                        <div class="form-text">Minimum 10 characters, maximum 1000 characters</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times-circle me-2"></i>Reject Permit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Reject Extension Modal -->
 <div class="modal fade" id="rejectExtensionModal" tabindex="-1" aria-labelledby="rejectExtensionModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -2115,6 +2256,151 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 @endif
+
+<!-- Request Approval Modal with Risk Assessment Form -->
+<div class="modal fade" id="requestApprovalModal" tabindex="-1" aria-labelledby="requestApprovalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ route('permits.request-approval', $permit) }}">
+                @csrf
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title text-white" id="requestApprovalModalLabel">
+                        <i class="fas fa-shield-alt me-2"></i>Penilaian Risiko & Pernyataan Metode
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Wajib diisi untuk semua pekerjaan</strong> - Pastikan semua pertanyaan dijawab sebelum mengajukan persetujuan.
+                    </div>
+                    
+                    <!-- Penilaian Risiko & Pernyataan Metode -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                Penilaian Risiko & Pernyataan Metode (Ditinjau dan Disetujui?) <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="risk_method_assessment" id="risk_method_yes" value="ya" required>
+                                    <label class="form-check-label fw-bold text-success" for="risk_method_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="risk_method_assessment" id="risk_method_no" value="tidak" required>
+                                    <label class="form-check-label fw-bold text-danger" for="risk_method_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Penggunaan dan Penyimpanan Bahan Kimia -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                Penggunaan dan Penyimpanan Bahan Kimia (Ditinjau dan Disetujui?) <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="chemical_usage_storage" id="chemical_yes" value="ya" required>
+                                    <label class="form-check-label fw-bold text-success" for="chemical_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="chemical_usage_storage" id="chemical_no" value="tidak" required>
+                                    <label class="form-check-label fw-bold text-danger" for="chemical_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kondisi Peralatan -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                Kondisi Peralatan (Ditinjau dan Disetujui?) <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="equipment_condition" id="equipment_yes" value="ya" required>
+                                    <label class="form-check-label fw-bold text-success" for="equipment_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="equipment_condition" id="equipment_no" value="tidak" required>
+                                    <label class="form-check-label fw-bold text-danger" for="equipment_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asbes -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                Apakah Asbes Ada di Area/Peralatan/Infrastruktur? <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="asbestos_presence" id="asbestos_yes" value="ya" required>
+                                    <label class="form-check-label fw-bold text-warning" for="asbestos_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="asbestos_presence" id="asbestos_no" value="tidak" required>
+                                    <label class="form-check-label fw-bold text-success" for="asbestos_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ATEX Area -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                Apakah pekerjaan ini termasuk dalam area ATEX? (Mandatory Authoriser) <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="atex_area" id="atex_yes" value="ya" required>
+                                    <label class="form-check-label fw-bold text-warning" for="atex_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="atex_area" id="atex_no" value="tidak" required>
+                                    <label class="form-check-label fw-bold text-success" for="atex_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gas Storage Area -->
+                    <div class="mb-3 p-3 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label fw-bold text-dark mb-0">
+                                Apakah pekerjaan dilakukan di/pada area penyimpanan gas/cairan yang mudah terbakar? (Mandatory Authoriser) <span class="text-danger">*</span>
+                            </label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gas_storage_area" id="gas_storage_yes" value="ya" required>
+                                    <label class="form-check-label fw-bold text-warning" for="gas_storage_yes">Ya</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gas_storage_area" id="gas_storage_no" value="tidak" required>
+                                    <label class="form-check-label fw-bold text-success" for="gas_storage_no">Tidak</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Batal
+                    </button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-paper-plane me-2"></i>Request Approval
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @include('layouts.sidebar-scripts')
 @endsection

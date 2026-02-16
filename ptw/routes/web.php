@@ -201,6 +201,8 @@ Route::middleware('auth')->group(function () {
         // Additional permit actions
     Route::post('/permits/{permit}/submit', [PermitToWorkController::class, 'submit'])->name('permits.submit');
     Route::post('/permits/{permit}/approve', [PermitToWorkController::class, 'approve'])->name('permits.approve');
+    Route::post('/permits/{permit}/approve-location-owner', [PermitToWorkController::class, 'approveByLocationOwner'])->name('permits.approve-location-owner');
+    Route::post('/permits/{permit}/reject-location-owner', [PermitToWorkController::class, 'rejectByLocationOwner'])->name('permits.reject-location-owner');
     Route::post('/permits/{permit}/reject', [PermitToWorkController::class, 'reject'])->name('permits.reject');
     Route::post('/permits/{permit}/resubmit', [PermitToWorkController::class, 'resubmit'])->name('permits.resubmit');
     Route::post('/permits/{permit}/request-approval', [PermitToWorkController::class, 'requestApproval'])->name('permits.request-approval');

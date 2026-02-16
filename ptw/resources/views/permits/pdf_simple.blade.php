@@ -258,9 +258,13 @@
 
     <div class="section">
         <div class="section-title">Signatures</div>
+        @php
+            $hasLocationOwnerApproval = $permit->location_owner_as_approver && $permit->location_owner_id;
+            $cellWidth = $hasLocationOwnerApproval ? '25%' : '33.33%';
+        @endphp
         <table style="width: 100%; border-collapse: collapse;">
             <tr>
-                <td style="width: 33.33%; border: 1px solid black; padding: 10px; vertical-align: top;">
+                <td style="width: {{ $cellWidth }}; border: 1px solid black; padding: 10px; vertical-align: top;">
                     <div style="text-align: center;">
                         <strong>PERMIT ISSUER</strong><br>
                         <div style="margin: 10px 0; font-style: italic; color: #666;">
@@ -272,9 +276,9 @@
                         </div>
                     </div>
                 </td>
-                <td style="width: 33.33%; border: 1px solid black; padding: 10px; vertical-align: top;">
+                <td style="width: {{ $cellWidth }}; border: 1px solid black; padding: 10px; vertical-align: top;">
                     <div style="text-align: center;">
-                        <strong>RECEIVER / PELAKSANA</strong><br>
+                        <strong>RECEIVER</strong><br>
                         <div style="margin: 10px 0; font-style: italic; color: #666;">
                             DIGITALLY SIGNED
                         </div>
@@ -284,7 +288,7 @@
                         </div>
                     </div>
                 </td>
-                <td style="width: 33.33%; border: 1px solid black; padding: 10px; vertical-align: top;">
+                <td style="width: {{ $cellWidth }}; border: 1px solid black; padding: 10px; vertical-align: top;">
                     <div style="text-align: center;">
                         <strong>AUTHORIZER / EHS</strong><br>
                         <div style="margin: 10px 0; font-style: italic; color: #666;">
@@ -296,10 +300,28 @@
                         </div>
                         <div style="border-top: 1px solid black; margin-top: 15px; padding-top: 5px;">
                             Name: {{ $permit->authorizer->name ?? 'N/A' }}<br>
-                            Date: {{ $permit->authorized_at ? $permit->authorized_at->format('d/m/Y H:i') : '______' }}
+                            Date: {{ $permit->ehs_approved_at ? $permit->ehs_approved_at->format('d/m/Y H:i') : ($permit->authorized_at ? $permit->authorized_at->format('d/m/Y H:i') : '______') }}
                         </div>
                     </div>
                 </td>
+                @if($hasLocationOwnerApproval)
+                <td style="width: {{ $cellWidth }}; border: 1px solid black; padding: 10px; vertical-align: top;">
+                    <div style="text-align: center;">
+                        <strong>LOCATION OWNER</strong><br>
+                        <div style="margin: 10px 0; font-style: italic; color: #666;">
+                            @if($permit->location_owner_approval_status === 'approved')
+                                DIGITALLY SIGNED
+                            @else
+                                PENDING APPROVAL
+                            @endif
+                        </div>
+                        <div style="border-top: 1px solid black; margin-top: 15px; padding-top: 5px;">
+                            Name: {{ $permit->locationOwner->name ?? 'N/A' }}<br>
+                            Date: {{ $permit->location_owner_approved_at ? $permit->location_owner_approved_at->format('d/m/Y H:i') : '______' }}
+                        </div>
+                    </div>
+                </td>
+                @endif
             </tr>
         </table>
     </div>

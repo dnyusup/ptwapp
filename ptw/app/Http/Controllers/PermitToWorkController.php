@@ -119,12 +119,12 @@ class PermitToWorkController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'authorizer_id' => 'nullable|exists:users,id',
-            'risk_method_assessment' => 'required|in:ya,tidak',
-            'chemical_usage_storage' => 'required|in:ya,tidak',
-            'equipment_condition' => 'required|in:ya,tidak',
-            'asbestos_presence' => 'required|in:ya,tidak',
-            'atex_area' => 'required|in:ya,tidak',
-            'gas_storage_area' => 'required|in:ya,tidak',
+            'risk_method_assessment' => 'nullable|in:ya,tidak',
+            'chemical_usage_storage' => 'nullable|in:ya,tidak',
+            'equipment_condition' => 'nullable|in:ya,tidak',
+            'asbestos_presence' => 'nullable|in:ya,tidak',
+            'atex_area' => 'nullable|in:ya,tidak',
+            'gas_storage_area' => 'nullable|in:ya,tidak',
         ]);
 
         // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)
@@ -156,6 +156,7 @@ class PermitToWorkController extends Controller
         $validated['excavation'] = $request->boolean('excavation');
         $validated['confined_spaces'] = $request->boolean('confined_spaces');
         $validated['explosive_atmosphere'] = $request->boolean('explosive_atmosphere');
+        $validated['location_owner_as_approver'] = $request->boolean('location_owner_as_approver');
         $validated['form_y_n'] = $request->form_y_n;
         $validated['form_detail'] = $request->form_detail;
 
@@ -286,12 +287,12 @@ class PermitToWorkController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'authorizer_id' => 'nullable|exists:users,id',
-            'risk_method_assessment' => 'required|in:ya,tidak',
-            'chemical_usage_storage' => 'required|in:ya,tidak',
-            'equipment_condition' => 'required|in:ya,tidak',
-            'asbestos_presence' => 'required|in:ya,tidak',
-            'atex_area' => 'required|in:ya,tidak',
-            'gas_storage_area' => 'required|in:ya,tidak',
+            'risk_method_assessment' => 'nullable|in:ya,tidak',
+            'chemical_usage_storage' => 'nullable|in:ya,tidak',
+            'equipment_condition' => 'nullable|in:ya,tidak',
+            'asbestos_presence' => 'nullable|in:ya,tidak',
+            'atex_area' => 'nullable|in:ya,tidak',
+            'gas_storage_area' => 'nullable|in:ya,tidak',
         ]);
 
         // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)
@@ -318,6 +319,7 @@ class PermitToWorkController extends Controller
         $validated['excavation'] = $request->boolean('excavation');
         $validated['confined_spaces'] = $request->boolean('confined_spaces');
         $validated['explosive_atmosphere'] = $request->boolean('explosive_atmosphere');
+        $validated['location_owner_as_approver'] = $request->boolean('location_owner_as_approver');
         $validated['form_y_n'] = $request->form_y_n;
         $validated['form_detail'] = $request->form_detail;
 
@@ -433,11 +435,19 @@ class PermitToWorkController extends Controller
             $permit->methodStatement->update(['status' => 'approved']);
         }
 
+        // Mark EHS approval
         $permit->update([
-            'status' => 'active',
             'authorizer_id' => Auth::id(),
             'authorized_at' => now(),
+            'ehs_approval_status' => 'approved',
+            'ehs_approved_at' => now(),
         ]);
+        
+        // Check if all required approvals are done
+        $this->checkAndActivatePermit($permit);
+        
+        // Refresh permit to get updated status
+        $permit->refresh();
         
         // Send notification email to permit creator, CC location owner if exists
         $creatorEmail = $permit->user->email ?? null;
@@ -450,14 +460,138 @@ class PermitToWorkController extends Controller
                 $ccEmail = $locationOwner->email;
             }
         }
-        if ($creatorEmail) {
-            \Mail::to($creatorEmail)
-                ->cc($ccEmail)
-                ->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
+        
+        $message = 'Permit telah disetujui oleh EHS.';
+        if ($permit->status === 'active') {
+            $message = 'Permit approved and activated successfully! Method Statement has also been approved.';
+            if ($creatorEmail) {
+                \Mail::to($creatorEmail)
+                    ->cc($ccEmail)
+                    ->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
+            }
+        } else {
+            $message = 'Permit telah disetujui oleh EHS. Menunggu approval dari Location Owner.';
         }
 
         return redirect()->route('permits.show', $permit)
-            ->with('success', 'Permit approved and activated successfully! Method Statement has also been approved.');
+            ->with('success', $message);
+    }
+
+    /**
+     * Approve permit by Location Owner
+     */
+    public function approveByLocationOwner(PermitToWork $permit)
+    {
+        if (!in_array($permit->status, ['pending_approval', 'resubmitted'])) {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'Only pending or resubmitted permits can be approved.');
+        }
+
+        // Only the assigned location owner can approve
+        if (Auth::id() != $permit->location_owner_id) {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'You do not have permission to approve this permit. Only the assigned Location Owner can approve.');
+        }
+
+        // Check if location owner approval is required
+        if (!$permit->location_owner_as_approver) {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'Location Owner approval is not required for this permit.');
+        }
+
+        // Mark Location Owner approval
+        $permit->update([
+            'location_owner_approval_status' => 'approved',
+            'location_owner_approved_at' => now(),
+        ]);
+        
+        // Check if all required approvals are done
+        $this->checkAndActivatePermit($permit);
+        
+        // Refresh permit to get updated status
+        $permit->refresh();
+        
+        $message = 'Permit telah disetujui oleh Location Owner.';
+        if ($permit->status === 'active') {
+            $message = 'Permit approved and activated successfully!';
+            
+            // Send notification email to permit creator
+            $creatorEmail = $permit->user->email ?? null;
+            $creatorName = $permit->user->name ?? '';
+            $permit->created_by_name = $creatorName;
+            if ($creatorEmail) {
+                \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
+            }
+        } else {
+            $message = 'Permit telah disetujui oleh Location Owner. Menunggu approval dari EHS.';
+        }
+
+        return redirect()->route('permits.show', $permit)
+            ->with('success', $message);
+    }
+
+    /**
+     * Reject permit by Location Owner
+     */
+    public function rejectByLocationOwner(Request $request, PermitToWork $permit)
+    {
+        if (!in_array($permit->status, ['pending_approval', 'resubmitted'])) {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'Only pending or resubmitted permits can be rejected.');
+        }
+
+        // Only the assigned location owner can reject
+        if (Auth::id() != $permit->location_owner_id) {
+            return redirect()->route('permits.show', $permit)
+                ->with('error', 'You do not have permission to reject this permit. Only the assigned Location Owner can reject.');
+        }
+
+        // Validate rejection reason
+        $validated = $request->validate([
+            'rejection_reason' => 'required|string|min:10|max:1000'
+        ]);
+
+        $permit->update([
+            'status' => 'rejected',
+            'location_owner_approval_status' => 'rejected',
+            'rejection_reason' => 'Ditolak oleh Location Owner: ' . $validated['rejection_reason'],
+            'rejected_at' => now(),
+            'rejected_by' => Auth::id(),
+        ]);
+        
+        // Send notification email to permit creator
+        $creatorEmail = $permit->user->email ?? null;
+        $creatorName = $permit->user->name ?? '';
+        $permit->created_by_name = $creatorName;
+        if ($creatorEmail) {
+            \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason']));
+        }
+
+        return redirect()->route('permits.show', $permit)
+            ->with('warning', 'Permit rejected by Location Owner. The reason has been recorded.');
+    }
+
+    /**
+     * Check if all required approvals are done and activate permit
+     */
+    private function checkAndActivatePermit(PermitToWork $permit)
+    {
+        // Check if EHS has approved
+        $ehsApproved = $permit->ehs_approval_status === 'approved';
+        
+        // Check if Location Owner approval is needed and done
+        $locationOwnerApprovalNeeded = $permit->location_owner_as_approver && $permit->location_owner_id;
+        $locationOwnerApproved = !$locationOwnerApprovalNeeded || $permit->location_owner_approval_status === 'approved';
+        
+        // If all required approvals are done, activate the permit
+        if ($ehsApproved && $locationOwnerApproved) {
+            $permit->update(['status' => 'active']);
+            
+            // Also approve method statement if exists
+            if ($permit->methodStatement && $permit->methodStatement->status !== 'approved') {
+                $permit->methodStatement->update(['status' => 'approved']);
+            }
+        }
     }
 
     /**
@@ -525,19 +659,69 @@ class PermitToWorkController extends Controller
             'rejected_at' => null,
             'rejected_by' => null,
             'issued_at' => now(),
+            'ehs_approval_status' => 'pending',
+            'ehs_approved_at' => null,
+            'location_owner_approval_status' => $permit->location_owner_as_approver ? 'pending' : null,
+            'location_owner_approved_at' => null,
         ]);
 
-        // Send email to all EHS users (same as request approval)
-        $ehsUsers = \App\Models\User::where('role', 'bekaert')
-            ->where('department', 'EHS')
-            ->get();
-        $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
-        if (count($ehsEmails) > 0) {
-            \Mail::to($ehsEmails)->send(new \App\Mail\PermitApprovalRequest($permit));
+        // Send email to EHS team and Location Owner (if applicable)
+        $emailSent = false;
+        $ehsCount = 0;
+        $locationOwnerNotified = false;
+        
+        try {
+            // Get EHS users
+            $ehsUsers = \App\Models\User::where('role', 'bekaert')
+                ->where('department', 'EHS')
+                ->get();
+            $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
+            $ehsCount = $ehsUsers->count();
+            
+            // Get all recipients (EHS + Location Owner if applicable)
+            $toEmails = $ehsEmails;
+            
+            // Add Location Owner to recipients if location_owner_as_approver is true
+            if ($permit->location_owner_as_approver && $permit->locationOwner) {
+                $locationOwnerEmail = $permit->locationOwner->email;
+                if ($locationOwnerEmail && !in_array($locationOwnerEmail, $toEmails)) {
+                    $toEmails[] = $locationOwnerEmail;
+                    $locationOwnerNotified = true;
+                }
+            }
+            
+            // Get permit creator email for CC
+            $ccEmails = [];
+            if ($permit->permitIssuer && $permit->permitIssuer->email) {
+                $ccEmails[] = $permit->permitIssuer->email;
+            }
+            
+            if (count($toEmails) > 0) {
+                $mail = \Mail::to($toEmails);
+                if (count($ccEmails) > 0) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new \App\Mail\PermitApprovalRequest($permit));
+                $emailSent = true;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Resubmit email failed', ['error' => $e->getMessage()]);
         }
+        
+        $recipients = [];
+        if ($ehsCount > 0) {
+            $recipients[] = "{$ehsCount} EHS member(s)";
+        }
+        if ($locationOwnerNotified) {
+            $recipients[] = "Location Owner";
+        }
+        
+        $message = $emailSent 
+            ? "Permit resubmitted! " . implode(' and ', $recipients) . " have been notified via email."
+            : "Permit resubmitted for approval successfully!";
 
         return redirect()->route('permits.show', $permit)
-            ->with('success', 'Permit resubmitted for approval successfully!');
+            ->with('success', $message);
     }
 
     /**
@@ -580,8 +764,25 @@ class PermitToWorkController extends Controller
     /**
      * Request approval for permit
      */
-    public function requestApproval(PermitToWork $permit)
+    public function requestApproval(Request $request, PermitToWork $permit)
     {
+        // Validate risk assessment fields
+        $validated = $request->validate([
+            'risk_method_assessment' => 'required|in:ya,tidak',
+            'chemical_usage_storage' => 'required|in:ya,tidak',
+            'equipment_condition' => 'required|in:ya,tidak',
+            'asbestos_presence' => 'required|in:ya,tidak',
+            'atex_area' => 'required|in:ya,tidak',
+            'gas_storage_area' => 'required|in:ya,tidak',
+        ], [
+            'risk_method_assessment.required' => 'Penilaian Risiko & Pernyataan Metode harus diisi.',
+            'chemical_usage_storage.required' => 'Penggunaan dan Penyimpanan Bahan Kimia harus diisi.',
+            'equipment_condition.required' => 'Kondisi Peralatan harus diisi.',
+            'asbestos_presence.required' => 'Status Asbes harus diisi.',
+            'atex_area.required' => 'Status Area ATEX harus diisi.',
+            'gas_storage_area.required' => 'Status Area Penyimpanan Gas harus diisi.',
+        ]);
+
         // Add logging for debugging
         \Log::info('Request Approval started', [
             'permit_id' => $permit->id,
@@ -627,9 +828,17 @@ class PermitToWorkController extends Controller
                 ->with('error', 'Emergency & Escape Plan must be completed before requesting approval.');
         }
 
-        // Update permit status first
+        // Update permit status and risk assessment fields
         $permit->update([
-            'status' => 'pending_approval'
+            'status' => 'pending_approval',
+            'ehs_approval_status' => 'pending',
+            'location_owner_approval_status' => $permit->location_owner_as_approver ? 'pending' : null,
+            'risk_method_assessment' => $validated['risk_method_assessment'],
+            'chemical_usage_storage' => $validated['chemical_usage_storage'],
+            'equipment_condition' => $validated['equipment_condition'],
+            'asbestos_presence' => $validated['asbestos_presence'],
+            'atex_area' => $validated['atex_area'],
+            'gas_storage_area' => $validated['gas_storage_area'],
         ]);
         
         \Log::info('Request Approval status updated to pending_approval');
@@ -637,26 +846,61 @@ class PermitToWorkController extends Controller
         // Try to send email, but don't fail if email fails
         $emailSent = false;
         $ehsCount = 0;
+        $locationOwnerNotified = false;
         
         try {
+            // Get EHS users
             $ehsUsers = User::where('role', 'bekaert')
                           ->where('department', 'EHS')
                           ->get();
             $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
             $ehsCount = $ehsUsers->count();
             
-            if (count($ehsEmails) > 0) {
-                Mail::to($ehsEmails)->send(new PermitApprovalRequest($permit));
+            // Get all recipients (EHS + Location Owner if applicable)
+            $toEmails = $ehsEmails;
+            
+            // Add Location Owner to recipients if location_owner_as_approver is true
+            if ($permit->location_owner_as_approver && $permit->locationOwner) {
+                $locationOwnerEmail = $permit->locationOwner->email;
+                if ($locationOwnerEmail && !in_array($locationOwnerEmail, $toEmails)) {
+                    $toEmails[] = $locationOwnerEmail;
+                    $locationOwnerNotified = true;
+                }
+            }
+            
+            // Get permit creator email for CC
+            $ccEmails = [];
+            if ($permit->permitIssuer && $permit->permitIssuer->email) {
+                $ccEmails[] = $permit->permitIssuer->email;
+            }
+            
+            if (count($toEmails) > 0) {
+                $mail = Mail::to($toEmails);
+                if (count($ccEmails) > 0) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new PermitApprovalRequest($permit));
                 $emailSent = true;
-                \Log::info('Request Approval email sent', ['recipients' => $ehsEmails]);
+                \Log::info('Request Approval email sent', [
+                    'to' => $toEmails,
+                    'cc' => $ccEmails
+                ]);
             }
         } catch (\Exception $e) {
             \Log::error('Request Approval email failed', ['error' => $e->getMessage()]);
             // Continue without email - don't rollback
         }
 
+        $recipients = [];
+        if ($ehsCount > 0) {
+            $recipients[] = "{$ehsCount} EHS member(s)";
+        }
+        if ($locationOwnerNotified) {
+            $recipients[] = "Location Owner";
+        }
+        
         $message = $emailSent 
-            ? "Approval request sent successfully! {$ehsCount} EHS member(s) have been notified via email."
+            ? "Approval request sent successfully! " . implode(' and ', $recipients) . " have been notified via email."
             : "Approval request submitted successfully! (Email notification may have failed)";
 
         return redirect()->route('permits.show', $permit)
@@ -1014,7 +1258,8 @@ class PermitToWorkController extends Controller
                 'authorizer', 
                 'receiver', 
                 'methodStatement',
-                'emergencyPlan'
+                'emergencyPlan',
+                'locationOwner'
             ]);
 
             // Check if user has permission to download

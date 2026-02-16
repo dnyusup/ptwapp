@@ -27,6 +27,11 @@ class PermitToWork extends Model
         'floor',
         'tip',
         'location_owner_id',
+        'location_owner_as_approver',
+        'location_owner_approval_status',
+        'location_owner_approved_at',
+        'ehs_approval_status',
+        'ehs_approved_at',
         'work_at_heights',
         'hot_work',
         'loto_isolation',
@@ -76,12 +81,15 @@ class PermitToWork extends Model
         'excavation' => 'boolean',
         'confined_spaces' => 'boolean',
         'explosive_atmosphere' => 'boolean',
+        'location_owner_as_approver' => 'boolean',
         'issued_at' => 'datetime',
         'authorized_at' => 'datetime',
         'received_at' => 'datetime',
         'rejected_at' => 'datetime',
         'extended_at' => 'datetime',
         'completed_at' => 'datetime',
+        'location_owner_approved_at' => 'datetime',
+        'ehs_approved_at' => 'datetime',
     ];
 
     public function user()

@@ -183,7 +183,14 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="location_owner_id" class="form-label">Location Owner</label>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="location_owner_id" class="form-label mb-0">Location Owner</label>
+                                    <div class="form-check form-switch ms-2">
+                                        <input class="form-check-input" type="checkbox" id="location_owner_as_approver" 
+                                               name="location_owner_as_approver" value="1" {{ old('location_owner_as_approver', $permit->location_owner_as_approver ?? true) ? 'checked' : '' }}>
+                                        <label class="form-check-label small text-muted" for="location_owner_as_approver">As Approver</label>
+                                    </div>
+                                </div>
                                 <select class="form-select @error('location_owner_id') is-invalid @enderror" 
                                         id="location_owner_id" name="location_owner_id">
                                     <option value="">Select Location Owner</option>
@@ -193,6 +200,9 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>Jika "As Approver" aktif, permit wajib disetujui oleh Location Owner
+                                </small>
                                 @error('location_owner_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -387,210 +397,7 @@
                             </div>
                         </div>
 
-                        <!-- Risk Assessment & Method Statement Section -->
-                        <div class="card border-0 shadow-lg mb-4">
-                            <div class="card-header bg-danger text-white py-3">
-                                <h5 class="mb-0 text-white fw-bold">
-                                    <i class="fas fa-shield-alt me-2"></i>Penilaian Risiko & Pernyataan Metode
-                                </h5>
-                                <small class="text-white-50">Wajib diisi untuk semua pekerjaan</small>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-4">
-                                    <!-- Penilaian Risiko & Pernyataan Metode -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-bold text-dark mb-0">
-                                                    Penilaian Risiko & Pernyataan Metode (Ditinjau dan Disetujui?) *
-                                                </label>
-                                            </div>
-                                            <div class="d-flex gap-3 ms-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('risk_method_assessment') is-invalid @enderror" 
-                                                           type="radio" name="risk_method_assessment" id="risk_method_yes" value="ya" 
-                                                           {{ old('risk_method_assessment', $permit->risk_method_assessment) == 'ya' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-success" for="risk_method_yes">
-                                                        Ya
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('risk_method_assessment') is-invalid @enderror" 
-                                                           type="radio" name="risk_method_assessment" id="risk_method_no" value="tidak" 
-                                                           {{ old('risk_method_assessment', $permit->risk_method_assessment) == 'tidak' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-danger" for="risk_method_no">
-                                                        Tidak
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @error('risk_method_assessment')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Penggunaan dan Penyimpanan Bahan Kimia -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-bold text-dark mb-0">
-                                                    Penggunaan dan Penyimpanan Bahan Kimia (Ditinjau dan Disetujui?) *
-                                                </label>
-                                            </div>
-                                            <div class="d-flex gap-3 ms-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('chemical_usage_storage') is-invalid @enderror" 
-                                                           type="radio" name="chemical_usage_storage" id="chemical_yes" value="ya" 
-                                                           {{ old('chemical_usage_storage', $permit->chemical_usage_storage) == 'ya' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-success" for="chemical_yes">
-                                                        Ya
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('chemical_usage_storage') is-invalid @enderror" 
-                                                           type="radio" name="chemical_usage_storage" id="chemical_no" value="tidak" 
-                                                           {{ old('chemical_usage_storage', $permit->chemical_usage_storage) == 'tidak' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-danger" for="chemical_no">
-                                                        Tidak
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @error('chemical_usage_storage')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Kondisi Peralatan -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-bold text-dark mb-0">
-                                                    Kondisi Peralatan (Ditinjau dan Disetujui?) *
-                                                </label>
-                                            </div>
-                                            <div class="d-flex gap-3 ms-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('equipment_condition') is-invalid @enderror" 
-                                                           type="radio" name="equipment_condition" id="equipment_yes" value="ya" 
-                                                           {{ old('equipment_condition', $permit->equipment_condition) == 'ya' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-success" for="equipment_yes">
-                                                        Ya
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('equipment_condition') is-invalid @enderror" 
-                                                           type="radio" name="equipment_condition" id="equipment_no" value="tidak" 
-                                                           {{ old('equipment_condition', $permit->equipment_condition) == 'tidak' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-danger" for="equipment_no">
-                                                        Tidak
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @error('equipment_condition')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Asbes -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-bold text-dark mb-0">
-                                                    Apakah Asbes Ada di Area/Peralatan/Infrastruktur? *
-                                                </label>
-                                            </div>
-                                            <div class="d-flex gap-3 ms-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('asbestos_presence') is-invalid @enderror" 
-                                                           type="radio" name="asbestos_presence" id="asbestos_yes" value="ya" 
-                                                           {{ old('asbestos_presence', $permit->asbestos_presence) == 'ya' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-warning" for="asbestos_yes">
-                                                        Ya
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('asbestos_presence') is-invalid @enderror" 
-                                                           type="radio" name="asbestos_presence" id="asbestos_no" value="tidak" 
-                                                           {{ old('asbestos_presence', $permit->asbestos_presence) == 'tidak' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-success" for="asbestos_no">
-                                                        Tidak
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @error('asbestos_presence')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <!-- ATEX Area -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-bold text-dark mb-0">
-                                                    Apakah pekerjaan ini termasuk dalam area ATEX? (Mandatory Authoriser) *
-                                                </label>
-                                            </div>
-                                            <div class="d-flex gap-3 ms-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('atex_area') is-invalid @enderror" 
-                                                           type="radio" name="atex_area" id="atex_yes" value="ya" 
-                                                           {{ old('atex_area', $permit->atex_area) == 'ya' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-warning" for="atex_yes">
-                                                        Ya
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('atex_area') is-invalid @enderror" 
-                                                           type="radio" name="atex_area" id="atex_no" value="tidak" 
-                                                           {{ old('atex_area', $permit->atex_area) == 'tidak' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-success" for="atex_no">
-                                                        Tidak
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @error('atex_area')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <!-- Gas Storage Area -->
-                                    <div class="col-12">
-                                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-bold text-dark mb-0">
-                                                    Apakah pekerjaan dilakukan di/pada area penyimpanan gas/cairan yang mudah terbakar? (Mandatory Authoriser) *
-                                                </label>
-                                            </div>
-                                            <div class="d-flex gap-3 ms-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('gas_storage_area') is-invalid @enderror" 
-                                                           type="radio" name="gas_storage_area" id="gas_storage_yes" value="ya" 
-                                                           {{ old('gas_storage_area', $permit->gas_storage_area) == 'ya' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-warning" for="gas_storage_yes">
-                                                        Ya
-                                                    </label>
-                                                </div>
-                                                <div class="form-check">
-                                                    <input class="form-check-input @error('gas_storage_area') is-invalid @enderror" 
-                                                           type="radio" name="gas_storage_area" id="gas_storage_no" value="tidak" 
-                                                           {{ old('gas_storage_area', $permit->gas_storage_area) == 'tidak' ? 'checked' : '' }} required>
-                                                    <label class="form-check-label fw-bold text-success" for="gas_storage_no">
-                                                        Tidak
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @error('gas_storage_area')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {{-- Risk Assessment & Method Statement Section removed - now shown in Request Approval popup --}}
 
                         <div class="row mb-3">
                             <div class="col-md-6">
