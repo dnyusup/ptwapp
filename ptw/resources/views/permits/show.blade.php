@@ -1868,8 +1868,33 @@
                             <i class="fas fa-camera me-1"></i>Foto Inspeksi
                         </label>
                         
-                        <!-- Camera Capture Interface -->
-                        <div id="cameraContainer" class="border rounded p-3 bg-light">
+                        <!-- Mobile Camera Capture (using native file input with capture) -->
+                        <div id="mobileCameraContainer" class="border rounded p-3 bg-light" style="display: none;">
+                            <div id="mobilePhotoInput" class="text-center">
+                                <label for="mobile_photo_input" class="btn btn-outline-primary mb-2">
+                                    <i class="fas fa-camera me-2"></i>Ambil Foto
+                                </label>
+                                <input type="file" id="mobile_photo_input" accept="image/*" capture="environment" 
+                                       class="d-none" onchange="handleMobilePhoto(this)">
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>Klik untuk membuka kamera
+                                </p>
+                            </div>
+                            <div id="mobilePhotoPreview" style="display: none;" class="text-center">
+                                <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded mb-2" style="max-height: 300px;">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <label for="mobile_photo_input" class="btn btn-warning mb-0">
+                                        <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                    </label>
+                                    <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
+                                        <i class="fas fa-trash me-1"></i>Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Desktop Camera Capture (using Camera API) -->
+                        <div id="desktopCameraContainer" class="border rounded p-3 bg-light" style="display: none;">
                             <!-- Camera not started state -->
                             <div id="cameraStartPanel" class="text-center">
                                 <button type="button" class="btn btn-outline-primary" id="startCameraBtn">
@@ -2065,11 +2090,74 @@ document.getElementById('inspectionModal').addEventListener('show.bs.modal', fun
         field.classList.remove('is-invalid');
     });
 
-    // Reset camera interface
-    resetCameraInterface();
+    // Detect device and show appropriate camera interface
+    initCameraInterface();
 });
 
-// Camera capture functionality
+// Detect if mobile device
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+}
+
+// Initialize camera interface based on device
+function initCameraInterface() {
+    const mobileContainer = document.getElementById('mobileCameraContainer');
+    const desktopContainer = document.getElementById('desktopCameraContainer');
+    
+    if (isMobileDevice()) {
+        // Mobile: Use native file input with capture
+        mobileContainer.style.display = 'block';
+        desktopContainer.style.display = 'none';
+        resetMobilePhoto();
+    } else {
+        // Desktop: Use Camera API
+        mobileContainer.style.display = 'none';
+        desktopContainer.style.display = 'block';
+        resetCameraInterface();
+    }
+}
+
+// Mobile photo handling
+function handleMobilePhoto(input) {
+    const file = input.files[0];
+    if (file) {
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Ukuran foto maksimal 5MB');
+            input.value = '';
+            return;
+        }
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('mobilePreviewImage').src = e.target.result;
+            document.getElementById('mobilePhotoInput').style.display = 'none';
+            document.getElementById('mobilePhotoPreview').style.display = 'block';
+            
+            // Copy file to main input for form submission
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            document.getElementById('inspection_photo').files = dataTransfer.files;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeMobilePhoto() {
+    resetMobilePhoto();
+}
+
+function resetMobilePhoto() {
+    document.getElementById('mobile_photo_input').value = '';
+    document.getElementById('inspection_photo').value = '';
+    document.getElementById('mobilePreviewImage').src = '';
+    document.getElementById('mobilePhotoInput').style.display = 'block';
+    document.getElementById('mobilePhotoPreview').style.display = 'none';
+}
+
+// Desktop Camera capture functionality
 let cameraStream = null;
 let capturedBlob = null;
 
@@ -2095,7 +2183,7 @@ function stopCamera() {
         cameraStream = null;
     }
     const video = document.getElementById('cameraVideo');
-    video.srcObject = null;
+    if (video) video.srcObject = null;
 }
 
 // Start camera button
@@ -2125,6 +2213,8 @@ document.getElementById('startCameraBtn').addEventListener('click', async functi
             message += 'Mohon izinkan akses kamera di pengaturan browser.';
         } else if (error.name === 'NotFoundError') {
             message += 'Kamera tidak ditemukan di perangkat ini.';
+        } else if (error.name === 'NotSupportedError' || error.name === 'SecurityError') {
+            message += 'Akses kamera membutuhkan koneksi HTTPS yang aman.';
         } else {
             message += 'Pastikan perangkat memiliki kamera dan izin akses diberikan.';
         }
@@ -2193,6 +2283,7 @@ document.getElementById('removePhotoBtn').addEventListener('click', function() {
 // Stop camera when modal is closed
 document.getElementById('inspectionModal').addEventListener('hidden.bs.modal', function() {
     stopCamera();
+    resetMobilePhoto();
 });
 
 // Extend Permit Modal functionality
