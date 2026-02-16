@@ -26,18 +26,28 @@ class InspectionController extends Controller
             $request->validate([
                 'inspector_name' => 'required|string|max:255',
                 'inspector_email' => 'required|email|max:255', 
-                'findings' => 'required|string'
+                'findings' => 'required|string',
+                'inspection_photo' => 'nullable|image|mimes:jpeg,jpg,png|max:5120'
             ]);
 
             $permit = PermitToWork::where('permit_number', $permitNumber)->firstOrFail();
             
             Log::info('Permit found', ['permit' => $permit->toArray()]);
 
+            // Handle photo upload
+            $photoPath = null;
+            if ($request->hasFile('inspection_photo')) {
+                $photo = $request->file('inspection_photo');
+                $filename = 'inspection_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+                $photoPath = $photo->storeAs('inspections', $filename, 'public');
+            }
+
             $inspection = Inspection::create([
                 'permit_number' => $permit->permit_number,
                 'inspector_name' => $request->inspector_name,
                 'inspector_email' => $request->inspector_email,
-                'findings' => $request->findings
+                'findings' => $request->findings,
+                'photo_path' => $photoPath
             ]);
 
             Log::info('Inspection created successfully', ['inspection' => $inspection->toArray()]);

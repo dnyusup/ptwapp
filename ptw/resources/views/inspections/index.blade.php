@@ -79,9 +79,10 @@
                             <tr>
                                 <th width="5%">#</th>
                                 <th width="15%">Date & Time</th>
-                                <th width="20%">Inspector</th>
-                                <th width="20%">Email</th>
-                                <th width="40%">Findings</th>
+                                <th width="15%">Inspector</th>
+                                <th width="15%">Email</th>
+                                <th width="35%">Findings</th>
+                                <th width="15%">Foto</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -107,6 +108,16 @@
                                             </a>
                                         @endif
                                     </div>
+                                </td>
+                                <td>
+                                    @if($inspection->photo_path)
+                                        <a href="{{ route('storage.serve', $inspection->photo_path) }}" target="_blank">
+                                            <img src="{{ route('storage.serve', $inspection->photo_path) }}" 
+                                                 alt="Inspection Photo" class="img-thumbnail" style="max-height: 50px;">
+                                        </a>
+                                    @else
+                                        <span class="text-muted"><i class="fas fa-image"></i> -</span>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -159,6 +170,17 @@
                         {!! nl2br(e($inspection->findings)) !!}
                     </div>
                 </div>
+                @if($inspection->photo_path)
+                <div class="mb-3">
+                    <strong>Foto Inspeksi:</strong>
+                    <div class="mt-2">
+                        <a href="{{ route('storage.serve', $inspection->photo_path) }}" target="_blank">
+                            <img src="{{ route('storage.serve', $inspection->photo_path) }}" 
+                                 alt="Inspection Photo" class="img-fluid rounded" style="max-height: 400px;">
+                        </a>
+                    </div>
+                </div>
+                @endif
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

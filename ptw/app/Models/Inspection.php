@@ -10,7 +10,8 @@ class Inspection extends Model
         'permit_number',
         'inspector_name', 
         'inspector_email',
-        'findings'
+        'findings',
+        'photo_path'
     ];
 
     public function permit()

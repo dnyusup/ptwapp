@@ -1829,7 +1829,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="inspectionForm">
+            <form id="inspectionForm" enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <div class="alert alert-info">
@@ -1860,6 +1860,58 @@
                             Jelaskan hasil inspeksi secara detail termasuk kondisi keselamatan yang ditemukan, 
                             kepatuhan terhadap prosedur, dan rekomendasi perbaikan jika ada.
                         </div>
+                        <div class="invalid-feedback"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="fas fa-camera me-1"></i>Foto Inspeksi
+                        </label>
+                        
+                        <!-- Camera Capture Interface -->
+                        <div id="cameraContainer" class="border rounded p-3 bg-light">
+                            <!-- Camera not started state -->
+                            <div id="cameraStartPanel" class="text-center">
+                                <button type="button" class="btn btn-outline-primary" id="startCameraBtn">
+                                    <i class="fas fa-camera me-2"></i>Buka Kamera
+                                </button>
+                                <p class="text-muted small mt-2 mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera
+                                </p>
+                            </div>
+                            
+                            <!-- Camera preview -->
+                            <div id="cameraPreviewPanel" style="display: none;">
+                                <video id="cameraVideo" autoplay playsinline class="w-100 rounded" style="max-height: 300px; background: #000;"></video>
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" class="btn btn-success" id="capturePhotoBtn">
+                                        <i class="fas fa-camera me-1"></i>Ambil Foto
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="stopCameraBtn">
+                                        <i class="fas fa-times me-1"></i>Tutup Kamera
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Captured photo preview -->
+                            <div id="capturedPhotoPanel" style="display: none;">
+                                <img id="capturedImage" src="" alt="Captured" class="img-fluid rounded" style="max-height: 300px;">
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" class="btn btn-warning" id="retakePhotoBtn">
+                                        <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="removePhotoBtn">
+                                        <i class="fas fa-trash me-1"></i>Hapus Foto
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden canvas for capturing -->
+                            <canvas id="photoCanvas" style="display: none;"></canvas>
+                        </div>
+                        
+                        <!-- Hidden file input for form submission -->
+                        <input type="file" id="inspection_photo" name="inspection_photo" accept="image/*" style="display: none;">
                         <div class="invalid-feedback"></div>
                     </div>
                 </div>
@@ -2012,6 +2064,135 @@ document.getElementById('inspectionModal').addEventListener('show.bs.modal', fun
     form.querySelectorAll('.is-invalid').forEach(field => {
         field.classList.remove('is-invalid');
     });
+
+    // Reset camera interface
+    resetCameraInterface();
+});
+
+// Camera capture functionality
+let cameraStream = null;
+let capturedBlob = null;
+
+function resetCameraInterface() {
+    // Stop camera if running
+    stopCamera();
+    
+    // Reset UI
+    document.getElementById('cameraStartPanel').style.display = 'block';
+    document.getElementById('cameraPreviewPanel').style.display = 'none';
+    document.getElementById('capturedPhotoPanel').style.display = 'none';
+    document.getElementById('capturedImage').src = '';
+    capturedBlob = null;
+    
+    // Clear file input
+    const fileInput = document.getElementById('inspection_photo');
+    fileInput.value = '';
+}
+
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    const video = document.getElementById('cameraVideo');
+    video.srcObject = null;
+}
+
+// Start camera button
+document.getElementById('startCameraBtn').addEventListener('click', async function() {
+    try {
+        // Request camera permission
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: 'environment', // Back camera on mobile
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        });
+        
+        const video = document.getElementById('cameraVideo');
+        video.srcObject = cameraStream;
+        
+        // Show camera preview
+        document.getElementById('cameraStartPanel').style.display = 'none';
+        document.getElementById('cameraPreviewPanel').style.display = 'block';
+        
+    } catch (error) {
+        console.error('Camera error:', error);
+        let message = 'Tidak dapat mengakses kamera. ';
+        
+        if (error.name === 'NotAllowedError') {
+            message += 'Mohon izinkan akses kamera di pengaturan browser.';
+        } else if (error.name === 'NotFoundError') {
+            message += 'Kamera tidak ditemukan di perangkat ini.';
+        } else {
+            message += 'Pastikan perangkat memiliki kamera dan izin akses diberikan.';
+        }
+        
+        alert(message);
+    }
+});
+
+// Capture photo button  
+document.getElementById('capturePhotoBtn').addEventListener('click', function() {
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('photoCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size to video size
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw video frame to canvas
+    ctx.drawImage(video, 0, 0);
+    
+    // Convert to blob
+    canvas.toBlob(function(blob) {
+        capturedBlob = blob;
+        
+        // Show captured image
+        const capturedImage = document.getElementById('capturedImage');
+        capturedImage.src = URL.createObjectURL(blob);
+        
+        // Stop camera and show captured panel
+        stopCamera();
+        document.getElementById('cameraPreviewPanel').style.display = 'none';
+        document.getElementById('capturedPhotoPanel').style.display = 'block';
+        
+        // Create a File object and set it to the file input
+        const file = new File([blob], 'inspection_photo.jpg', { type: 'image/jpeg' });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('inspection_photo').files = dataTransfer.files;
+        
+    }, 'image/jpeg', 0.8);
+});
+
+// Stop camera button
+document.getElementById('stopCameraBtn').addEventListener('click', function() {
+    stopCamera();
+    document.getElementById('cameraPreviewPanel').style.display = 'none';
+    document.getElementById('cameraStartPanel').style.display = 'block';
+});
+
+// Retake photo button
+document.getElementById('retakePhotoBtn').addEventListener('click', async function() {
+    capturedBlob = null;
+    document.getElementById('capturedPhotoPanel').style.display = 'none';
+    document.getElementById('inspection_photo').value = '';
+    
+    // Restart camera
+    document.getElementById('startCameraBtn').click();
+});
+
+// Remove photo button
+document.getElementById('removePhotoBtn').addEventListener('click', function() {
+    resetCameraInterface();
+});
+
+// Stop camera when modal is closed
+document.getElementById('inspectionModal').addEventListener('hidden.bs.modal', function() {
+    stopCamera();
 });
 
 // Extend Permit Modal functionality
