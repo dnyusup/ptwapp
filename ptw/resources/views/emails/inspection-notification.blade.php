@@ -290,7 +290,7 @@
                             <div style="background-color: #f8f9fa; padding: 15px; border: 1px solid #dee2e6; border-radius: 4px; margin: 10px 0; text-align: center;">
                                 <img src="{{ $message->embed(storage_path('app/public/' . $inspection->photo_path)) }}" 
                                      alt="Foto Inspeksi" 
-                                     style="max-width: 100%; max-height: 400px; border-radius: 4px; border: 1px solid #dee2e6;">
+                                     style="max-width: 300px; width: 100%; height: auto; border-radius: 4px; border: 1px solid #dee2e6;">
                                 <p style="margin: 10px 0 0 0; font-size: 12px; color: #6c757d;">Foto diambil pada {{ $inspection->created_at->format('d M Y H:i') }}</p>
                             </div>
                             @endif
