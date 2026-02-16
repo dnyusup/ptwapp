@@ -2137,12 +2137,19 @@ function blockFileInputOnDesktop() {
     }
 }
 
-// Detect if mobile device
+// Detect if mobile device (more accurate - excludes touchscreen laptops)
 function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+    const ua = navigator.userAgent;
+    
+    // If Windows or Mac, it's a desktop/laptop (even with touchscreen)
+    if (/Windows NT|Macintosh/i.test(ua)) {
+        return false;
+    }
+    
+    // Check for mobile OS patterns
+    const mobilePatterns = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    return mobilePatterns.test(ua);
 }
-
 // Initialize camera interface based on device
 async function initCameraInterface() {
     const mobileContainer = document.getElementById('mobileCameraContainer');
