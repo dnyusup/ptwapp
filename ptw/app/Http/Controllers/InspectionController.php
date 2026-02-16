@@ -11,6 +11,7 @@ use App\Mail\InspectionNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class InspectionController extends Controller
 {
@@ -27,7 +28,8 @@ class InspectionController extends Controller
                 'inspector_name' => 'required|string|max:255',
                 'inspector_email' => 'required|email|max:255', 
                 'findings' => 'required|string',
-                'inspection_photo' => 'nullable|image|mimes:jpeg,jpg,png|max:5120'
+                'inspection_photo' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
+                'inspection_photo_data' => 'nullable|string'
             ]);
 
             $permit = PermitToWork::where('permit_number', $permitNumber)->firstOrFail();
@@ -40,6 +42,20 @@ class InspectionController extends Controller
                 $photo = $request->file('inspection_photo');
                 $filename = 'inspection_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
                 $photoPath = $photo->storeAs('inspections', $filename, 'public');
+            } elseif ($request->filled('inspection_photo_data')) {
+                // Handle base64 data (fallback for camera capture)
+                $base64Data = $request->input('inspection_photo_data');
+                if (preg_match('/^data:image\/(\w+);base64,/', $base64Data, $matches)) {
+                    $extension = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+                    $base64Data = substr($base64Data, strpos($base64Data, ',') + 1);
+                    $imageData = base64_decode($base64Data);
+                    
+                    if ($imageData !== false) {
+                        $filename = 'inspection_' . time() . '_' . uniqid() . '.' . $extension;
+                        $photoPath = 'inspections/' . $filename;
+                        Storage::disk('public')->put($photoPath, $imageData);
+                    }
+                }
             }
 
             $inspection = Inspection::create([

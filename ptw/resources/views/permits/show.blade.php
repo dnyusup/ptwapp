@@ -1946,8 +1946,10 @@
                             <canvas id="photoCanvas" style="display: none;"></canvas>
                         </div>
                         
-                        <!-- Hidden file input for form submission -->
-                        <input type="file" id="inspection_photo" name="inspection_photo" accept="image/*" style="display: none;">
+                        <!-- Hidden file input for form submission - blocked from direct click on desktop -->
+                        <input type="hidden" id="inspection_photo_data" name="inspection_photo_data">
+                        <input type="file" id="inspection_photo" name="inspection_photo" accept="image/*" 
+                               style="display: none; pointer-events: none;" tabindex="-1">
                         <div class="invalid-feedback"></div>
                     </div>
                 </div>
@@ -2103,7 +2105,37 @@ document.getElementById('inspectionModal').addEventListener('show.bs.modal', fun
 
     // Detect device and show appropriate camera interface
     initCameraInterface();
+    
+    // Block file input click on desktop
+    blockFileInputOnDesktop();
 });
+
+// Block file input from being clicked directly on desktop
+function blockFileInputOnDesktop() {
+    if (!isMobileDevice()) {
+        const fileInput = document.getElementById('inspection_photo');
+        if (fileInput) {
+            // Prevent any click events
+            fileInput.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            });
+            
+            // Prevent change events from manual file selection
+            fileInput.addEventListener('change', function(e) {
+                // Only allow if it was set programmatically (has our marker)
+                if (!this.dataset.programmatic) {
+                    e.preventDefault();
+                    this.value = '';
+                    alert('Foto hanya bisa diambil dari kamera. Klik tombol "Buka Kamera".');
+                    return false;
+                }
+                delete this.dataset.programmatic;
+            });
+        }
+    }
+}
 
 // Detect if mobile device
 function isMobileDevice() {
@@ -2181,7 +2213,14 @@ function handleMobilePhoto(input) {
             // Copy file to main input for form submission
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
-            document.getElementById('inspection_photo').files = dataTransfer.files;
+            
+            // Mark as programmatic
+            const fileInput = document.getElementById('inspection_photo');
+            fileInput.dataset.programmatic = 'true';
+            fileInput.files = dataTransfer.files;
+            
+            // Also store as base64 for backup
+            document.getElementById('inspection_photo_data').value = e.target.result;
         };
         reader.readAsDataURL(file);
     }
@@ -2194,6 +2233,7 @@ function removeMobilePhoto() {
 function resetMobilePhoto() {
     document.getElementById('mobile_photo_input').value = '';
     document.getElementById('inspection_photo').value = '';
+    document.getElementById('inspection_photo_data').value = '';
     document.getElementById('mobilePreviewImage').src = '';
     document.getElementById('mobilePhotoInput').style.display = 'block';
     document.getElementById('mobilePhotoPreview').style.display = 'none';
@@ -2215,9 +2255,10 @@ function resetCameraInterface() {
     document.getElementById('capturedImage').src = '';
     capturedBlob = null;
     
-    // Clear file input
+    // Clear file input and base64 data
     const fileInput = document.getElementById('inspection_photo');
     fileInput.value = '';
+    document.getElementById('inspection_photo_data').value = '';
 }
 
 function stopCamera() {
@@ -2300,7 +2341,18 @@ document.getElementById('capturePhotoBtn').addEventListener('click', function() 
         const file = new File([blob], 'inspection_photo.jpg', { type: 'image/jpeg' });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
-        document.getElementById('inspection_photo').files = dataTransfer.files;
+        
+        // Mark as programmatic to bypass blocking
+        const fileInput = document.getElementById('inspection_photo');
+        fileInput.dataset.programmatic = 'true';
+        fileInput.files = dataTransfer.files;
+        
+        // Also store as base64 for backup
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('inspection_photo_data').value = e.target.result;
+        };
+        reader.readAsDataURL(blob);
         
     }, 'image/jpeg', 0.8);
 });
