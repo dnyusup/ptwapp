@@ -1895,6 +1895,17 @@
 
                         <!-- Desktop Camera Capture (using Camera API) -->
                         <div id="desktopCameraContainer" class="border rounded p-3 bg-light" style="display: none;">
+                            <!-- No camera message -->
+                            <div id="noCameraPanel" class="text-center" style="display: none;">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                <p class="text-muted mb-2">
+                                    <strong>Kamera tidak tersedia di perangkat ini</strong>
+                                </p>
+                                <p class="text-muted small mb-0">
+                                    Gunakan HP/smartphone untuk mengambil foto inspeksi
+                                </p>
+                            </div>
+                            
                             <!-- Camera not started state -->
                             <div id="cameraStartPanel" class="text-center">
                                 <button type="button" class="btn btn-outline-primary" id="startCameraBtn">
@@ -2101,7 +2112,7 @@ function isMobileDevice() {
 }
 
 // Initialize camera interface based on device
-function initCameraInterface() {
+async function initCameraInterface() {
     const mobileContainer = document.getElementById('mobileCameraContainer');
     const desktopContainer = document.getElementById('desktopCameraContainer');
     
@@ -2111,11 +2122,42 @@ function initCameraInterface() {
         desktopContainer.style.display = 'none';
         resetMobilePhoto();
     } else {
-        // Desktop: Use Camera API
+        // Desktop: Use Camera API only - no file upload allowed
         mobileContainer.style.display = 'none';
         desktopContainer.style.display = 'block';
-        resetCameraInterface();
+        
+        // Check if camera is available
+        const hasCamera = await checkCameraAvailability();
+        if (hasCamera) {
+            resetCameraInterface();
+        } else {
+            showNoCameraMessage();
+        }
     }
+}
+
+// Check if camera is available on device
+async function checkCameraAvailability() {
+    try {
+        // Check if mediaDevices API is available
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+            return false;
+        }
+        
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.some(device => device.kind === 'videoinput');
+    } catch (error) {
+        console.error('Error checking camera:', error);
+        return false;
+    }
+}
+
+// Show no camera available message
+function showNoCameraMessage() {
+    document.getElementById('noCameraPanel').style.display = 'block';
+    document.getElementById('cameraStartPanel').style.display = 'none';
+    document.getElementById('cameraPreviewPanel').style.display = 'none';
+    document.getElementById('capturedPhotoPanel').style.display = 'none';
 }
 
 // Mobile photo handling
@@ -2166,6 +2208,7 @@ function resetCameraInterface() {
     stopCamera();
     
     // Reset UI
+    document.getElementById('noCameraPanel').style.display = 'none';
     document.getElementById('cameraStartPanel').style.display = 'block';
     document.getElementById('cameraPreviewPanel').style.display = 'none';
     document.getElementById('capturedPhotoPanel').style.display = 'none';
@@ -2207,16 +2250,20 @@ document.getElementById('startCameraBtn').addEventListener('click', async functi
         
     } catch (error) {
         console.error('Camera error:', error);
+        
+        // Show no camera message - no fallback to file upload
+        showNoCameraMessage();
+        
         let message = 'Tidak dapat mengakses kamera. ';
         
         if (error.name === 'NotAllowedError') {
-            message += 'Mohon izinkan akses kamera di pengaturan browser.';
+            message += 'Izin kamera ditolak. Silakan gunakan HP untuk mengambil foto.';
         } else if (error.name === 'NotFoundError') {
-            message += 'Kamera tidak ditemukan di perangkat ini.';
+            message += 'Kamera tidak ditemukan. Silakan gunakan HP untuk mengambil foto.';
         } else if (error.name === 'NotSupportedError' || error.name === 'SecurityError') {
-            message += 'Akses kamera membutuhkan koneksi HTTPS yang aman.';
+            message += 'HTTPS diperlukan. Silakan gunakan HP untuk mengambil foto.';
         } else {
-            message += 'Pastikan perangkat memiliki kamera dan izin akses diberikan.';
+            message += 'Silakan gunakan HP untuk mengambil foto inspeksi.';
         }
         
         alert(message);
