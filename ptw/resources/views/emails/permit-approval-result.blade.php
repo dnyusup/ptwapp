@@ -274,7 +274,7 @@
                     
                     @if($comment)
                     <div class="comment-box">
-                        <div class="comment-label">Comment from EHS Team:</div>
+                        <div class="comment-label">Comment from {{ isset($rejectedBy) && $rejectedBy === 'location_owner' ? 'Location Owner' : 'EHS Team' }}:</div>
                         {{ $comment }}
                     </div>
                     @endif

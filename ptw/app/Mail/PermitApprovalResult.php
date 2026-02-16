@@ -15,13 +15,15 @@ class PermitApprovalResult extends Mailable
     public $result; // true for approved, false for rejected
     public $comment;
     public $type; // 'permit' or 'extension'
+    public $rejectedBy; // 'ehs' or 'location_owner'
 
-    public function __construct(PermitToWork $permit, $result, $type = 'permit', $comment = null)
+    public function __construct(PermitToWork $permit, $result, $type = 'permit', $comment = null, $rejectedBy = 'ehs')
     {
         $this->permit = $permit;
         $this->result = $result;
         $this->type = $type;
         $this->comment = $comment;
+        $this->rejectedBy = $rejectedBy;
     }
 
     public function build()

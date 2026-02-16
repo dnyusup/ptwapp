@@ -564,7 +564,7 @@ class PermitToWorkController extends Controller
         $creatorName = $permit->user->name ?? '';
         $permit->created_by_name = $creatorName;
         if ($creatorEmail) {
-            \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason']));
+            \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason'], 'location_owner'));
         }
 
         return redirect()->route('permits.show', $permit)
