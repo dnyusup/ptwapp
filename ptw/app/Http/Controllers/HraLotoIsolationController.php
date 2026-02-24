@@ -358,14 +358,18 @@ class HraLotoIsolationController extends Controller
             ->where('permit_to_work_id', $permit->id)
             ->firstOrFail();
 
-        // Check if user is the creator
-        if ($hraLotoIsolation->user_id !== auth()->id()) {
+        // Check if user is authorized (creator, permit issuer, or administrator)
+        $isCreator = $hraLotoIsolation->user_id === auth()->id();
+        $isPermitIssuer = $permit->permit_issuer_id === auth()->id();
+        $isAdmin = auth()->user()->role === 'administrator';
+        
+        if (!$isCreator && !$isPermitIssuer && !$isAdmin) {
             return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
-                ->with('error', 'Only the creator can request approval.');
+                ->with('error', 'Only the creator, permit issuer, or administrator can request approval.');
         }
 
         // Check if already pending or approved
-        if ($hraLotoIsolation->approval_status !== 'draft') {
+        if (!in_array($hraLotoIsolation->approval_status ?? 'draft', ['draft', 'rejected'])) {
             return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
                 ->with('error', 'Approval has already been requested.');
         }

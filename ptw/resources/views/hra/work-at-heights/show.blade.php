@@ -104,13 +104,13 @@
                 
                 <!-- Action Buttons -->
                 @if(($hraWorkAtHeight->approval_status ?? 'draft') === 'draft')
-                    @if($hraWorkAtHeight->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    @if($hraWorkAtHeight->user_id == auth()->id() || $permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                     <button type="button" class="btn btn-info" onclick="requestApproval()">
                         <i class="fas fa-paper-plane me-2"></i>Request Approval
                     </button>
                     @endif
                 @elseif($hraWorkAtHeight->approval_status === 'rejected')
-                    @if($hraWorkAtHeight->user_id == auth()->id() || auth()->user()->role === 'administrator')
+                    @if($hraWorkAtHeight->user_id == auth()->id() || $permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
                     <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
                         <i class="fas fa-redo me-2"></i>Re-request Approval
                     </button>

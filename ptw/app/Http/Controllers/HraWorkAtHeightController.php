@@ -349,10 +349,14 @@ class HraWorkAtHeightController extends Controller
         // Load the locationOwner relationship
         $permit->load('locationOwner');
         
-        // Check if user is the creator
-        if ($hraWorkAtHeight->user_id !== auth()->id()) {
+        // Check if user is authorized (creator, permit issuer, or administrator)
+        $isCreator = $hraWorkAtHeight->user_id === auth()->id();
+        $isPermitIssuer = $permit->permit_issuer_id === auth()->id();
+        $isAdmin = auth()->user()->role === 'administrator';
+        
+        if (!$isCreator && !$isPermitIssuer && !$isAdmin) {
             return redirect()->route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight])
-                ->with('error', 'Only the creator can request approval.');
+                ->with('error', 'Only the creator, permit issuer, or administrator can request approval.');
         }
 
         // Check if already pending or approved
