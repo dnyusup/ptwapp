@@ -302,6 +302,7 @@
                                     <option value="Finance" {{ old('department') == 'Finance' ? 'selected' : '' }}>Finance</option>
                                     <option value="Procurement" {{ old('department') == 'Procurement' ? 'selected' : '' }}>Procurement</option>
                                     <option value="Sales" {{ old('department') == 'Sales' ? 'selected' : '' }}>Sales</option>
+                                    <option value="Sustainable Construction" {{ old('department') == 'Sustainable Construction' ? 'selected' : '' }}>Sustainable Construction</option>
                                     <option value="CORD" {{ old('department') == 'CORD' ? 'selected' : '' }}>CORD</option>
                                     <option value="WWD" {{ old('department') == 'WWD' ? 'selected' : '' }}>WWD</option>
                                     <option value="HP" {{ old('department') == 'HP' ? 'selected' : '' }}>HP</option>
@@ -423,7 +424,7 @@
                                         <i class="fas fa-calendar-minus me-2 text-danger"></i>End Date *
                                     </label>
                                     <div class="form-text">
-                                        <small class="text-muted">Maksimal 5 hari termasuk tanggal mulai</small>
+                                        <small class="text-muted">Tanggal selesai pekerjaan</small>
                                     </div>
                                     @error('end_date')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -790,36 +791,19 @@ $(document).ready(function() {
             // Set minimum end_date to same as start_date
             endDateInput.setAttribute('min', startDateInput.value);
             
-            // Set maximum end_date to 4 days after start_date (5 days total including start date)
-            const maxEndDate = new Date(startDate);
-            maxEndDate.setDate(maxEndDate.getDate() + 4);
-            const maxEndDateString = maxEndDate.toISOString().split('T')[0];
-            endDateInput.setAttribute('max', maxEndDateString);
+            // No maximum end_date limit - users can select any date after start_date
 
-            // Clear end_date if it's outside the allowed range
+            // Clear end_date if it's before start_date
             if (endDateInput.value) {
                 const currentEndDate = new Date(endDateInput.value);
-                if (currentEndDate < startDate || currentEndDate > maxEndDate) {
+                if (currentEndDate < startDate) {
                     endDateInput.value = '';
                 }
-            }
-
-            // Update form text with specific dates
-            const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
-            if (endDateFormText) {
-                endDateFormText.textContent = `Maksimal ${maxEndDate.toLocaleDateString('id-ID')} (5 hari termasuk tanggal mulai)`;
             }
         } else {
             // Reset end_date constraints if no start_date is selected
             endDateInput.removeAttribute('min');
-            endDateInput.removeAttribute('max');
             endDateInput.value = '';
-            
-            // Reset form text
-            const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
-            if (endDateFormText) {
-                endDateFormText.textContent = 'Maksimal 5 hari termasuk tanggal mulai';
-            }
         }
     }
 
@@ -831,17 +815,9 @@ $(document).ready(function() {
         if (startDateInput.value && endDateInput.value) {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
-            const maxDate = new Date(startDate);
-            maxDate.setDate(maxDate.getDate() + 4); // 4 days after = 5 days total
 
             if (endDate < startDate) {
                 alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
-                endDateInput.value = '';
-                return;
-            }
-
-            if (endDate > maxDate) {
-                alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
                 endDateInput.value = '';
                 return;
             }
