@@ -98,14 +98,14 @@
                 @php
                     $currentUser = auth()->user();
                     $approvalStatus = $hraWorkAtHeight->approval_status ?? 'draft';
-                    $isDraft = $approvalStatus === 'draft';
-                    $isRejected = $approvalStatus === 'rejected';
-                    $isApproved = $approvalStatus === 'approved';
-                    $isPending = $approvalStatus === 'pending';
+                    $isDraft = $approvalStatus == 'draft';
+                    $isRejected = $approvalStatus == 'rejected';
+                    $isApproved = $approvalStatus == 'approved';
+                    $isPending = $approvalStatus == 'pending';
                     
                     $isCreator = $currentUser && $hraWorkAtHeight->user_id == $currentUser->id;
                     $isPermitIssuer = $currentUser && $permit->permit_issuer_id == $currentUser->id;
-                    $isAdmin = $currentUser && $currentUser->role === 'administrator';
+                    $isAdmin = $currentUser && $currentUser->role == 'administrator';
                     
                     $canRequestApproval = ($isCreator || $isPermitIssuer || $isAdmin) && ($isDraft || $isRejected);
                     $canEdit = ($isCreator || $isAdmin) && !$isPending && !$isApproved;

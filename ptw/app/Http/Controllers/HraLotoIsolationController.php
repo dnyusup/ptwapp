@@ -359,9 +359,10 @@ class HraLotoIsolationController extends Controller
             ->firstOrFail();
 
         // Check if user is authorized (creator, permit issuer, or administrator)
-        $isCreator = $hraLotoIsolation->user_id === auth()->id();
-        $isPermitIssuer = $permit->permit_issuer_id === auth()->id();
-        $isAdmin = auth()->user()->role === 'administrator';
+        // Use == instead of === to avoid type mismatch issues
+        $isCreator = $hraLotoIsolation->user_id == auth()->id();
+        $isPermitIssuer = $permit->permit_issuer_id == auth()->id();
+        $isAdmin = auth()->user()->role == 'administrator';
         
         if (!$isCreator && !$isPermitIssuer && !$isAdmin) {
             return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
