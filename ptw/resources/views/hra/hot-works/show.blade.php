@@ -115,22 +115,36 @@
                     <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
                 </a>
                 
+                @php
+                    $currentUser = auth()->user();
+                    $approvalStatus = $hraHotWork->approval_status ?? 'draft';
+                    $isDraft = $approvalStatus === 'draft';
+                    $isRejected = $approvalStatus === 'rejected';
+                    $isApproved = $approvalStatus === 'approved';
+                    $isPending = $approvalStatus === 'pending';
+                    
+                    $isCreator = $currentUser && $hraHotWork->user_id == $currentUser->id;
+                    $isPermitIssuer = $currentUser && $permit->permit_issuer_id == $currentUser->id;
+                    $isAdmin = $currentUser && $currentUser->role === 'administrator';
+                    
+                    $canRequestApproval = ($isCreator || $isPermitIssuer || $isAdmin) && ($isDraft || $isRejected);
+                    $canEdit = ($isCreator || $isPermitIssuer || $isAdmin) && !$isPending && !$isApproved;
+                @endphp
+
                 <!-- Download PDF Button - only visible when approved -->
-                @if($hraHotWork->approval_status === 'approved')
+                @if($isApproved)
                 <a href="{{ route('hra.hot-works.download-pdf', ['permit' => $permit, 'hraHotWork' => $hraHotWork]) }}" class="btn btn-success">
                     <i class="fas fa-download me-2"></i>Download PDF
                 </a>
                 @endif
                 
                 <!-- Action Buttons -->
-                @if(($hraHotWork->approval_status ?? 'draft') === 'draft')
-                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
+                @if($canRequestApproval)
+                    @if($isDraft)
                     <button type="button" class="btn btn-info" onclick="requestApproval()">
                         <i class="fas fa-paper-plane me-2"></i>Request Approval
                     </button>
-                    @endif
-                @elseif($hraHotWork->approval_status === 'rejected')
-                    @if($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
+                    @elseif($isRejected)
                     <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
                         <i class="fas fa-redo me-2"></i>Re-request Approval
                     </button>
@@ -138,8 +152,7 @@
                 @endif
 
                 <!-- Edit Button - only visible when not pending or approved -->
-                @if(($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator') && 
-                    !in_array($hraHotWork->approval_status, ['pending', 'approved']))
+                @if($canEdit)
                 <a href="{{ route('hra.hot-works.edit', ['permit' => $permit, 'hraHotWork' => $hraHotWork]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>

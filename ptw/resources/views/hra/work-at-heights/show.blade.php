@@ -95,22 +95,36 @@
                     <i class="fas fa-arrow-left me-2"></i>Back to Main Permit
                 </a>
                 
+                @php
+                    $currentUser = auth()->user();
+                    $approvalStatus = $hraWorkAtHeight->approval_status ?? 'draft';
+                    $isDraft = $approvalStatus === 'draft';
+                    $isRejected = $approvalStatus === 'rejected';
+                    $isApproved = $approvalStatus === 'approved';
+                    $isPending = $approvalStatus === 'pending';
+                    
+                    $isCreator = $currentUser && $hraWorkAtHeight->user_id == $currentUser->id;
+                    $isPermitIssuer = $currentUser && $permit->permit_issuer_id == $currentUser->id;
+                    $isAdmin = $currentUser && $currentUser->role === 'administrator';
+                    
+                    $canRequestApproval = ($isCreator || $isPermitIssuer || $isAdmin) && ($isDraft || $isRejected);
+                    $canEdit = ($isCreator || $isAdmin) && !$isPending && !$isApproved;
+                @endphp
+
                 <!-- Download PDF Button - only visible when approved -->
-                @if($hraWorkAtHeight->approval_status === 'approved')
+                @if($isApproved)
                 <a href="{{ route('hra.work-at-heights.download-pdf', [$permit, $hraWorkAtHeight]) }}" class="btn btn-success">
                     <i class="fas fa-download me-2"></i>Download PDF
                 </a>
                 @endif
                 
                 <!-- Action Buttons -->
-                @if(($hraWorkAtHeight->approval_status ?? 'draft') === 'draft')
-                    @if($hraWorkAtHeight->user_id == auth()->id() || $permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
+                @if($canRequestApproval)
+                    @if($isDraft)
                     <button type="button" class="btn btn-info" onclick="requestApproval()">
                         <i class="fas fa-paper-plane me-2"></i>Request Approval
                     </button>
-                    @endif
-                @elseif($hraWorkAtHeight->approval_status === 'rejected')
-                    @if($hraWorkAtHeight->user_id == auth()->id() || $permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator')
+                    @elseif($isRejected)
                     <button type="button" class="btn btn-info btn-sm" onclick="requestApproval()">
                         <i class="fas fa-redo me-2"></i>Re-request Approval
                     </button>
@@ -118,8 +132,7 @@
                 @endif
 
                 <!-- Edit Button - only visible when not pending or approved -->
-                @if((auth()->user()->role === 'administrator' || auth()->user()->id === $hraWorkAtHeight->user_id) && 
-                    !in_array($hraWorkAtHeight->approval_status ?? 'draft', ['pending', 'approved']))
+                @if($canEdit)
                 <a href="{{ route('hra.work-at-heights.edit', [$permit, $hraWorkAtHeight]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>
