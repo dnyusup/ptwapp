@@ -323,9 +323,9 @@ class HraHotWorkController extends Controller
             // Build approval URL
             $approvalUrl = route('hra.hot-works.show', [$permit, $hraHotWork]);
             
-            // Send email to EHS users with Location Owner CCed
-            foreach ($ehsUsers as $ehsEmail) {
-                $mail = \Mail::to($ehsEmail);
+            // Send single email to all EHS users with Location Owner CCed
+            if (!empty($ehsUsers)) {
+                $mail = \Mail::to($ehsUsers);
                 if (!empty($ccEmails)) {
                     $mail->cc($ccEmails);
                 }

@@ -389,10 +389,10 @@ class HraWorkAtHeightController extends Controller
         // Build approval URL
         $approvalUrl = route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight]);
 
-        // Send notification to all EHS users (with Location Owner CCed)
-        foreach ($ehsUsers as $ehsEmail) {
+        // Send single email to all EHS users (with Location Owner CCed)
+        if (!empty($ehsUsers)) {
             try {
-                $mail = Mail::to($ehsEmail);
+                $mail = Mail::to($ehsUsers);
                 if (!empty($ccEmails)) {
                     $mail->cc($ccEmails);
                 }

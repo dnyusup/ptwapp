@@ -394,7 +394,7 @@ class HraLotoIsolationController extends Controller
                         ->toArray();
 
         // Build approval URL
-        $approvalUrl = route('hra.loto-isolations.approve', [$permit, $hraLotoIsolation]);
+        $approvalUrl = route('hra.loto-isolations.show', [$permit, $hraLotoIsolation]);
 
         // Prepare CC list (Location Owner)
         $ccEmails = [];
@@ -402,10 +402,10 @@ class HraLotoIsolationController extends Controller
             $ccEmails[] = $locationOwnerEmail;
         }
 
-        // Send notification to all EHS users (with Location Owner CCed)
-        foreach ($ehsUsers as $ehsEmail) {
+        // Send single email to all EHS users (with Location Owner CCed)
+        if (!empty($ehsUsers)) {
             try {
-                $mail = Mail::to($ehsEmail);
+                $mail = Mail::to($ehsUsers);
                 if (!empty($ccEmails)) {
                     $mail->cc($ccEmails);
                 }
