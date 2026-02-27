@@ -190,6 +190,10 @@
                                     <td class="info-value">{{ $hra->worker_name }}</td>
                                 </tr>
                                 <tr>
+                                    <td class="info-label">Contractor:</td>
+                                    <td class="info-value">{{ $permit->receiver_company_name }}</td>
+                                </tr>
+                                <tr>
                                     <td class="info-label">Supervisor:</td>
                                     <td class="info-value">{{ $hra->supervisor_name }}</td>
                                 </tr>

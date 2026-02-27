@@ -234,6 +234,10 @@
                         <td class="info-value">{{ $hra->worker_name }}</td>
                     </tr>
                     <tr>
+                        <td class="info-label">Contractor:</td>
+                        <td class="info-value">{{ $permit->receiver_company_name }}</td>
+                    </tr>
+                    <tr>
                         <td class="info-label">Work Period:</td>
                         <td class="info-value">
                             {{ $hra->start_datetime ? $hra->start_datetime->format('d M Y H:i') : 'Not specified' }}

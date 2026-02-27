@@ -225,6 +225,10 @@
                         <td>{{ $hra->worker_name }}</td>
                     </tr>
                     <tr>
+                        <td>Contractor:</td>
+                        <td>{{ $permit->receiver_company_name }}</td>
+                    </tr>
+                    <tr>
                         <td>Work Period:</td>
                         <td>{{ $hra->start_datetime->format('d M Y, H:i') }} to {{ $hra->end_datetime->format('d M Y, H:i') }}</td>
                     </tr>
