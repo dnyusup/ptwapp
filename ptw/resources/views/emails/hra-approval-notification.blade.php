@@ -293,6 +293,10 @@
                     <a href="{{ route('hra.loto-isolations.show', [$permit, $hra]) }}" class="btn-view">
                         🔍 View HRA LOTO/Isolation Details
                     </a>
+                    @elseif(($hraType ?? 'Hot Work') === 'Work at Height')
+                    <a href="{{ route('hra.work-at-heights.show', [$permit, $hra]) }}" class="btn-view">
+                        🔍 View HRA Work at Height Details
+                    </a>
                     @else
                     <a href="{{ route('hra.hot-works.show', [$permit, $hra]) }}" class="btn-view">
                         🔍 View HRA {{ $hraType ?? 'Hot Work' }} Details
