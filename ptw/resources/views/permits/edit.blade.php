@@ -269,9 +269,6 @@
                                 <input type="date" class="form-control @error('end_date') is-invalid @enderror" 
                                        id="end_date" name="end_date" 
                                        value="{{ old('end_date', $permit->end_date ? $permit->end_date->format('Y-m-d') : '') }}" required>
-                                <div class="form-text">
-                                    <small class="text-muted">Maksimal 5 hari termasuk tanggal mulai</small>
-                                </div>
                                 @error('end_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -646,42 +643,20 @@ $(document).ready(function() {
             // Set minimum end_date to same as start_date
             endDateInput.setAttribute('min', startDateInput.value);
             
-            // Set maximum end_date to 4 days after start_date (5 days total including start date)
-            const maxEndDate = new Date(startDate);
-            maxEndDate.setDate(maxEndDate.getDate() + 4);
-            const maxEndDateString = maxEndDate.toISOString().split('T')[0];
-            
-            console.log('Setting max date to:', maxEndDateString);
-            endDateInput.setAttribute('max', maxEndDateString);
-            
-            // Double-check: force constraint by disabling invalid dates
-            endDateInput.style.maxDate = maxEndDateString;
+            // No maximum end_date limit - users can select any date after start_date
 
-            // Clear end_date if it's outside the allowed range
+            // Clear end_date if it's before start_date
             if (endDateInput.value) {
                 const currentEndDate = new Date(endDateInput.value);
-                if (currentEndDate < startDate || currentEndDate > maxEndDate) {
+                if (currentEndDate < startDate) {
                     console.log('Clearing invalid end date:', endDateInput.value);
                     endDateInput.value = '';
                 }
-            }
-
-            // Update form text with specific dates
-            const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
-            if (endDateFormText) {
-                endDateFormText.textContent = `Maksimal ${maxEndDate.toLocaleDateString('id-ID')} (5 hari termasuk tanggal mulai)`;
             }
         } else {
             // Reset end_date constraints if no start_date is selected
             console.log('Resetting constraints');
             endDateInput.removeAttribute('min');
-            endDateInput.removeAttribute('max');
-            
-            // Reset form text
-            const endDateFormText = endDateInput.parentElement.querySelector('.form-text small');
-            if (endDateFormText) {
-                endDateFormText.textContent = 'Maksimal 5 hari termasuk tanggal mulai';
-            }
         }
     }
 
@@ -697,18 +672,16 @@ $(document).ready(function() {
         updateEndDateConstraints();
     });
 
-    // Additional validation on end_date input to prevent manual typing of invalid dates
+    // Validation on end_date input
     endDateInput.addEventListener('input', function() {
         if (startDateInput.value && this.value) {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(this.value);
-            const maxDate = new Date(startDate);
-            maxDate.setDate(maxDate.getDate() + 4);
 
-            if (endDate > maxDate) {
+            if (endDate < startDate) {
                 console.log('Invalid end date detected via input, clearing');
                 this.value = '';
-                alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
+                alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
             }
         }
     });
@@ -720,23 +693,9 @@ $(document).ready(function() {
         if (startDateInput.value && endDateInput.value) {
             const startDate = new Date(startDateInput.value);
             const endDate = new Date(endDateInput.value);
-            const maxDate = new Date(startDate);
-            maxDate.setDate(maxDate.getDate() + 4); // 4 days after = 5 days total
-
-            console.log('Validating:', {
-                startDate: startDate.toISOString().split('T')[0],
-                endDate: endDate.toISOString().split('T')[0], 
-                maxDate: maxDate.toISOString().split('T')[0]
-            });
 
             if (endDate < startDate) {
                 alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
-                endDateInput.value = '';
-                return;
-            }
-
-            if (endDate > maxDate) {
-                alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
                 endDateInput.value = '';
                 return;
             }

@@ -127,23 +127,6 @@ class PermitToWorkController extends Controller
             'gas_storage_area' => 'nullable|in:ya,tidak',
         ]);
 
-        // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)
-        $request->validate([
-            'end_date' => [
-                'required',
-                'date',
-                function ($attribute, $value, $fail) use ($request) {
-                    $startDate = \Carbon\Carbon::parse($request->start_date);
-                    $endDate = \Carbon\Carbon::parse($value);
-                    $maxEndDate = $startDate->copy()->addDays(4); // 4 days after = 5 days total including start date
-                    
-                    if ($endDate->gt($maxEndDate)) {
-                        $fail('Tanggal selesai maksimal 5 hari termasuk tanggal mulai.');
-                    }
-                },
-            ],
-        ]);
-
         // Generate unique permit number
         $validated['permit_number'] = $this->generateUniquePermitNumber();
         
@@ -293,23 +276,6 @@ class PermitToWorkController extends Controller
             'asbestos_presence' => 'nullable|in:ya,tidak',
             'atex_area' => 'nullable|in:ya,tidak',
             'gas_storage_area' => 'nullable|in:ya,tidak',
-        ]);
-
-        // Additional validation: end_date should not be more than 4 days after start_date (max 5 days total)
-        $request->validate([
-            'end_date' => [
-                'required',
-                'date',
-                function ($attribute, $value, $fail) use ($request) {
-                    $startDate = \Carbon\Carbon::parse($request->start_date);
-                    $endDate = \Carbon\Carbon::parse($value);
-                    $maxEndDate = $startDate->copy()->addDays(4); // 4 days after = 5 days total including start date
-                    
-                    if ($endDate->gt($maxEndDate)) {
-                        $fail('Tanggal selesai maksimal 5 hari termasuk tanggal mulai.');
-                    }
-                },
-            ],
         ]);
 
         $validated['work_at_heights'] = $request->boolean('work_at_heights');
