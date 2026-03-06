@@ -156,6 +156,7 @@
                                 <option value="Finance" {{ old('department') == 'Finance' ? 'selected' : '' }}>Finance</option>
                                 <option value="Procurement" {{ old('department') == 'Procurement' ? 'selected' : '' }}>Procurement</option>
                                 <option value="Sales" {{ old('department') == 'Sales' ? 'selected' : '' }}>Sales</option>
+                                <option value="Sustainable Construction" {{ old('department') == 'Sustainable Construction' ? 'selected' : '' }}>Sustainable Construction</option>
                                 <option value="CORD" {{ old('department') == 'CORD' ? 'selected' : '' }}>CORD</option>
                                 <option value="WWD" {{ old('department') == 'WWD' ? 'selected' : '' }}>WWD</option>
                                 <option value="HP" {{ old('department') == 'HP' ? 'selected' : '' }}>HP</option>

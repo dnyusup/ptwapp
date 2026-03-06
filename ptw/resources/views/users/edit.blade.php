@@ -174,6 +174,7 @@
                                         <option value="Finance" {{ old('department', $user->department) == 'Finance' ? 'selected' : '' }}>Finance</option>
                                         <option value="Procurement" {{ old('department', $user->department) == 'Procurement' ? 'selected' : '' }}>Procurement</option>
                                         <option value="Sales" {{ old('department', $user->department) == 'Sales' ? 'selected' : '' }}>Sales</option>
+                                        <option value="Sustainable Construction" {{ old('department', $user->department) == 'Sustainable Construction' ? 'selected' : '' }}>Sustainable Construction</option>
                                         <option value="CORD" {{ old('department', $user->department) == 'CORD' ? 'selected' : '' }}>CORD</option>
                                         <option value="WWD" {{ old('department', $user->department) == 'WWD' ? 'selected' : '' }}>WWD</option>
                                         <option value="HP" {{ old('department', $user->department) == 'HP' ? 'selected' : '' }}>HP</option>
