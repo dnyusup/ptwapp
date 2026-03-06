@@ -104,6 +104,7 @@
                             <tr>
                                 <th>Permit Number</th>
                                 <th>Work Title</th>
+                                <th>Company/Contractor</th>
                                 <th>Location</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
@@ -122,6 +123,7 @@
                                     <div class="fw-medium">{{ $permit->work_title }}</div>
                                     <small class="text-muted">{{ Str::limit($permit->work_description, 50) }}</small>
                                 </td>
+                                <td>{{ $permit->receiver_company_name ?: '-' }}</td>
                                 <td>{{ $permit->work_location ?: 'Not specified' }}</td>
                                 <td>{{ $permit->start_date ? $permit->start_date->format('d M Y') : 'Not set' }}</td>
                                 <td>{{ $permit->end_date ? $permit->end_date->format('d M Y') : 'Not set' }}</td>
