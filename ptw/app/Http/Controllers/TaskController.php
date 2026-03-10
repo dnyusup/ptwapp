@@ -99,19 +99,33 @@ class TaskController extends Controller
                     ->map(function($hra) use ($modelName) {
                         $hraType = str_replace('Hra', '', $modelName);
                         $hraType = preg_replace('/([a-z])([A-Z])/', '$1 $2', $hraType);
+                        
+                        // Determine route name and parameter based on model
+                        $routeMap = [
+                            'HraHotWork' => ['route' => 'hra.hot-works.show', 'param' => 'hraHotWork'],
+                            'HraWorkAtHeight' => ['route' => 'hra.work-at-heights.show', 'param' => 'hraWorkAtHeight'],
+                            'HraLotoIsolation' => ['route' => 'hra.loto-isolations.show', 'param' => 'hraLotoIsolation'],
+                        ];
+                        $routeInfo = $routeMap[$modelName] ?? null;
+                        $permitId = $hra->permit_to_work_id ?? ($hra->permitToWork->id ?? 0);
+                        
+                        $hraRoute = $routeInfo 
+                            ? route($routeInfo['route'], ['permit' => $permitId, $routeInfo['param'] => $hra->id])
+                            : route('permits.show', $permitId);
+                        
                         return [
                             'id' => $hra->id,
                             'type' => 'hra',
                             'subtype' => strtolower(str_replace(' ', '_', $hraType)),
                             'title' => 'HRA ' . $hraType . ' - ' . ($hra->permitToWork->work_title ?? $hra->work_description ?? 'N/A'),
-                            'permit_number' => $hra->permit_number ?? $hra->hra_permit_number,
+                            'permit_number' => $hra->hra_permit_number ?? $hra->permit_number,
                             'description' => 'HRA ' . $hraType . ' needs EHS approval',
                             'company' => $hra->permitToWork->receiver_company_name ?? '-',
                             'location' => $hra->work_location ?? ($hra->permitToWork->work_location ?? '-'),
                             'created_by' => $hra->user->name ?? '-',
                             'date' => $hra->created_at,
                             'priority' => 'high',
-                            'route' => route('permits.show', $hra->permit_to_work_id ?? ($hra->permitToWork->id ?? 0)),
+                            'route' => $hraRoute,
                             'badge_class' => 'bg-info',
                             'badge_text' => 'HRA Pending Approval'
                         ];
@@ -237,19 +251,33 @@ class TaskController extends Controller
                 ->map(function($hra) use ($modelName) {
                     $hraType = str_replace('Hra', '', $modelName);
                     $hraType = preg_replace('/([a-z])([A-Z])/', '$1 $2', $hraType);
+                    
+                    // Determine route name and parameter based on model
+                    $routeMap = [
+                        'HraHotWork' => ['route' => 'hra.hot-works.show', 'param' => 'hraHotWork'],
+                        'HraWorkAtHeight' => ['route' => 'hra.work-at-heights.show', 'param' => 'hraWorkAtHeight'],
+                        'HraLotoIsolation' => ['route' => 'hra.loto-isolations.show', 'param' => 'hraLotoIsolation'],
+                    ];
+                    $routeInfo = $routeMap[$modelName] ?? null;
+                    $permitId = $hra->permit_to_work_id ?? ($hra->permitToWork->id ?? 0);
+                    
+                    $hraRoute = $routeInfo 
+                        ? route($routeInfo['route'], ['permit' => $permitId, $routeInfo['param'] => $hra->id])
+                        : route('permits.show', $permitId);
+                    
                     return [
                         'id' => $hra->id,
                         'type' => 'hra',
                         'subtype' => 'rejected',
                         'title' => 'HRA ' . $hraType . ' - ' . ($hra->permitToWork->work_title ?? $hra->work_description ?? 'N/A'),
-                        'permit_number' => $hra->permit_number ?? $hra->hra_permit_number,
+                        'permit_number' => $hra->hra_permit_number ?? $hra->permit_number,
                         'description' => 'HRA was rejected by EHS - needs revision',
                         'company' => $hra->permitToWork->receiver_company_name ?? '-',
                         'location' => $hra->work_location ?? ($hra->permitToWork->work_location ?? '-'),
                         'created_by' => $hra->user->name ?? '-',
                         'date' => $hra->updated_at,
                         'priority' => 'high',
-                        'route' => route('permits.show', $hra->permit_to_work_id ?? ($hra->permitToWork->id ?? 0)),
+                        'route' => $hraRoute,
                         'badge_class' => 'bg-danger',
                         'badge_text' => 'HRA Rejected'
                     ];
