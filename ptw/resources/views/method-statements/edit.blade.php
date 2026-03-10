@@ -355,9 +355,6 @@
                         <i class="fas fa-times me-2"></i>Cancel
                     </a>
                     <div>
-                        <button type="submit" name="save_draft" class="btn btn-outline-primary me-2">
-                            <i class="fas fa-save me-2"></i>Save as Draft
-                        </button>
                         <button type="submit" name="submit" class="btn btn-primary">
                             <i class="fas fa-check me-2"></i>Update Method Statement
                         </button>

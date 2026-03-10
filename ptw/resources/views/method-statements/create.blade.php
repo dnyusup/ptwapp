@@ -201,8 +201,7 @@
             <div class="card-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    <strong>Catatan:</strong> Semua field di bawah ini wajib diisi jika Anda ingin <strong>Submit Method Statement</strong>. 
-                    Untuk <strong>Save as Draft</strong>, field dapat dikosongkan sementara.
+                    <strong>Catatan:</strong> Semua field di bawah ini wajib diisi untuk <strong>Submit Method Statement</strong>.
                 </div>
                 <div class="mb-4">
                     <label for="safe_access_explanation" class="form-label fw-bold">Tentukan akses aman ke dan dari lokasi kerja, termasuk platform permanen, scaffolds (pegangan tangan, papan kaki, dll.), dan menara seluler. Dan bagaimana akses tanpa izin akan dicegah. <span class="text-danger">*</span></label>
@@ -328,9 +327,6 @@
                         <i class="fas fa-times me-2"></i>Cancel
                     </a>
                     <div>
-                        <button type="submit" name="save_draft" class="btn btn-outline-primary me-2">
-                            <i class="fas fa-save me-2"></i>Save as Draft
-                        </button>
                         <button type="submit" name="submit" class="btn btn-primary">
                             <i class="fas fa-check me-2"></i>Submit Method Statement
                         </button>
@@ -644,13 +640,6 @@ $(document).ready(function() {
                 firstInvalidField.focus();
             }
         }
-    });
-
-    // Allow Save Draft without validation
-    $('button[name="save_draft"]').on('click', function(e) {
-        // Remove any existing validation styling for save draft
-        $('textarea.is-invalid').removeClass('is-invalid');
-        $('#work-method-alert').remove();
     });
 
     // Remove validation error styling when user starts typing
