@@ -64,13 +64,12 @@ class PermitToWorkController extends Controller
             });
         }
 
-        // Filter by work date (permits that are active on this date)
-        if ($request->filled('work_date')) {
-            $workDate = $request->get('work_date');
-            $query->where(function($q) use ($workDate) {
-                $q->whereDate('start_date', '<=', $workDate)
-                  ->whereDate('end_date', '>=', $workDate);
-            });
+        // Filter by work date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('start_date', '>=', $request->get('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('end_date', '<=', $request->get('date_to'));
         }
 
         // Get companies for dropdown based on current filters (before company filter is applied)
@@ -1329,13 +1328,12 @@ class PermitToWorkController extends Controller
             });
         }
 
-        // Filter by work date
-        if ($request->filled('work_date')) {
-            $workDate = $request->get('work_date');
-            $query->where(function($q) use ($workDate) {
-                $q->whereDate('start_date', '<=', $workDate)
-                  ->whereDate('end_date', '>=', $workDate);
-            });
+        // Filter by work date range
+        if ($request->filled('date_from')) {
+            $query->whereDate('start_date', '>=', $request->get('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('end_date', '<=', $request->get('date_to'));
         }
 
         // Filter by company

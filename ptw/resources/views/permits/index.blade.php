@@ -45,9 +45,13 @@
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label for="work_date" class="form-label">Work Date</label>
-                    <input type="date" name="work_date" id="work_date" class="form-control" value="{{ request('work_date') }}">
+                <div class="col-md-3">
+                    <label class="form-label">Work Date</label>
+                    <div class="d-flex gap-1 align-items-center">
+                        <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From">
+                        <span class="text-muted">-</span>
+                        <input type="date" name="date_to" id="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To">
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <label for="company" class="form-label">Company</label>
@@ -58,12 +62,12 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <label for="search" class="form-label">Search</label>
                     <input type="text" name="search" id="search" class="form-control" 
-                           placeholder="Search by title, location, permit number..." value="{{ request('search') }}">
+                           placeholder="Search..." value="{{ request('search') }}">
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label class="form-label">&nbsp;</label>
                     <div class="d-flex gap-2">
                         <a href="{{ route('permits.index') }}" class="btn btn-secondary btn-sm">
@@ -86,15 +90,23 @@
                     <i class="fas fa-file-alt me-2"></i>Permits List
                 </h5>
                 <div class="d-flex align-items-center gap-3">
-                    @if(request()->hasAny(['status', 'work_date', 'search', 'company']))
+                    @if(request()->hasAny(['status', 'date_from', 'date_to', 'search', 'company']))
                         <small class="text-muted">
                             <i class="fas fa-filter me-1"></i>
                             Filtered results: <strong>{{ $permits->total() }}</strong>
                             @if(request('status'))
                                 <span class="badge bg-primary ms-1">{{ ucfirst(str_replace('_', ' ', request('status'))) }}</span>
                             @endif
-                            @if(request('work_date'))
-                                <span class="badge bg-success ms-1">Date: {{ \Carbon\Carbon::parse(request('work_date'))->format('d M Y') }}</span>
+                            @if(request('date_from') || request('date_to'))
+                                <span class="badge bg-success ms-1">
+                                    @if(request('date_from') && request('date_to'))
+                                        {{ \Carbon\Carbon::parse(request('date_from'))->format('d/m/Y') }} - {{ \Carbon\Carbon::parse(request('date_to'))->format('d/m/Y') }}
+                                    @elseif(request('date_from'))
+                                        From: {{ \Carbon\Carbon::parse(request('date_from'))->format('d/m/Y') }}
+                                    @else
+                                        To: {{ \Carbon\Carbon::parse(request('date_to'))->format('d/m/Y') }}
+                                    @endif
+                                </span>
                             @endif
                             @if(request('company'))
                                 <span class="badge bg-warning ms-1">{{ request('company') }}</span>
@@ -226,12 +238,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get filter form elements
     const filterForm = document.querySelector('form[method="GET"]');
     const statusSelect = document.getElementById('status');
-    const workDateInput = document.getElementById('work_date');
+    const dateFromInput = document.getElementById('date_from');
+    const dateToInput = document.getElementById('date_to');
     const companySelect = document.getElementById('company');
     const searchInput = document.getElementById('search');
     
     // Auto-submit on status, date or company change
-    [statusSelect, workDateInput, companySelect].forEach(element => {
+    [statusSelect, dateFromInput, dateToInput, companySelect].forEach(element => {
         if (element) {
             element.addEventListener('change', function() {
                 filterForm.submit();
