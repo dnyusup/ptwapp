@@ -1342,8 +1342,8 @@ class PermitToWorkController extends Controller
             fputcsv($file, [
                 'Permit Number',
                 'Work Title',
-                'Work Description',
                 'Company/Contractor',
+                'Permit Receiver',
                 'Location',
                 'Start Date',
                 'End Date',
@@ -1358,8 +1358,8 @@ class PermitToWorkController extends Controller
                 fputcsv($file, [
                     $permit->permit_number,
                     $permit->work_title,
-                    $permit->work_description,
                     $permit->receiver_company_name ?? '-',
+                    $permit->receiver->name ?? ($permit->receiver_name ?? '-'),
                     $permit->work_location,
                     $permit->start_date ? \Carbon\Carbon::parse($permit->start_date)->format('d/m/Y') : '-',
                     $permit->end_date ? \Carbon\Carbon::parse($permit->end_date)->format('d/m/Y') : '-',
