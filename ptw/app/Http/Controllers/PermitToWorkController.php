@@ -64,11 +64,13 @@ class PermitToWorkController extends Controller
             });
         }
 
-        // Filter by work date range (filter by start_date)
+        // Filter by work date range (show permits active during this period)
         if ($request->filled('date_from')) {
-            $query->whereDate('start_date', '>=', $request->get('date_from'));
+            // Permit end_date must be >= date_from (permit still active on or after filter start)
+            $query->whereDate('end_date', '>=', $request->get('date_from'));
         }
         if ($request->filled('date_to')) {
+            // Permit start_date must be <= date_to (permit already started before filter end)
             $query->whereDate('start_date', '<=', $request->get('date_to'));
         }
 
@@ -1328,11 +1330,13 @@ class PermitToWorkController extends Controller
             });
         }
 
-        // Filter by work date range (filter by start_date)
+        // Filter by work date range (show permits active during this period)
         if ($request->filled('date_from')) {
-            $query->whereDate('start_date', '>=', $request->get('date_from'));
+            // Permit end_date must be >= date_from (permit still active on or after filter start)
+            $query->whereDate('end_date', '>=', $request->get('date_from'));
         }
         if ($request->filled('date_to')) {
+            // Permit start_date must be <= date_to (permit already started before filter end)
             $query->whereDate('start_date', '<=', $request->get('date_to'));
         }
 

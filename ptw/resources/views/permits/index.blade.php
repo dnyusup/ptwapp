@@ -46,7 +46,7 @@
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Start Date</label>
+                    <label class="form-label">Work Date</label>
                     <div class="d-flex gap-1 align-items-center">
                         <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From">
                         <span class="text-muted">-</span>
