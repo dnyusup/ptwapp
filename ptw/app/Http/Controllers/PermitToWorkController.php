@@ -1295,7 +1295,7 @@ class PermitToWorkController extends Controller
      */
     public function export(Request $request)
     {
-        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver']);
+        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver', 'locationOwner']);
         
         // Contractors can only see permits from their company
         $currentUser = auth()->user();
@@ -1368,6 +1368,7 @@ class PermitToWorkController extends Controller
                 'Company/Contractor',
                 'Permit Receiver',
                 'Location',
+                'Location Owner',
                 'Start Date',
                 'End Date',
                 'Status',
@@ -1384,6 +1385,7 @@ class PermitToWorkController extends Controller
                     $permit->receiver_company_name ?? '-',
                     $permit->receiver->name ?? ($permit->receiver_name ?? '-'),
                     $permit->work_location,
+                    $permit->locationOwner->name ?? '-',
                     $permit->start_date ? \Carbon\Carbon::parse($permit->start_date)->format('d/m/Y') : '-',
                     $permit->end_date ? \Carbon\Carbon::parse($permit->end_date)->format('d/m/Y') : '-',
                     ucfirst(str_replace('_', ' ', $permit->status)),
