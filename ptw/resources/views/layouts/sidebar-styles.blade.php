@@ -214,6 +214,12 @@
             background: #3b82f6;
         }
 
+        .sidebar .nav-link .badge {
+            font-size: 11px;
+            padding: 4px 8px;
+            font-weight: 600;
+        }
+
         .sidebar-footer {
             padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);

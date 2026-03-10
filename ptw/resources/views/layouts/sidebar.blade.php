@@ -16,12 +16,21 @@
         </div>
     </div>
     
+    @php
+        $taskCount = \App\Http\Controllers\TaskController::getTaskCount(auth()->user());
+    @endphp
     <nav class="nav flex-column sidebar-nav">
         @if(auth()->user()->role !== 'contractor')
         <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
             <i class="fas fa-chart-line"></i>Dashboard
         </a>
         @endif
+        <a class="nav-link {{ Request::routeIs('tasks.*') ? 'active' : '' }}" href="{{ route('tasks.index') }}">
+            <i class="fas fa-tasks"></i>My Tasks
+            @if($taskCount > 0)
+                <span class="badge bg-danger rounded-pill ms-auto">{{ $taskCount }}</span>
+            @endif
+        </a>
         <a class="nav-link {{ Request::routeIs('permits.*') ? 'active' : '' }}" href="{{ route('permits.index') }}">
             <i class="fas fa-clipboard-list"></i>Permits
         </a>

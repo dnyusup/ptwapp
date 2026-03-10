@@ -20,6 +20,7 @@ use App\Http\Controllers\HraConfinedSpaceController;
 use App\Http\Controllers\HraExplosiveAtmosphereController;
 use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\ContractorUserController;
+use App\Http\Controllers\TaskController;
 
 // Debug route - hapus setelah testing
 Route::get('/debug-storage/{permitId}', function ($permitId) {
@@ -72,6 +73,7 @@ Route::post('/register', [AuthController::class, 'register']);
 // Protected routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::resource('permits', PermitToWorkController::class);
     Route::get('/permits-export', [PermitToWorkController::class, 'export'])->name('permits.export');
     
