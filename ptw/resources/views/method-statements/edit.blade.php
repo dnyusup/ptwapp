@@ -111,6 +111,18 @@
         </div>
 
         <!-- Responsible Persons -->
+        @php
+            // Check if any responsible person was entered using free text mode (email is null)
+            $hasFreeTextPersons = false;
+            if ($methodStatement->responsible_persons && count($methodStatement->responsible_persons) > 0) {
+                foreach ($methodStatement->responsible_persons as $person) {
+                    if (!isset($person['email']) || $person['email'] === null || empty($person['email'])) {
+                        $hasFreeTextPersons = true;
+                        break;
+                    }
+                }
+            }
+        @endphp
         <div class="card mb-4">
             <div class="card-header bg-success text-white">
                 <h5 class="mb-0"><i class="fas fa-users me-2"></i>Personil Yang Bertanggung Jawab</h5>
@@ -120,7 +132,7 @@
                 
                 <!-- Toggle for Free Text Mode -->
                 <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="freeTextPersonToggle" role="switch">
+                    <input class="form-check-input" type="checkbox" id="freeTextPersonToggle" role="switch" {{ $hasFreeTextPersons ? 'checked' : '' }}>
                     <label class="form-check-label" for="freeTextPersonToggle">
                         <i class="fas fa-keyboard me-1"></i> Input Manual (Free Text)
                     </label>
@@ -143,16 +155,22 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>
-                                            <select class="form-select responsible-person-select" name="responsible_persons[]" data-placeholder="Pilih responsible person...">
-                                                <option value="">Pilih responsible person...</option>
-                                                @foreach($users as $user)
-                                                    <option value="{{ json_encode(['name' => $user->name, 'email' => $user->email]) }}" 
-                                                            data-email="{{ $user->email }}"
-                                                            {{ isset($person['name']) && $person['name'] == $user->name ? 'selected' : '' }}>
-                                                        {{ $user->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                            @if($hasFreeTextPersons)
+                                                {{-- Show text input for free text mode --}}
+                                                <input type="text" class="form-control responsible-person-text" name="responsible_persons[]" placeholder="Masukkan nama personil..." value="{{ $person['name'] ?? '' }}">
+                                            @else
+                                                {{-- Show dropdown for select mode --}}
+                                                <select class="form-select responsible-person-select" name="responsible_persons[]" data-placeholder="Pilih responsible person...">
+                                                    <option value="">Pilih responsible person...</option>
+                                                    @foreach($users as $user)
+                                                        <option value="{{ json_encode(['name' => $user->name, 'email' => $user->email]) }}" 
+                                                                data-email="{{ $user->email }}"
+                                                                {{ isset($person['name']) && $person['name'] == $user->name ? 'selected' : '' }}>
+                                                            {{ $user->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-danger remove-person-row" {{ $loop->first && $loop->count == 1 ? 'disabled' : '' }}>
@@ -590,10 +608,12 @@ $(document).ready(function() {
         }
     });
 
-    // Initialize Select2 for existing Responsible Persons
-    $('.responsible-person-select').each(function() {
-        window.initializeSelect2(this);
-    });
+    // Initialize Select2 for existing Responsible Persons only if free text mode is not enabled
+    if (!$('#freeTextPersonToggle').is(':checked')) {
+        $('.responsible-person-select').each(function() {
+            window.initializeSelect2(this);
+        });
+    }
 });
 </script>
 
