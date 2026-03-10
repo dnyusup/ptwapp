@@ -64,20 +64,11 @@ class PermitToWorkController extends Controller
             });
         }
 
-        // Filter by work date range (find permits active within the date range)
-        if ($request->filled('date_from') && $request->filled('date_to')) {
-            // Both dates: find permits that overlap with the date range
-            $dateFrom = $request->get('date_from');
-            $dateTo = $request->get('date_to');
-            $query->where(function($q) use ($dateFrom, $dateTo) {
-                $q->whereDate('start_date', '<=', $dateTo)
-                  ->whereDate('end_date', '>=', $dateFrom);
-            });
-        } elseif ($request->filled('date_from')) {
-            // Only from date: find permits that are still active on or after this date
-            $query->whereDate('end_date', '>=', $request->get('date_from'));
-        } elseif ($request->filled('date_to')) {
-            // Only to date: find permits that have started on or before this date
+        // Filter by work date range (filter by start_date)
+        if ($request->filled('date_from')) {
+            $query->whereDate('start_date', '>=', $request->get('date_from'));
+        }
+        if ($request->filled('date_to')) {
             $query->whereDate('start_date', '<=', $request->get('date_to'));
         }
 
@@ -1337,20 +1328,11 @@ class PermitToWorkController extends Controller
             });
         }
 
-        // Filter by work date range (find permits active within the date range)
-        if ($request->filled('date_from') && $request->filled('date_to')) {
-            // Both dates: find permits that overlap with the date range
-            $dateFrom = $request->get('date_from');
-            $dateTo = $request->get('date_to');
-            $query->where(function($q) use ($dateFrom, $dateTo) {
-                $q->whereDate('start_date', '<=', $dateTo)
-                  ->whereDate('end_date', '>=', $dateFrom);
-            });
-        } elseif ($request->filled('date_from')) {
-            // Only from date: find permits that are still active on or after this date
-            $query->whereDate('end_date', '>=', $request->get('date_from'));
-        } elseif ($request->filled('date_to')) {
-            // Only to date: find permits that have started on or before this date
+        // Filter by work date range (filter by start_date)
+        if ($request->filled('date_from')) {
+            $query->whereDate('start_date', '>=', $request->get('date_from'));
+        }
+        if ($request->filled('date_to')) {
             $query->whereDate('start_date', '<=', $request->get('date_to'));
         }
 
