@@ -73,6 +73,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('permits', PermitToWorkController::class);
+    Route::get('/permits-export', [PermitToWorkController::class, 'export'])->name('permits.export');
     
     // Test route for expired permits functionality
     Route::get('/test/expired-permits', function() {

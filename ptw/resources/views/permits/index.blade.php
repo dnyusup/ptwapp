@@ -60,6 +60,9 @@
                         <a href="{{ route('permits.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-times"></i> Reset
                         </a>
+                        <a href="{{ route('permits.export', request()->query()) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-download"></i> Download
+                        </a>
                     </div>
                 </div>
             </form>

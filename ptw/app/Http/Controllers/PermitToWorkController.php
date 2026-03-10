@@ -1272,4 +1272,107 @@ class PermitToWorkController extends Controller
                 ->with('error', 'Failed to generate PDF: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Export permits to Excel/CSV based on current filters
+     */
+    public function export(Request $request)
+    {
+        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver']);
+        
+        // Contractors can only see permits from their company
+        $currentUser = auth()->user();
+        if ($currentUser->role === 'contractor' && $currentUser->company_id) {
+            $companyName = $currentUser->company->company_name ?? null;
+            if ($companyName) {
+                $query->where('receiver_company_name', $companyName);
+            }
+        }
+        
+        // Filter by status
+        if ($request->filled('status')) {
+            $status = $request->get('status');
+            if ($status === 'pending') {
+                $query->where('status', 'pending_approval');
+            } else {
+                $query->where('status', $status);
+            }
+        }
+        
+        // Search by work title, location, permit number, or creator name
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('work_title', 'like', '%' . $search . '%')
+                  ->orWhere('work_location', 'like', '%' . $search . '%')
+                  ->orWhere('permit_number', 'like', '%' . $search . '%')
+                  ->orWhere('department', 'like', '%' . $search . '%')
+                  ->orWhereHas('permitIssuer', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Filter by work date
+        if ($request->filled('work_date')) {
+            $workDate = $request->get('work_date');
+            $query->where(function($q) use ($workDate) {
+                $q->whereDate('start_date', '<=', $workDate)
+                  ->whereDate('end_date', '>=', $workDate);
+            });
+        }
+
+        $permits = $query->latest()->get();
+
+        // Create CSV content
+        $filename = 'permits_export_' . date('Y-m-d_His') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($permits) {
+            $file = fopen('php://output', 'w');
+            
+            // Add BOM for Excel UTF-8 compatibility
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Header row
+            fputcsv($file, [
+                'Permit Number',
+                'Work Title',
+                'Work Description',
+                'Company/Contractor',
+                'Location',
+                'Start Date',
+                'End Date',
+                'Status',
+                'Created By',
+                'Permit Issuer',
+                'Created At'
+            ]);
+
+            // Data rows
+            foreach ($permits as $permit) {
+                fputcsv($file, [
+                    $permit->permit_number,
+                    $permit->work_title,
+                    $permit->work_description,
+                    $permit->receiver_company_name ?? '-',
+                    $permit->work_location,
+                    $permit->start_date ? \Carbon\Carbon::parse($permit->start_date)->format('d/m/Y') : '-',
+                    $permit->end_date ? \Carbon\Carbon::parse($permit->end_date)->format('d/m/Y') : '-',
+                    ucfirst(str_replace('_', ' ', $permit->status)),
+                    $permit->user->name ?? '-',
+                    $permit->permitIssuer->name ?? '-',
+                    $permit->created_at ? $permit->created_at->format('d/m/Y H:i') : '-'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
