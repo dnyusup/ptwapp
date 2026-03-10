@@ -31,7 +31,7 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('permits.index') }}" class="row g-3">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select">
                         <option value="">All Status</option>
@@ -45,9 +45,18 @@
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label for="work_date" class="form-label">Work Date</label>
                     <input type="date" name="work_date" id="work_date" class="form-control" value="{{ request('work_date') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="company" class="form-label">Company</label>
+                    <select name="company" id="company" class="form-select">
+                        <option value="">All Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company }}" {{ request('company') == $company ? 'selected' : '' }}>{{ $company }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label for="search" class="form-label">Search</label>
@@ -77,7 +86,7 @@
                     <i class="fas fa-file-alt me-2"></i>Permits List
                 </h5>
                 <div class="d-flex align-items-center gap-3">
-                    @if(request()->hasAny(['status', 'work_date', 'search']))
+                    @if(request()->hasAny(['status', 'work_date', 'search', 'company']))
                         <small class="text-muted">
                             <i class="fas fa-filter me-1"></i>
                             Filtered results: <strong>{{ $permits->total() }}</strong>
@@ -86,6 +95,9 @@
                             @endif
                             @if(request('work_date'))
                                 <span class="badge bg-success ms-1">Date: {{ \Carbon\Carbon::parse(request('work_date'))->format('d M Y') }}</span>
+                            @endif
+                            @if(request('company'))
+                                <span class="badge bg-warning ms-1">{{ request('company') }}</span>
                             @endif
                             @if(request('search'))
                                 <span class="badge bg-info ms-1">Search: "{{ request('search') }}"</span>
@@ -215,10 +227,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const filterForm = document.querySelector('form[method="GET"]');
     const statusSelect = document.getElementById('status');
     const workDateInput = document.getElementById('work_date');
+    const companySelect = document.getElementById('company');
     const searchInput = document.getElementById('search');
     
-    // Auto-submit on status or date change
-    [statusSelect, workDateInput].forEach(element => {
+    // Auto-submit on status, date or company change
+    [statusSelect, workDateInput, companySelect].forEach(element => {
         if (element) {
             element.addEventListener('change', function() {
                 filterForm.submit();

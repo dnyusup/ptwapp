@@ -71,9 +71,25 @@ class PermitToWorkController extends Controller
                 $q->whereDate('start_date', '<=', $workDate)
                   ->whereDate('end_date', '>=', $workDate);
             });
-        }        $permits = $query->latest()->paginate(15)->withQueryString();
+        }
 
-        return view('permits.index', compact('permits'));
+        // Get companies for dropdown based on current filters (before company filter is applied)
+        $companiesQuery = clone $query;
+        $companies = $companiesQuery->whereNotNull('receiver_company_name')
+            ->where('receiver_company_name', '!=', '')
+            ->distinct()
+            ->pluck('receiver_company_name')
+            ->sort()
+            ->values();
+
+        // Filter by company
+        if ($request->filled('company')) {
+            $query->where('receiver_company_name', $request->get('company'));
+        }
+
+        $permits = $query->latest()->paginate(15)->withQueryString();
+
+        return view('permits.index', compact('permits', 'companies'));
     }
 
     /**
@@ -1320,6 +1336,11 @@ class PermitToWorkController extends Controller
                 $q->whereDate('start_date', '<=', $workDate)
                   ->whereDate('end_date', '>=', $workDate);
             });
+        }
+
+        // Filter by company
+        if ($request->filled('company')) {
+            $query->where('receiver_company_name', $request->get('company'));
         }
 
         $permits = $query->latest()->get();
