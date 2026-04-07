@@ -31,7 +31,7 @@ class InspectionNotification extends Mailable
      */
     public function build()
     {
-        $email = $this->subject('New Inspection Report - ' . $this->permit->permit_number)
+        $email = $this->subject($this->permit->work_title . ' - New Inspection Report - ' . $this->permit->permit_number)
                     ->view('emails.inspection-notification')
                     ->with([
                         'inspection' => $this->inspection,

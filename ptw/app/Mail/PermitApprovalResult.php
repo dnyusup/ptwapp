@@ -30,12 +30,12 @@ class PermitApprovalResult extends Mailable
     {
         if ($this->type === 'extension') {
             $subject = $this->result 
-                ? 'Permit Extension Approved - ' . $this->permit->permit_number
-                : 'Permit Extension Rejected - ' . $this->permit->permit_number;
+                ? $this->permit->work_title . ' - Permit Extension Approved - ' . $this->permit->permit_number
+                : $this->permit->work_title . ' - Permit Extension Rejected - ' . $this->permit->permit_number;
         } else {
             $subject = $this->result 
-                ? 'Permit Approved - ' . $this->permit->permit_number
-                : 'Permit Rejected - ' . $this->permit->permit_number;
+                ? $this->permit->work_title . ' - Permit Approved - ' . $this->permit->permit_number
+                : $this->permit->work_title . ' - Permit Rejected - ' . $this->permit->permit_number;
         }
         
         return $this->subject($subject)

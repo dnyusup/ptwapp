@@ -35,7 +35,7 @@ class HraApprovalNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'HRA ' . $this->hraType . ' Approved - ' . $this->hra->hra_permit_number,
+            subject: $this->permit->work_title . ' - HRA ' . $this->hraType . ' Approved - ' . $this->hra->hra_permit_number,
         );
     }
 

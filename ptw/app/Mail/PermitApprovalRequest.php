@@ -30,7 +30,7 @@ class PermitApprovalRequest extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Permit Approval Request - ' . $this->permit->permit_number,
+            subject: $this->permit->work_title . ' - Permit Approval Request - ' . $this->permit->permit_number,
         );
     }
 
