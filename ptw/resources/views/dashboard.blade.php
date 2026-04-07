@@ -184,37 +184,23 @@
         </div>
     </div>
 
-    <!-- Pekerjaan Hari Ini & Recent Activity -->
+    <!-- Recent Permits & Pekerjaan Hari Ini -->
     <div class="row">
-        <!-- Pekerjaan Hari Ini -->
+        <!-- Recent Permits (kiri, compact) -->
         <div class="col-xl-4 col-lg-6 mb-4">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap">
-                        <div>
-                            <h5 class="mb-1">
-                                <i class="fas fa-calendar-day me-2 text-primary"></i>Pekerjaan Hari Ini
-                            </h5>
-                            <small class="text-muted">{{ now()->format('l, d F Y') }}</small>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <div class="text-center">
-                                <div class="fw-bold text-primary small">{{ $today_summary['total'] }}</div>
-                                <small class="text-muted" style="font-size: 0.7rem;">Total</small>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold text-success small">{{ $today_summary['active'] }}</div>
-                                <small class="text-muted" style="font-size: 0.7rem;">Active</small>
-                            </div>
-                            <div class="text-center">
-                                <div class="fw-bold text-info small">{{ $today_summary['completed'] }}</div>
-                                <small class="text-muted" style="font-size: 0.7rem;">Done</small>
-                            </div>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history me-2 text-primary"></i>Recent Permits
+                        </h5>
+                        <a href="{{ route('permits.index') }}" class="btn btn-outline-primary btn-sm">
+                            View All
+                        </a>
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    @if($today_permits->count() > 0)
+                    @if($recent_permits->count() > 0)
                     <div class="table-responsive">
                         <table class="table table-hover table-sm mb-0">
                             <thead class="table-light">
@@ -226,25 +212,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($today_permits as $permit)
-                                <tr class="{{ $permit->status === 'expired' ? 'table-danger' : ($permit->status === 'completed' ? 'table-success' : '') }}">
+                                @foreach($recent_permits as $permit)
+                                <tr>
                                     <td>
                                         <div class="fw-semibold small">{{ $permit->permit_number }}</div>
                                         <div class="text-muted" style="font-size: 0.75rem;">
-                                            {{ $permit->start_date->format('d/m') }} - {{ $permit->end_date->format('d/m') }}
+                                            {{ $permit->created_at->format('M d, Y') }}
                                         </div>
                                     </td>
                                     <td>
                                         <div class="fw-medium small">{{ Str::limit($permit->work_title, 25) }}</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">{{ Str::limit($permit->work_location, 20) }}</div>
                                     </td>
                                     <td>
-                                        @if($permit->status === 'active')
+                                        @if($permit->status === 'draft')
+                                            <span class="badge bg-secondary badge-sm">Draft</span>
+                                        @elseif($permit->status === 'pending_approval')
+                                            <span class="badge bg-warning badge-sm">Pending</span>
+                                        @elseif($permit->status === 'approved')
+                                            <span class="badge bg-success badge-sm">Approved</span>
+                                        @elseif($permit->status === 'active')
                                             <span class="badge bg-success badge-sm">Active</span>
                                         @elseif($permit->status === 'expired')
                                             <span class="badge bg-danger badge-sm">Expired</span>
                                         @elseif($permit->status === 'completed')
-                                            <span class="badge bg-info badge-sm">Done</span>
+                                            <span class="badge bg-primary badge-sm">Completed</span>
                                         @else
                                             <span class="badge bg-secondary badge-sm">{{ ucfirst($permit->status) }}</span>
                                         @endif
@@ -261,35 +252,49 @@
                     </div>
                     @else
                     <div class="text-center py-5">
-                        <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">Tidak Ada Pekerjaan Hari Ini</h5>
-                        <p class="text-muted">Tidak ada permit yang dijadwalkan untuk hari ini.</p>
+                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No permits yet</h5>
                     </div>
                     @endif
                 </div>
             </div>
         </div>
 
-        <!-- Recent Permits -->
+        <!-- Pekerjaan Hari Ini (kanan, lebar dengan summary) -->
         <div class="col-xl-8 col-lg-6 mb-4">
             <div class="card">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-history me-2 text-primary"></i>Recent Permits
-                        </h5>
-                        <a href="{{ route('permits.index') }}" class="btn btn-outline-primary btn-sm">
-                            View All
-                        </a>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h5 class="mb-1">
+                                <i class="fas fa-calendar-day me-2 text-primary"></i>Pekerjaan Hari Ini
+                            </h5>
+                            <small class="text-muted">{{ now()->format('l, d F Y') }}</small>
+                        </div>
+                        <div class="d-flex gap-3">
+                            <div class="text-center px-3 border-end">
+                                <div class="fw-bold text-primary h5 mb-0">{{ $today_summary['total'] }}</div>
+                                <small class="text-muted">Total</small>
+                            </div>
+                            <div class="text-center px-3 border-end">
+                                <div class="fw-bold text-success h5 mb-0">{{ $today_summary['active'] }}</div>
+                                <small class="text-muted">Active</small>
+                            </div>
+                            <div class="text-center px-3">
+                                <div class="fw-bold text-info h5 mb-0">{{ $today_summary['completed'] }}</div>
+                                <small class="text-muted">Done</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    @if($recent_permits->count() > 0)
+                    @if($today_permits->total() > 0)
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>Permit Number</th>
+                                    <th>Contractor</th>
                                     <th>Work Title</th>
                                     <th>Status</th>
                                     <th>Date</th>
@@ -297,34 +302,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($recent_permits as $permit)
-                                <tr>
+                                @foreach($today_permits as $permit)
+                                <tr class="{{ $permit->status === 'expired' ? 'table-danger' : ($permit->status === 'completed' ? 'table-success' : '') }}">
                                     <td>
                                         <span class="fw-semibold">{{ $permit->permit_number }}</span>
                                     </td>
-                                    <td>{{ Str::limit($permit->work_title, 50) }}</td>
                                     <td>
-                                        @if($permit->status === 'draft')
-                                            <span class="badge bg-secondary">Draft</span>
-                                        @elseif($permit->status === 'pending_approval')
-                                            <span class="badge bg-warning">Pending</span>
-                                        @elseif($permit->status === 'approved')
-                                            <span class="badge bg-success">Approved</span>
-                                        @elseif($permit->status === 'active')
+                                        <span class="text-muted">{{ Str::limit($permit->receiver_company_name, 25) }}</span>
+                                    </td>
+                                    <td>
+                                        <div>{{ Str::limit($permit->work_title, 50) }}</div>
+                                        <small class="text-muted">{{ Str::limit($permit->work_location, 30) }}</small>
+                                    </td>
+                                    <td>
+                                        @if($permit->status === 'active')
                                             <span class="badge bg-success">Active</span>
                                         @elseif($permit->status === 'expired')
                                             <span class="badge bg-danger">Expired</span>
-                                        @elseif($permit->status === 'pending_extension_approval')
-                                            <span class="badge bg-warning">Pending Extension</span>
-                                        @elseif($permit->status === 'in_progress')
-                                            <span class="badge bg-info">In Progress</span>
                                         @elseif($permit->status === 'completed')
-                                            <span class="badge bg-primary">Completed</span>
+                                            <span class="badge bg-info">Done</span>
                                         @else
-                                            <span class="badge bg-danger">{{ ucfirst($permit->status) }}</span>
+                                            <span class="badge bg-secondary">{{ ucfirst($permit->status) }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $permit->created_at->format('M d, Y') }}</td>
+                                    <td>{{ $permit->start_date->format('d/m') }} - {{ $permit->end_date->format('d/m') }}</td>
                                     <td>
                                         <a href="{{ route('permits.show', $permit) }}" class="btn btn-outline-primary btn-sm">
                                             <i class="fas fa-eye"></i>
@@ -335,14 +336,18 @@
                             </tbody>
                         </table>
                     </div>
+                    @if($today_permits->hasPages())
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-center">
+                            {{ $today_permits->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
+                    @endif
                     @else
                     <div class="text-center py-5">
-                        <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No permits yet</h5>
-                        <p class="text-muted">Create your first permit to get started.</p>
-                        <a href="{{ route('permits.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Create New Permit
-                        </a>
+                        <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Tidak Ada Pekerjaan Hari Ini</h5>
+                        <p class="text-muted">Tidak ada permit yang dijadwalkan untuk hari ini.</p>
                     </div>
                     @endif
                 </div>

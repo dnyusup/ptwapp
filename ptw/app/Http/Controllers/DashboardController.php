@@ -42,6 +42,24 @@ class DashboardController extends Controller
 
         // Get today's work permits (active permits that are scheduled for today)
         $today = now()->format('Y-m-d');
+        $today_permits_query = PermitToWork::with(['permitIssuer', 'authorizer'])
+            ->where(function($query) use ($today) {
+                $query->whereDate('start_date', '<=', $today)
+                      ->whereDate('end_date', '>=', $today);
+            })
+            ->whereIn('status', ['active', 'expired', 'completed'])
+            ->orderBy('start_date');
+
+        // Today's work summary (count all, not just paginated)
+        $all_today_permits = $today_permits_query->get();
+        $today_summary = [
+            'total' => $all_today_permits->count(),
+            'active' => $all_today_permits->where('status', 'active')->count(),
+            'expired' => $all_today_permits->where('status', 'expired')->count(),
+            'completed' => $all_today_permits->where('status', 'completed')->count(),
+        ];
+
+        // Paginate for display (10 per page)
         $today_permits = PermitToWork::with(['permitIssuer', 'authorizer'])
             ->where(function($query) use ($today) {
                 $query->whereDate('start_date', '<=', $today)
@@ -49,15 +67,7 @@ class DashboardController extends Controller
             })
             ->whereIn('status', ['active', 'expired', 'completed'])
             ->orderBy('start_date')
-            ->get();
-
-        // Today's work summary
-        $today_summary = [
-            'total' => $today_permits->count(),
-            'active' => $today_permits->where('status', 'active')->count(),
-            'expired' => $today_permits->where('status', 'expired')->count(),
-            'completed' => $today_permits->where('status', 'completed')->count(),
-        ];
+            ->paginate(10, ['*'], 'today_page');
 
         return view('dashboard', compact('stats', 'recent_permits', 'user', 'today_permits', 'today_summary'));
     }
