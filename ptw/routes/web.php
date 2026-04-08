@@ -226,6 +226,11 @@ Route::middleware('auth')->group(function () {
     // Kontraktor List management routes (Administrator and Bekaert EHS only)
     Route::resource('kontraktor-lists', KontraktorListController::class);
     
+    // Settings - Area management routes (Administrator and Bekaert EHS only)
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::resource('areas', \App\Http\Controllers\AreaController::class)->except(['show']);
+    });
+    
     // Method Statement routes
     Route::get('/permits/{permitNumber}/method-statement/create', [MethodStatementController::class, 'create'])->name('method-statements.create');
     Route::post('/permits/{permitNumber}/method-statement', [MethodStatementController::class, 'store'])->name('method-statements.store');

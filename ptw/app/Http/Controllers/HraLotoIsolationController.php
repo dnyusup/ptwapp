@@ -387,11 +387,8 @@ class HraLotoIsolationController extends Controller
         $locationOwner = $permit->locationOwner;
         $locationOwnerEmail = $locationOwner ? $locationOwner->email : null;
 
-        // Get all EHS users (role = bekaert, department = EHS)
-        $ehsUsers = User::where('role', 'bekaert')
-                        ->where('department', 'EHS')
-                        ->pluck('email')
-                        ->toArray();
+        // Get EHS users based on permit's area (or all EHS if no area)
+        $ehsUsers = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
 
         // Build approval URL
         $approvalUrl = route('hra.loto-isolations.show', [$permit, $hraLotoIsolation]);
@@ -529,10 +526,8 @@ class HraLotoIsolationController extends Controller
                     if ($permit->locationOwner) {
                         $ccEmails[] = $permit->locationOwner->email;
                     }
-                    $ehsEmails = User::where('role', 'bekaert')
-                                    ->where('department', 'EHS')
-                                    ->pluck('email')
-                                    ->toArray();
+                    // Get EHS users based on permit's area (or all EHS if no area)
+                    $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
                     $ccEmails = array_merge($ccEmails, $ehsEmails);
 
                     Mail::to($creator->email)
@@ -566,7 +561,7 @@ class HraLotoIsolationController extends Controller
                 'rejected_by' => $user->id,
             ]);
 
-            // Send rejection notification to creator (CC Location Owner)
+            // Send rejection notification to creator (CC Location Owner and EHS)
             $creator = $hraLotoIsolation->user;
             if ($creator) {
                 try {
@@ -574,6 +569,10 @@ class HraLotoIsolationController extends Controller
                     if ($permit->locationOwner) {
                         $ccEmails[] = $permit->locationOwner->email;
                     }
+                    // Add EHS users based on permit's area (or all EHS if no area)
+                    $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+                    $ccEmails = array_merge($ccEmails, $ehsEmails);
+                    $ccEmails = array_unique(array_filter($ccEmails));
                     
                     $mail = Mail::to($creator->email);
                     if (!empty($ccEmails)) {

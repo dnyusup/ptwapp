@@ -380,11 +380,8 @@ class HraWorkAtHeightController extends Controller
             $ccEmails[] = $locationOwner->email;
         }
 
-        // Get all EHS users (role = bekaert, department = EHS)
-        $ehsUsers = User::where('role', 'bekaert')
-                        ->where('department', 'EHS')
-                        ->pluck('email')
-                        ->toArray();
+        // Get EHS users based on permit's area (or all EHS if no area)
+        $ehsUsers = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
 
         // Build approval URL
         $approvalUrl = route('hra.work-at-heights.show', [$permit, $hraWorkAtHeight]);
@@ -457,10 +454,8 @@ class HraWorkAtHeightController extends Controller
                     if ($permit->locationOwner) {
                         $ccEmails[] = $permit->locationOwner->email;
                     }
-                    $ehsEmails = User::where('role', 'bekaert')
-                                    ->where('department', 'EHS')
-                                    ->pluck('email')
-                                    ->toArray();
+                    // Get EHS users based on permit's area (or all EHS if no area)
+                    $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
                     $ccEmails = array_merge($ccEmails, $ehsEmails);
                     $ccEmails = array_unique(array_filter($ccEmails));
 
@@ -498,7 +493,7 @@ class HraWorkAtHeightController extends Controller
                 'rejected_by' => $user->id,
             ]);
 
-            // Send rejection notification to creator (CC Location Owner)
+            // Send rejection notification to creator (CC Location Owner and EHS)
             $creator = $hraWorkAtHeight->user;
             if ($creator) {
                 try {
@@ -506,6 +501,10 @@ class HraWorkAtHeightController extends Controller
                     if ($permit->locationOwner) {
                         $ccEmails[] = $permit->locationOwner->email;
                     }
+                    // Add EHS users based on permit's area (or all EHS if no area)
+                    $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+                    $ccEmails = array_merge($ccEmails, $ehsEmails);
+                    $ccEmails = array_unique(array_filter($ccEmails));
                     
                     $mail = Mail::to($creator->email);
                     if (!empty($ccEmails)) {

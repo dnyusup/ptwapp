@@ -70,10 +70,8 @@ class InspectionController extends Controller
 
             // Send email notification to EHS team
             try {
-                $ehsUsers = \App\Models\User::where('role', 'bekaert')
-                    ->where('department', 'EHS')
-                    ->get();
-                $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
+                // Get EHS users based on permit's area (or all EHS if no area)
+                $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
                 
                 if (count($ehsEmails) > 0) {
                     // Get area/location owner email

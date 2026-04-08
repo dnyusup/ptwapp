@@ -18,6 +18,7 @@ class PermitToWork extends Model
         'work_area_photo',
         'work_description',
         'department',
+        'area_id',
         'responsible_person',
         'responsible_person_email',
         'receiver_name',
@@ -115,6 +116,11 @@ class PermitToWork extends Model
     public function locationOwner()
     {
         return $this->belongsTo(User::class, 'location_owner_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
     }
 
     public function rejectedBy()

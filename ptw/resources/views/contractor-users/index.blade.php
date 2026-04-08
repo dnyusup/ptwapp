@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.sidebar-styles')
 @include('layouts.sidebar')
 
 <!-- Main Content -->
@@ -214,6 +215,5 @@
 }
 </style>
 
-@include('layouts.sidebar-styles')
 @include('layouts.sidebar-scripts')
 @endsection

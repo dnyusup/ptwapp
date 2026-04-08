@@ -56,7 +56,9 @@
         <a class="nav-link" href="#">
             <i class="fas fa-chart-bar"></i>Reports
         </a>
-        <a class="nav-link" href="#">
+        @endif
+        @if(auth()->user()->role === 'administrator' || (auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS'))
+        <a class="nav-link {{ Request::routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.areas.index') }}">
             <i class="fas fa-cog"></i>Settings
         </a>
         @endif

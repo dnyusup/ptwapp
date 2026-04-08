@@ -662,6 +662,19 @@
                     <!-- Location -->
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
+                            <div class="info-item border-start border-success border-3 ps-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="icon-box bg-success bg-opacity-10 text-success me-3 rounded-3">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <label class="form-label fw-bold text-dark mb-0 fs-6">Area</label>
+                                </div>
+                                <div class="ms-5">
+                                    <p class="mb-0 text-dark fw-medium">{{ $permit->area->name ?? 'N/A' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="info-item border-start border-secondary border-3 ps-3">
                                 <div class="d-flex align-items-center mb-2">
                                     <div class="icon-box bg-secondary bg-opacity-10 text-secondary me-3 rounded-3">
@@ -674,6 +687,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Location Owner -->
+                    <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <div class="info-item border-start border-secondary border-3 ps-3">
                                 <div class="d-flex align-items-center mb-2">

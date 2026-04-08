@@ -12,6 +12,7 @@ use App\Models\HraLineBreaking;
 use App\Models\HraExcavation;
 use App\Models\HraConfinedSpace;
 use App\Models\HraExplosiveAtmosphere;
+use App\Models\Area;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
@@ -23,8 +24,9 @@ class TaskController extends Controller
     {
         $currentUser = auth()->user();
         $tasks = $this->getTasksForUser($currentUser);
+        $areas = Area::where('is_active', true)->orderBy('name')->get();
         
-        return view('tasks.index', compact('tasks'));
+        return view('tasks.index', compact('tasks', 'areas'));
     }
 
     /**
@@ -37,7 +39,7 @@ class TaskController extends Controller
         // EHS Approval Tasks
         if ($user->role === 'bekaert' && $user->department === 'EHS') {
             // Permits pending EHS approval
-            $pendingEhsPermits = PermitToWork::with(['permitIssuer', 'receiver'])
+            $pendingEhsPermits = PermitToWork::with(['permitIssuer', 'receiver', 'area'])
                 ->whereIn('status', ['pending_approval', 'resubmitted'])
                 ->where('ehs_approval_status', '!=', 'approved')
                 ->get()
@@ -51,6 +53,8 @@ class TaskController extends Controller
                         'description' => 'Permit needs EHS approval',
                         'company' => $permit->receiver_company_name,
                         'location' => $permit->work_location,
+                        'area_id' => $permit->area_id,
+                        'area_name' => $permit->area->name ?? '',
                         'created_by' => $permit->permitIssuer->name ?? '-',
                         'date' => $permit->created_at,
                         'priority' => 'high',
@@ -62,7 +66,7 @@ class TaskController extends Controller
             $tasks = $tasks->merge($pendingEhsPermits);
 
             // Permits pending extension approval (for EHS to approve)
-            $pendingExtensionEhsPermits = PermitToWork::with(['permitIssuer', 'receiver'])
+            $pendingExtensionEhsPermits = PermitToWork::with(['permitIssuer', 'receiver', 'area'])
                 ->where('status', 'pending_extension_approval')
                 ->get()
                 ->map(function($permit) {
@@ -75,6 +79,8 @@ class TaskController extends Controller
                         'description' => 'Extension request needs EHS approval',
                         'company' => $permit->receiver_company_name,
                         'location' => $permit->work_location,
+                        'area_id' => $permit->area_id,
+                        'area_name' => $permit->area->name ?? '',
                         'created_by' => $permit->permitIssuer->name ?? '-',
                         'date' => $permit->updated_at,
                         'priority' => 'high',
@@ -93,7 +99,7 @@ class TaskController extends Controller
             ];
 
             foreach ($hraModels as $modelName => $modelClass) {
-                $pendingHras = $modelClass::with(['permitToWork', 'user'])
+                $pendingHras = $modelClass::with(['permitToWork.area', 'user'])
                     ->where('ehs_approval', 'pending')
                     ->get()
                     ->map(function($hra) use ($modelName) {
@@ -122,6 +128,8 @@ class TaskController extends Controller
                             'description' => 'HRA ' . $hraType . ' needs EHS approval',
                             'company' => $hra->permitToWork->receiver_company_name ?? '-',
                             'location' => $hra->work_location ?? ($hra->permitToWork->work_location ?? '-'),
+                            'area_id' => $hra->permitToWork->area_id ?? null,
+                            'area_name' => $hra->permitToWork->area->name ?? '',
                             'created_by' => $hra->user->name ?? '-',
                             'date' => $hra->created_at,
                             'priority' => 'high',
@@ -135,7 +143,7 @@ class TaskController extends Controller
         }
 
         // Location Owner Approval Tasks
-        $pendingLocationOwnerPermits = PermitToWork::with(['permitIssuer', 'receiver'])
+        $pendingLocationOwnerPermits = PermitToWork::with(['permitIssuer', 'receiver', 'area'])
             ->whereIn('status', ['pending_approval', 'resubmitted'])
             ->where('location_owner_as_approver', true)
             ->where('location_owner_id', $user->id)
@@ -151,6 +159,8 @@ class TaskController extends Controller
                     'description' => 'Permit needs Location Owner approval',
                     'company' => $permit->receiver_company_name,
                     'location' => $permit->work_location,
+                    'area_id' => $permit->area_id,
+                    'area_name' => $permit->area->name ?? '',
                     'created_by' => $permit->permitIssuer->name ?? '-',
                     'date' => $permit->created_at,
                     'priority' => 'high',
@@ -162,7 +172,7 @@ class TaskController extends Controller
         $tasks = $tasks->merge($pendingLocationOwnerPermits);
 
         // Permit Issuer - Rejected permits that need action
-        $rejectedPermits = PermitToWork::with(['permitIssuer', 'receiver'])
+        $rejectedPermits = PermitToWork::with(['permitIssuer', 'receiver', 'area'])
             ->where('status', 'rejected')
             ->where('permit_issuer_id', $user->id)
             ->get()
@@ -176,6 +186,8 @@ class TaskController extends Controller
                     'description' => 'Permit was rejected - needs revision',
                     'company' => $permit->receiver_company_name,
                     'location' => $permit->work_location,
+                    'area_id' => $permit->area_id,
+                    'area_name' => $permit->area->name ?? '',
                     'created_by' => $permit->permitIssuer->name ?? '-',
                     'date' => $permit->updated_at,
                     'priority' => 'medium',
@@ -187,7 +199,7 @@ class TaskController extends Controller
         $tasks = $tasks->merge($rejectedPermits);
 
         // Permit Issuer - Expired permits that need action (complete or extend)
-        $expiredPermits = PermitToWork::with(['permitIssuer', 'receiver'])
+        $expiredPermits = PermitToWork::with(['permitIssuer', 'receiver', 'area'])
             ->where('status', 'expired')
             ->where('permit_issuer_id', $user->id)
             ->get()
@@ -201,6 +213,8 @@ class TaskController extends Controller
                     'description' => 'Permit has expired - needs to be completed or extended',
                     'company' => $permit->receiver_company_name,
                     'location' => $permit->work_location,
+                    'area_id' => $permit->area_id,
+                    'area_name' => $permit->area->name ?? '',
                     'created_by' => $permit->permitIssuer->name ?? '-',
                     'date' => $permit->end_date,
                     'priority' => 'medium',
@@ -212,7 +226,7 @@ class TaskController extends Controller
         $tasks = $tasks->merge($expiredPermits);
 
         // Permit Issuer - Pending Extension Approval
-        $pendingExtensionPermits = PermitToWork::with(['permitIssuer', 'receiver'])
+        $pendingExtensionPermits = PermitToWork::with(['permitIssuer', 'receiver', 'area'])
             ->where('status', 'pending_extension_approval')
             ->where('permit_issuer_id', $user->id)
             ->get()
@@ -226,6 +240,8 @@ class TaskController extends Controller
                     'description' => 'Extension request pending approval',
                     'company' => $permit->receiver_company_name,
                     'location' => $permit->work_location,
+                    'area_id' => $permit->area_id,
+                    'area_name' => $permit->area->name ?? '',
                     'created_by' => $permit->permitIssuer->name ?? '-',
                     'date' => $permit->updated_at,
                     'priority' => 'medium',
@@ -244,7 +260,7 @@ class TaskController extends Controller
         ];
 
         foreach ($rejectedHraModels as $modelName => $modelClass) {
-            $rejectedHras = $modelClass::with(['permitToWork', 'user'])
+            $rejectedHras = $modelClass::with(['permitToWork.area', 'user'])
                 ->where('ehs_approval', 'rejected')
                 ->where('user_id', $user->id)
                 ->get()
@@ -274,6 +290,8 @@ class TaskController extends Controller
                         'description' => 'HRA was rejected by EHS - needs revision',
                         'company' => $hra->permitToWork->receiver_company_name ?? '-',
                         'location' => $hra->work_location ?? ($hra->permitToWork->work_location ?? '-'),
+                        'area_id' => $hra->permitToWork->area_id ?? null,
+                        'area_name' => $hra->permitToWork->area->name ?? '',
                         'created_by' => $hra->user->name ?? '-',
                         'date' => $hra->updated_at,
                         'priority' => 'high',

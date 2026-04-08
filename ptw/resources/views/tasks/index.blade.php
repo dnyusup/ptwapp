@@ -183,11 +183,19 @@
                 </div>
                 <div class="col-md-9">
                     <div class="row g-2 justify-content-end">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
                                 <input type="text" class="form-control" id="searchInput" placeholder="Search permit, title, company...">
                             </div>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm" id="areaFilter">
+                                <option value="">All Areas</option>
+                                @foreach($areas as $area)
+                                    <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-md-3">
                             <select class="form-select form-select-sm" id="typeFilter">
@@ -236,6 +244,7 @@
                                 data-title="{{ strtolower($task['title']) }}"
                                 data-company="{{ strtolower($task['company'] ?? '') }}"
                                 data-location="{{ strtolower($task['location'] ?? '') }}"
+                                data-area="{{ $task['area_id'] ?? '' }}"
                                 data-creator="{{ strtolower($task['created_by']) }}">
                                 <td class="ps-3">
                                     <span class="badge {{ $task['badge_class'] }}">
@@ -308,6 +317,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const typeFilter = document.getElementById('typeFilter');
+    const areaFilter = document.getElementById('areaFilter');
     const clearBtn = document.getElementById('clearFilter');
     const filterCards = document.querySelectorAll('.filter-card');
     const taskRows = document.querySelectorAll('.task-row');
@@ -316,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function filterTasks() {
         const searchTerm = searchInput.value.toLowerCase();
         const selectedType = typeFilter.value;
+        const selectedArea = areaFilter.value;
         let visibleCount = 0;
 
         taskRows.forEach(row => {
@@ -325,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const title = row.dataset.title;
             const company = row.dataset.company;
             const location = row.dataset.location;
+            const area = row.dataset.area;
             const creator = row.dataset.creator;
 
             // Check type filter
@@ -341,6 +353,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            // Check area filter
+            let areaMatch = true;
+            if (selectedArea) {
+                areaMatch = area === selectedArea;
+            }
+
             // Check search filter
             let searchMatch = true;
             if (searchTerm) {
@@ -351,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
                               creator.includes(searchTerm);
             }
 
-            if (typeMatch && searchMatch) {
+            if (typeMatch && areaMatch && searchMatch) {
                 row.classList.remove('hidden');
                 visibleCount++;
             } else {
@@ -376,10 +394,14 @@ document.addEventListener('DOMContentLoaded', function() {
         filterTasks();
     });
 
+    // Area filter change event
+    areaFilter.addEventListener('change', filterTasks);
+
     // Clear filter button
     clearBtn.addEventListener('click', function() {
         searchInput.value = '';
         typeFilter.value = '';
+        areaFilter.value = '';
         filterCards.forEach(card => card.classList.remove('active'));
         filterTasks();
     });

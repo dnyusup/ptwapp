@@ -314,11 +314,8 @@ class HraHotWorkController extends Controller
                 $ccEmails[] = $locationOwner->email;
             }
             
-            // Get all EHS users (role = bekaert, department = EHS)
-            $ehsUsers = \App\Models\User::where('role', 'bekaert')
-                                      ->where('department', 'EHS')
-                                      ->pluck('email')
-                                      ->toArray();
+            // Get EHS users based on permit's area (or all EHS if no area)
+            $ehsUsers = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
             
             // Build approval URL
             $approvalUrl = route('hra.hot-works.show', [$permit, $hraHotWork]);
@@ -417,11 +414,8 @@ class HraHotWorkController extends Controller
                     $ccRecipients[] = $permit->locationOwner->email;
                 }
                 
-                // Add EHS Team to CC
-                $ehsUsers = \App\Models\User::where('role', 'bekaert')
-                                            ->where('department', 'EHS')
-                                            ->pluck('email')
-                                            ->toArray();
+                // Add EHS Team to CC (based on permit's area or all EHS if no area)
+                $ehsUsers = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
                 $ccRecipients = array_merge($ccRecipients, $ehsUsers);
                 
                 // Remove duplicates and filter out empty emails
@@ -468,13 +462,17 @@ class HraHotWorkController extends Controller
                 // Get HRA creator
                 $hraCreator = $hraHotWork->user;
                 
-                // Get CC recipients: Location Owner
+                // Get CC recipients: Location Owner and EHS
                 $ccRecipients = [];
                 
                 // Add Location Owner to CC
                 if ($permit->locationOwner && $permit->locationOwner->email) {
                     $ccRecipients[] = $permit->locationOwner->email;
                 }
+                
+                // Add EHS users based on permit's area (or all EHS if no area)
+                $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+                $ccRecipients = array_merge($ccRecipients, $ehsEmails);
                 
                 // Remove duplicates and filter out empty emails
                 $ccRecipients = array_unique(array_filter($ccRecipients));

@@ -315,6 +315,26 @@
 
                         <div class="row g-4 mt-2">
                             <div class="col-md-6">
+                                <label for="area_id" class="form-label fw-semibold">
+                                    <i class="fas fa-building me-2 text-success"></i>Area
+                                </label>
+                                <select class="form-select select2-area @error('area_id') is-invalid @enderror" 
+                                        id="area_id" name="area_id">
+                                    <option value="">Select Area</option>
+                                    @foreach($areas as $area)
+                                        <option value="{{ $area->id }}" {{ old('area_id') == $area->id ? 'selected' : '' }}>
+                                            {{ $area->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('area_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mt-2">
+                            <div class="col-md-6">
                                 <label for="work_location" class="form-label fw-semibold">
                                     <i class="fas fa-map-marker-alt me-2 text-warning"></i>Work Location *
                                 </label>
@@ -740,6 +760,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 $(document).ready(function() {
+    // Initialize Select2 for Area with search functionality
+    $('#area_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select Area',
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('body'),
+        dropdownCssClass: 'select2-dropdown-above'
+    }).on('select2:open', function() {
+        $('.select2-dropdown').css({
+            'z-index': '999999',
+            'position': 'absolute'
+        });
+    });
+
     // Initialize Select2 for Location Owner with search functionality
     $('#location_owner_id').select2({
         theme: 'bootstrap-5',

@@ -112,4 +112,13 @@ class User extends Authenticatable
     {
         return $this->belongsTo(KontraktorList::class, 'company_id');
     }
+
+    /**
+     * Get the areas where this user is responsible
+     */
+    public function responsibleAreas()
+    {
+        return $this->belongsToMany(Area::class, 'area_user')
+                    ->withTimestamps();
+    }
 }

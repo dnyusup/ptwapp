@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@include('layouts.sidebar-styles')
 @include('layouts.sidebar')
 
 <!-- Main Content -->
@@ -30,10 +31,10 @@
     <!-- Filter and Search -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" action="{{ route('permits.index') }}" class="row g-3">
-                <div class="col-md-2">
+            <form method="GET" action="{{ route('permits.index') }}" class="row g-3 align-items-end">
+                <div class="col-lg-2 col-md-3">
                     <label for="status" class="form-label">Status</label>
-                    <select name="status" id="status" class="form-select">
+                    <select name="status" id="status" class="form-select" onchange="this.form.submit()">
                         <option value="">All Status</option>
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
@@ -45,35 +46,43 @@
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-lg-2 col-md-3">
                     <label class="form-label">Work Date</label>
                     <div class="d-flex gap-1 align-items-center">
-                        <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From">
+                        <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From" onchange="this.form.submit()">
                         <span class="text-muted">-</span>
-                        <input type="date" name="date_to" id="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To">
+                        <input type="date" name="date_to" id="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To" onchange="this.form.submit()">
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-lg-2 col-md-3">
                     <label for="company" class="form-label">Company</label>
-                    <select name="company" id="company" class="form-select">
+                    <select name="company" id="company" class="form-select" onchange="this.form.submit()">
                         <option value="">All Company</option>
                         @foreach($companies as $company)
                             <option value="{{ $company }}" {{ request('company') == $company ? 'selected' : '' }}>{{ $company }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-lg-2 col-md-3">
+                    <label for="area" class="form-label">Area</label>
+                    <select name="area" id="area" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Area</option>
+                        @foreach($areas as $area)
+                            <option value="{{ $area->id }}" {{ request('area') == $area->id ? 'selected' : '' }}>{{ $area->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3">
                     <label for="search" class="form-label">Search</label>
                     <input type="text" name="search" id="search" class="form-control" 
                            placeholder="Search..." value="{{ request('search') }}">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">&nbsp;</label>
+                <div class="col-lg-2 col-md-3">
                     <div class="d-flex gap-2">
-                        <a href="{{ route('permits.index') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ route('permits.index') }}" class="btn btn-secondary">
                             <i class="fas fa-times"></i> Reset
                         </a>
-                        <a href="{{ route('permits.export', request()->query()) }}" class="btn btn-success btn-sm">
+                        <a href="{{ route('permits.export', request()->query()) }}" class="btn btn-success">
                             <i class="fas fa-download"></i> Download
                         </a>
                     </div>
@@ -90,7 +99,7 @@
                     <i class="fas fa-file-alt me-2"></i>Permits List
                 </h5>
                 <div class="d-flex align-items-center gap-3">
-                    @if(request()->hasAny(['status', 'date_from', 'date_to', 'search', 'company']))
+                    @if(request()->hasAny(['status', 'date_from', 'date_to', 'search', 'company', 'area']))
                         <small class="text-muted">
                             <i class="fas fa-filter me-1"></i>
                             Filtered results: <strong>{{ $permits->total() }}</strong>
@@ -110,6 +119,9 @@
                             @endif
                             @if(request('company'))
                                 <span class="badge bg-warning ms-1">{{ request('company') }}</span>
+                            @endif
+                            @if(request('area'))
+                                <span class="badge bg-success ms-1">Area: {{ $areas->find(request('area'))->name ?? '' }}</span>
                             @endif
                             @if(request('search'))
                                 <span class="badge bg-info ms-1">Search: "{{ request('search') }}"</span>

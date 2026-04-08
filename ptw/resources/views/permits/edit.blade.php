@@ -174,6 +174,26 @@
 
                         <div class="row mb-3">
                             <div class="col-md-6">
+                                <label for="area_id" class="form-label">
+                                    <i class="fas fa-building me-2 text-success"></i>Area
+                                </label>
+                                <select class="form-select @error('area_id') is-invalid @enderror" 
+                                        id="area_id" name="area_id">
+                                    <option value="">Select Area</option>
+                                    @foreach($areas as $area)
+                                        <option value="{{ $area->id }}" {{ old('area_id', $permit->area_id) == $area->id ? 'selected' : '' }}>
+                                            {{ $area->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('area_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
                                 <label for="work_location" class="form-label">Work Location *</label>
                                 <input type="text" class="form-control @error('work_location') is-invalid @enderror" 
                                        id="work_location" name="work_location" 
@@ -572,6 +592,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 $(document).ready(function() {
+    // Initialize Select2 for Area
+    $('#area_id').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select Area',
+        allowClear: true,
+        width: '100%'
+    });
+
     // Initialize Select2 for Location Owner
     $('#location_owner_id').select2({
         theme: 'bootstrap-5',

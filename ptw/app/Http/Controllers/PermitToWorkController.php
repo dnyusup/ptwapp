@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\PermitToWork;
 use App\Models\User;
+use App\Models\Area;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -88,9 +89,17 @@ class PermitToWorkController extends Controller
             $query->where('receiver_company_name', $request->get('company'));
         }
 
+        // Filter by area
+        if ($request->filled('area')) {
+            $query->where('area_id', $request->get('area'));
+        }
+
+        // Get areas for dropdown
+        $areas = Area::where('is_active', true)->orderBy('name')->get();
+
         $permits = $query->latest()->paginate(15)->withQueryString();
 
-        return view('permits.index', compact('permits', 'companies'));
+        return view('permits.index', compact('permits', 'companies', 'areas'));
     }
 
     /**
@@ -106,7 +115,8 @@ class PermitToWorkController extends Controller
         $users = User::where('role', '!=', 'contractor')->get();
         $contractors = User::where('role', 'contractor')->with('company')->get();
         $bekaertUsers = User::where('role', 'bekaert')->select('id', 'name', 'email')->orderBy('name')->get();
-        return view('permits.create', compact('users', 'contractors', 'bekaertUsers'));
+        $areas = Area::where('is_active', true)->orderBy('name')->get();
+        return view('permits.create', compact('users', 'contractors', 'bekaertUsers', 'areas'));
     }
 
     /**
@@ -122,6 +132,7 @@ class PermitToWorkController extends Controller
         $validated = $request->validate([
             'work_title' => 'nullable|string|max:255',
             'department' => 'required|string|max:255', 
+            'area_id' => 'nullable|exists:areas,id',
             'location' => 'nullable|string|max:255',
             'work_location' => 'required|string|max:255',
             'location_owner_id' => 'nullable|exists:users,id',
@@ -192,7 +203,7 @@ class PermitToWorkController extends Controller
             $permit->update(['status' => 'expired']);
         }
         
-        $permit->load(['permitIssuer', 'authorizer', 'receiver', 'locationOwner', 'methodStatement.creator', 'emergencyPlan.creator', 'riskAssessments']);
+        $permit->load(['permitIssuer', 'authorizer', 'receiver', 'locationOwner', 'area', 'methodStatement.creator', 'emergencyPlan.creator', 'riskAssessments']);
         return view('permits.show', compact('permit'));
     }
 
@@ -220,7 +231,8 @@ class PermitToWorkController extends Controller
         $users = User::where('role', '!=', 'contractor')->get();
         $contractors = User::where('role', 'contractor')->with('company')->get();
         $bekaertUsers = User::where('role', 'bekaert')->select('id', 'name', 'email')->orderBy('name')->get();
-        return view('permits.edit', compact('permit', 'users', 'contractors', 'bekaertUsers'));
+        $areas = Area::where('is_active', true)->orderBy('name')->get();
+        return view('permits.edit', compact('permit', 'users', 'contractors', 'bekaertUsers', 'areas'));
     }
 
     /**
@@ -273,6 +285,7 @@ class PermitToWorkController extends Controller
         $validated = $request->validate([
             'work_title' => 'nullable|string|max:255',
             'department' => 'required|string|max:255', 
+            'area_id' => 'nullable|exists:areas,id',
             'location' => 'nullable|string|max:255',
             'work_location' => 'required|string|max:255',
             'location_owner_id' => 'nullable|exists:users,id',
@@ -432,25 +445,31 @@ class PermitToWorkController extends Controller
         // Refresh permit to get updated status
         $permit->refresh();
         
-        // Send notification email to permit creator, CC location owner if exists
+        // Send notification email to permit creator, CC location owner and EHS if exists
         $creatorEmail = $permit->user->email ?? null;
         $creatorName = $permit->user->name ?? '';
         $permit->created_by_name = $creatorName;
-        $ccEmail = null;
+        $ccEmails = [];
         if ($permit->location_owner_id) {
             $locationOwner = \App\Models\User::find($permit->location_owner_id);
             if ($locationOwner && $locationOwner->email) {
-                $ccEmail = $locationOwner->email;
+                $ccEmails[] = $locationOwner->email;
             }
         }
+        // Add EHS users based on permit's area (or all EHS if no area)
+        $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+        $ccEmails = array_merge($ccEmails, $ehsEmails);
+        $ccEmails = array_unique(array_filter($ccEmails));
         
         $message = 'Permit telah disetujui oleh EHS.';
         if ($permit->status === 'active') {
             $message = 'Permit approved and activated successfully! Method Statement has also been approved.';
             if ($creatorEmail) {
-                \Mail::to($creatorEmail)
-                    ->cc($ccEmail)
-                    ->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
+                $mail = \Mail::to($creatorEmail);
+                if (!empty($ccEmails)) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
             }
         } else {
             $message = 'Permit telah disetujui oleh EHS. Menunggu approval dari Location Owner.';
@@ -498,12 +517,17 @@ class PermitToWorkController extends Controller
         if ($permit->status === 'active') {
             $message = 'Permit approved and activated successfully!';
             
-            // Send notification email to permit creator
+            // Send notification email to permit creator (CC EHS)
             $creatorEmail = $permit->user->email ?? null;
             $creatorName = $permit->user->name ?? '';
             $permit->created_by_name = $creatorName;
             if ($creatorEmail) {
-                \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
+                $ccEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+                $mail = \Mail::to($creatorEmail);
+                if (!empty($ccEmails)) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new \App\Mail\PermitApprovalResult($permit, true, 'permit'));
             }
         } else {
             $message = 'Permit telah disetujui oleh Location Owner. Menunggu approval dari EHS.';
@@ -542,12 +566,17 @@ class PermitToWorkController extends Controller
             'rejected_by' => Auth::id(),
         ]);
         
-        // Send notification email to permit creator
+        // Send notification email to permit creator (CC EHS)
         $creatorEmail = $permit->user->email ?? null;
         $creatorName = $permit->user->name ?? '';
         $permit->created_by_name = $creatorName;
         if ($creatorEmail) {
-            \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason'], 'location_owner'));
+            $ccEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+            $mail = \Mail::to($creatorEmail);
+            if (!empty($ccEmails)) {
+                $mail->cc($ccEmails);
+            }
+            $mail->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason'], 'location_owner'));
         }
 
         return redirect()->route('permits.show', $permit)
@@ -607,12 +636,28 @@ class PermitToWorkController extends Controller
             'authorized_at' => null,
         ]);
         
-        // Send notification email to permit creator
+        // Send notification email to permit creator (CC Location Owner and EHS)
         $creatorEmail = $permit->user->email ?? null;
         $creatorName = $permit->user->name ?? '';
         $permit->created_by_name = $creatorName;
         if ($creatorEmail) {
-            \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason']));
+            $ccEmails = [];
+            if ($permit->location_owner_id) {
+                $locationOwner = \App\Models\User::find($permit->location_owner_id);
+                if ($locationOwner && $locationOwner->email) {
+                    $ccEmails[] = $locationOwner->email;
+                }
+            }
+            // Add EHS users based on permit's area (or all EHS if no area)
+            $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+            $ccEmails = array_merge($ccEmails, $ehsEmails);
+            $ccEmails = array_unique(array_filter($ccEmails));
+            
+            $mail = \Mail::to($creatorEmail);
+            if (!empty($ccEmails)) {
+                $mail->cc($ccEmails);
+            }
+            $mail->send(new \App\Mail\PermitApprovalResult($permit, false, 'permit', $validated['rejection_reason']));
         }
 
         return redirect()->route('permits.show', $permit)
@@ -654,10 +699,8 @@ class PermitToWorkController extends Controller
         $locationOwnerNotified = false;
         
         try {
-            // Get EHS users
-            $ehsUsers = \App\Models\User::where('role', 'bekaert')
-                ->where('department', 'EHS')
-                ->get();
+            // Get EHS users based on permit's area (or all EHS if no area)
+            $ehsUsers = \App\Services\EhsEmailService::getEhsUsers($permit->area_id);
             $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
             $ehsCount = $ehsUsers->count();
             
@@ -832,10 +875,8 @@ class PermitToWorkController extends Controller
         $locationOwnerNotified = false;
         
         try {
-            // Get EHS users
-            $ehsUsers = User::where('role', 'bekaert')
-                          ->where('department', 'EHS')
-                          ->get();
+            // Get EHS users based on permit's area (or all EHS if no area)
+            $ehsUsers = \App\Services\EhsEmailService::getEhsUsers($permit->area_id);
             $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
             $ehsCount = $ehsUsers->count();
             
@@ -1071,9 +1112,8 @@ class PermitToWorkController extends Controller
 
         // Try to send email notification, but don't fail if email fails
         try {
-            $ehsUsers = \App\Models\User::where('role', 'bekaert')
-                              ->where('department', 'EHS')
-                              ->get();
+            // Get EHS users based on permit's area (or all EHS if no area)
+            $ehsUsers = \App\Services\EhsEmailService::getEhsUsers($permit->area_id);
             
             $ehsEmails = $ehsUsers->pluck('email')->filter()->unique()->toArray();
             
@@ -1131,10 +1171,17 @@ class PermitToWorkController extends Controller
             
             if ($creatorEmail) {
                 try {
-                    \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, true, 'extension'));
+                    // CC EHS users based on permit's area (or all EHS if no area)
+                    $ccEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+                    $mail = \Mail::to($creatorEmail);
+                    if (!empty($ccEmails)) {
+                        $mail->cc($ccEmails);
+                    }
+                    $mail->send(new \App\Mail\PermitApprovalResult($permit, true, 'extension'));
                     \Log::info('Extension approval email sent successfully', [
                         'permit_id' => $permit->id,
-                        'to' => $creatorEmail
+                        'to' => $creatorEmail,
+                        'cc' => $ccEmails
                     ]);
                 } catch (\Exception $mailException) {
                     \Log::error('Failed to send extension approval email', [
@@ -1200,10 +1247,17 @@ class PermitToWorkController extends Controller
             
             if ($creatorEmail) {
                 try {
-                    \Mail::to($creatorEmail)->send(new \App\Mail\PermitApprovalResult($permit, false, 'extension'));
+                    // CC EHS users based on permit's area (or all EHS if no area)
+                    $ccEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+                    $mail = \Mail::to($creatorEmail);
+                    if (!empty($ccEmails)) {
+                        $mail->cc($ccEmails);
+                    }
+                    $mail->send(new \App\Mail\PermitApprovalResult($permit, false, 'extension'));
                     \Log::info('Extension rejection email sent successfully', [
                         'permit_id' => $permit->id,
-                        'to' => $creatorEmail
+                        'to' => $creatorEmail,
+                        'cc' => $ccEmails
                     ]);
                 } catch (\Exception $mailException) {
                     \Log::error('Failed to send extension rejection email', [
