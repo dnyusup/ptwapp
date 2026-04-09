@@ -418,6 +418,81 @@
         </div>
     </div>
 
+    <!-- Work Schedule Trend Section (Interactive) -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card report-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <h5 class="section-title mb-0"><i class="fas fa-calendar-alt"></i>Work Schedule Trend</h5>
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <div class="btn-group" role="group" id="periodSelector">
+                                <button type="button" class="btn btn-outline-primary btn-sm active" data-period="daily">Daily</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="weekly">Weekly</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="monthly">Monthly</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="yearly">Yearly</button>
+                            </div>
+                            <select class="form-select form-select-sm" id="rangeSelector" style="width: auto;">
+                                <option value="7">Last 7</option>
+                                <option value="14">Last 14</option>
+                                <option value="30" selected>Last 30</option>
+                                <option value="60">Last 60</option>
+                                <option value="90">Last 90</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-secondary" id="refreshTrendBtn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="fas fa-info-circle me-1"></i>Based on work schedule dates, not permit creation dates
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container chart-container-lg" style="height: 400px;">
+                        <canvas id="workScheduleChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HRA Work Schedule Trend Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card report-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <h5 class="section-title mb-0"><i class="fas fa-exclamation-circle"></i>HRA Activities by Work Schedule</h5>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="badge bg-light text-dark" id="hraPeriodLabel">Daily - Last 30</span>
+                            <small class="text-muted">(Synced with above)</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="fas fa-info-circle me-1"></i>HRA count based on actual work dates (start_datetime - end_datetime)
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container chart-container-lg" style="height: 400px;">
+                        <canvas id="hraScheduleChart"></canvas>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center" id="hraLegend">
+                            <span class="badge" style="background-color: rgba(255, 193, 7, 0.8);"><i class="fas fa-hard-hat me-1"></i>Work at Height</span>
+                            <span class="badge" style="background-color: rgba(220, 53, 69, 0.8);"><i class="fas fa-fire me-1"></i>Hot Work</span>
+                            <span class="badge" style="background-color: rgba(23, 162, 184, 0.8);"><i class="fas fa-lock me-1"></i>LOTO/Isolation</span>
+                            <span class="badge" style="background-color: rgba(108, 117, 125, 0.8);"><i class="fas fa-tools me-1"></i>Line Breaking</span>
+                            <span class="badge" style="background-color: rgba(255, 152, 0, 0.8);"><i class="fas fa-hard-hat me-1"></i>Excavation</span>
+                            <span class="badge" style="background-color: rgba(33, 37, 41, 0.8);"><i class="fas fa-door-closed me-1"></i>Confined Space</span>
+                            <span class="badge" style="background-color: rgba(156, 39, 176, 0.8);"><i class="fas fa-bomb me-1"></i>Explosive Atm.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hazard Risk Assessment Section -->
     <div class="row g-4 mb-4">
         <div class="col-12">
@@ -1035,6 +1110,266 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Work Schedule Trend Charts (Interactive)
+    let workScheduleChart = null;
+    let hraScheduleChart = null;
+    let currentPeriod = 'daily';
+    let currentRange = 30;
+
+    const hraColors = {
+        workAtHeight: 'rgba(255, 193, 7, 0.8)',
+        hotWork: 'rgba(220, 53, 69, 0.8)',
+        lotoIsolation: 'rgba(23, 162, 184, 0.8)',
+        lineBreaking: 'rgba(108, 117, 125, 0.8)',
+        excavation: 'rgba(255, 152, 0, 0.8)',
+        confinedSpace: 'rgba(33, 37, 41, 0.8)',
+        explosiveAtmosphere: 'rgba(156, 39, 176, 0.8)',
+    };
+
+    // Initialize work schedule charts
+    async function loadWorkScheduleTrend() {
+        try {
+            const response = await fetch(`{{ route('reports.work-schedule-trend') }}?period=${currentPeriod}&range=${currentRange}`);
+            const data = await response.json();
+
+            // Update period label
+            document.getElementById('hraPeriodLabel').textContent = 
+                `${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)} - Last ${currentRange}`;
+
+            // Update Work Schedule Chart
+            if (workScheduleChart) {
+                workScheduleChart.destroy();
+            }
+
+            workScheduleChart = new Chart(document.getElementById('workScheduleChart'), {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Active Work (Permits)',
+                        data: data.workCounts,
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primaryLight,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: colors.primary,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return `${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}: ${context[0].label}`;
+                                },
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y} permit(s)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            title: {
+                                display: true,
+                                text: 'Number of Permits'
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            title: {
+                                display: true,
+                                text: currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+
+            // Update HRA Schedule Chart
+            if (hraScheduleChart) {
+                hraScheduleChart.destroy();
+            }
+
+            hraScheduleChart = new Chart(document.getElementById('hraScheduleChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Work at Height',
+                            data: data.hraCounts.workAtHeight,
+                            backgroundColor: hraColors.workAtHeight,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        },
+                        {
+                            label: 'Hot Work',
+                            data: data.hraCounts.hotWork,
+                            backgroundColor: hraColors.hotWork,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        },
+                        {
+                            label: 'LOTO/Isolation',
+                            data: data.hraCounts.lotoIsolation,
+                            backgroundColor: hraColors.lotoIsolation,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        },
+                        {
+                            label: 'Line Breaking',
+                            data: data.hraCounts.lineBreaking,
+                            backgroundColor: hraColors.lineBreaking,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        },
+                        {
+                            label: 'Excavation',
+                            data: data.hraCounts.excavation,
+                            backgroundColor: hraColors.excavation,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        },
+                        {
+                            label: 'Confined Space',
+                            data: data.hraCounts.confinedSpace,
+                            backgroundColor: hraColors.confinedSpace,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        },
+                        {
+                            label: 'Explosive Atm.',
+                            data: data.hraCounts.explosiveAtmosphere,
+                            backgroundColor: hraColors.explosiveAtmosphere,
+                            borderRadius: 4,
+                            stack: 'stack0'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            display: false // We have custom legend below
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return `${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}: ${context[0].label}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            title: {
+                                display: true,
+                                text: 'Number of HRA Activities'
+                            }
+                        },
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            title: {
+                                display: true,
+                                text: currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)
+                            }
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error('Error loading work schedule trend:', error);
+        }
+    }
+
+    // Period selector event listeners
+    document.querySelectorAll('#periodSelector button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#periodSelector button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentPeriod = this.dataset.period;
+            
+            // Adjust default range based on period
+            const rangeSelect = document.getElementById('rangeSelector');
+            if (currentPeriod === 'yearly') {
+                rangeSelect.innerHTML = `
+                    <option value="3">Last 3</option>
+                    <option value="5" selected>Last 5</option>
+                    <option value="10">Last 10</option>
+                `;
+                currentRange = 5;
+            } else if (currentPeriod === 'monthly') {
+                rangeSelect.innerHTML = `
+                    <option value="6">Last 6</option>
+                    <option value="12" selected>Last 12</option>
+                    <option value="24">Last 24</option>
+                `;
+                currentRange = 12;
+            } else if (currentPeriod === 'weekly') {
+                rangeSelect.innerHTML = `
+                    <option value="4">Last 4</option>
+                    <option value="8" selected>Last 8</option>
+                    <option value="12">Last 12</option>
+                    <option value="26">Last 26</option>
+                `;
+                currentRange = 8;
+            } else {
+                rangeSelect.innerHTML = `
+                    <option value="7">Last 7</option>
+                    <option value="14">Last 14</option>
+                    <option value="30" selected>Last 30</option>
+                    <option value="60">Last 60</option>
+                    <option value="90">Last 90</option>
+                `;
+                currentRange = 30;
+            }
+            
+            loadWorkScheduleTrend();
+        });
+    });
+
+    // Range selector event listener
+    document.getElementById('rangeSelector').addEventListener('change', function() {
+        currentRange = parseInt(this.value);
+        loadWorkScheduleTrend();
+    });
+
+    // Refresh button
+    document.getElementById('refreshTrendBtn').addEventListener('click', function() {
+        loadWorkScheduleTrend();
+    });
+
+    // Initial load
+    loadWorkScheduleTrend();
 });
 </script>
 

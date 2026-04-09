@@ -9,6 +9,13 @@ use App\Models\User;
 use App\Models\Area;
 use App\Models\KontraktorList;
 use App\Models\Inspection;
+use App\Models\HraWorkAtHeight;
+use App\Models\HraHotWork;
+use App\Models\HraLotoIsolation;
+use App\Models\HraLineBreaking;
+use App\Models\HraExcavation;
+use App\Models\HraConfinedSpace;
+use App\Models\HraExplosiveAtmosphere;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -247,5 +254,194 @@ class ReportsController extends Controller
     {
         // Future implementation
         return redirect()->route('reports.index')->with('info', 'Excel export coming soon!');
+    }
+
+    /**
+     * API endpoint for work schedule trends
+     */
+    public function getWorkScheduleTrend(Request $request)
+    {
+        $period = $request->get('period', 'daily');
+        $dateRange = $request->get('range', 30); // default 30 days/weeks/months
+
+        $data = $this->calculateWorkScheduleTrend($period, $dateRange);
+        
+        return response()->json($data);
+    }
+
+    /**
+     * Calculate work schedule trend based on permit start_date (work schedule, not creation date)
+     */
+    private function calculateWorkScheduleTrend($period, $range)
+    {
+        $now = Carbon::now();
+        $labels = [];
+        $workCounts = [];
+        $hraCounts = [
+            'workAtHeight' => [],
+            'hotWork' => [],
+            'lotoIsolation' => [],
+            'lineBreaking' => [],
+            'excavation' => [],
+            'confinedSpace' => [],
+            'explosiveAtmosphere' => [],
+        ];
+
+        switch ($period) {
+            case 'daily':
+                for ($i = $range - 1; $i >= 0; $i--) {
+                    $date = $now->copy()->subDays($i);
+                    $labels[] = $date->format('d M');
+                    
+                    // Count permits with work scheduled on this date
+                    $workCounts[] = PermitToWork::whereDate('start_date', '<=', $date)
+                        ->whereDate('end_date', '>=', $date)
+                        ->whereIn('status', ['active', 'completed', 'expired'])
+                        ->count();
+                    
+                    // Count HRAs with work scheduled on this date
+                    $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                    $hraCounts['hotWork'][] = HraHotWork::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                    $hraCounts['lotoIsolation'][] = HraLotoIsolation::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                    $hraCounts['lineBreaking'][] = HraLineBreaking::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                    $hraCounts['excavation'][] = HraExcavation::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                    $hraCounts['confinedSpace'][] = HraConfinedSpace::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                    $hraCounts['explosiveAtmosphere'][] = HraExplosiveAtmosphere::whereDate('start_datetime', '<=', $date)
+                        ->whereDate('end_datetime', '>=', $date)
+                        ->count();
+                }
+                break;
+
+            case 'weekly':
+                for ($i = $range - 1; $i >= 0; $i--) {
+                    $weekStart = $now->copy()->subWeeks($i)->startOfWeek();
+                    $weekEnd = $now->copy()->subWeeks($i)->endOfWeek();
+                    $labels[] = $weekStart->format('d M');
+                    
+                    // Count permits with work overlapping this week
+                    $workCounts[] = PermitToWork::where('start_date', '<=', $weekEnd)
+                        ->where('end_date', '>=', $weekStart)
+                        ->whereIn('status', ['active', 'completed', 'expired'])
+                        ->count();
+                    
+                    // Count HRAs with work overlapping this week
+                    $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                    $hraCounts['hotWork'][] = HraHotWork::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                    $hraCounts['lotoIsolation'][] = HraLotoIsolation::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                    $hraCounts['lineBreaking'][] = HraLineBreaking::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                    $hraCounts['excavation'][] = HraExcavation::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                    $hraCounts['confinedSpace'][] = HraConfinedSpace::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                    $hraCounts['explosiveAtmosphere'][] = HraExplosiveAtmosphere::whereDate('start_datetime', '<=', $weekEnd)
+                        ->whereDate('end_datetime', '>=', $weekStart)
+                        ->count();
+                }
+                break;
+
+            case 'monthly':
+                for ($i = $range - 1; $i >= 0; $i--) {
+                    $monthStart = $now->copy()->subMonths($i)->startOfMonth();
+                    $monthEnd = $now->copy()->subMonths($i)->endOfMonth();
+                    $labels[] = $monthStart->format('M Y');
+                    
+                    // Count permits with work overlapping this month
+                    $workCounts[] = PermitToWork::where('start_date', '<=', $monthEnd)
+                        ->where('end_date', '>=', $monthStart)
+                        ->whereIn('status', ['active', 'completed', 'expired'])
+                        ->count();
+                    
+                    // Count HRAs with work overlapping this month
+                    $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                    $hraCounts['hotWork'][] = HraHotWork::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                    $hraCounts['lotoIsolation'][] = HraLotoIsolation::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                    $hraCounts['lineBreaking'][] = HraLineBreaking::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                    $hraCounts['excavation'][] = HraExcavation::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                    $hraCounts['confinedSpace'][] = HraConfinedSpace::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                    $hraCounts['explosiveAtmosphere'][] = HraExplosiveAtmosphere::whereDate('start_datetime', '<=', $monthEnd)
+                        ->whereDate('end_datetime', '>=', $monthStart)
+                        ->count();
+                }
+                break;
+
+            case 'yearly':
+                for ($i = $range - 1; $i >= 0; $i--) {
+                    $yearStart = $now->copy()->subYears($i)->startOfYear();
+                    $yearEnd = $now->copy()->subYears($i)->endOfYear();
+                    $labels[] = $yearStart->format('Y');
+                    
+                    // Count permits with work overlapping this year
+                    $workCounts[] = PermitToWork::where('start_date', '<=', $yearEnd)
+                        ->where('end_date', '>=', $yearStart)
+                        ->whereIn('status', ['active', 'completed', 'expired'])
+                        ->count();
+                    
+                    // Count HRAs with work overlapping this year
+                    $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                    $hraCounts['hotWork'][] = HraHotWork::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                    $hraCounts['lotoIsolation'][] = HraLotoIsolation::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                    $hraCounts['lineBreaking'][] = HraLineBreaking::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                    $hraCounts['excavation'][] = HraExcavation::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                    $hraCounts['confinedSpace'][] = HraConfinedSpace::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                    $hraCounts['explosiveAtmosphere'][] = HraExplosiveAtmosphere::whereDate('start_datetime', '<=', $yearEnd)
+                        ->whereDate('end_datetime', '>=', $yearStart)
+                        ->count();
+                }
+                break;
+        }
+
+        return [
+            'labels' => $labels,
+            'workCounts' => $workCounts,
+            'hraCounts' => $hraCounts,
+            'period' => $period,
+            'range' => $range
+        ];
     }
 }

@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/work-schedule-trend', [ReportsController::class, 'getWorkScheduleTrend'])->name('reports.work-schedule-trend');
     Route::resource('permits', PermitToWorkController::class);
     Route::get('/permits-export', [PermitToWorkController::class, 'export'])->name('permits.export');
     
