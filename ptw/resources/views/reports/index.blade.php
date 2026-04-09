@@ -433,6 +433,44 @@
         </div>
     </div>
 
+    <!-- Work Schedule Trend Charts -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card report-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <h5 class="section-title mb-0"><i class="fas fa-calendar-alt"></i>Work Schedule Trend</h5>
+                        <div class="d-flex gap-2 align-items-center">
+                            <label class="form-label mb-0 text-muted small">Period:</label>
+                            <select id="schedulePeriod" class="form-select form-select-sm" style="width: auto;">
+                                <option value="daily">Daily (30 days)</option>
+                                <option value="weekly" selected>Weekly (12 weeks)</option>
+                                <option value="monthly">Monthly (12 months)</option>
+                                <option value="yearly">Yearly (5 years)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-xl-6">
+                            <h6 class="text-muted mb-3"><i class="fas fa-file-alt me-2"></i>Permit Work Schedule</h6>
+                            <div class="chart-container chart-container-lg">
+                                <canvas id="workScheduleChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <h6 class="text-muted mb-3"><i class="fas fa-exclamation-triangle me-2"></i>HRA Activities by Work Schedule</h6>
+                            <div class="chart-container chart-container-lg">
+                                <canvas id="hraScheduleChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Area & Contractor Charts -->
     <div class="row g-4 mb-4">
         <!-- Permits by Area -->
