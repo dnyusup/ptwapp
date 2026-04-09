@@ -356,22 +356,8 @@
         </div>
     </div>
 
-    <!-- Charts Row 1 -->
+    <!-- Status Distribution & HRA Overview Row -->
     <div class="row g-4 mb-4">
-        <!-- Monthly Permits Chart -->
-        <div class="col-xl-8">
-            <div class="card report-card h-100">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-chart-line"></i>Permits Trend (12 Months)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container chart-container-lg">
-                        <canvas id="monthlyChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Status Distribution -->
         <div class="col-xl-4">
             <div class="card report-card h-100">
@@ -379,124 +365,16 @@
                     <h5 class="section-title mb-0"><i class="fas fa-chart-pie"></i>Status Distribution</h5>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
+                    <div class="chart-container" style="height: 280px;">
                         <canvas id="statusChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Charts Row 2 -->
-    <div class="row g-4 mb-4">
-        <!-- Weekly Trend -->
-        <div class="col-xl-6">
+        <!-- Hazard Risk Assessment Overview -->
+        <div class="col-xl-8">
             <div class="card report-card h-100">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-calendar-week"></i>Weekly Activity</h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="weeklyChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Daily Activity -->
-        <div class="col-xl-6">
-            <div class="card report-card h-100">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-clock"></i>Daily Activity (Last 7 Days)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="dailyChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Work Schedule Trend Section (Interactive) -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card report-card">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <h5 class="section-title mb-0"><i class="fas fa-calendar-alt"></i>Work Schedule Trend</h5>
-                        <div class="d-flex gap-2 align-items-center flex-wrap">
-                            <div class="btn-group" role="group" id="periodSelector">
-                                <button type="button" class="btn btn-outline-primary btn-sm active" data-period="daily">Daily</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="weekly">Weekly</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="monthly">Monthly</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="yearly">Yearly</button>
-                            </div>
-                            <select class="form-select form-select-sm" id="rangeSelector" style="width: auto;">
-                                <option value="7">Last 7</option>
-                                <option value="14">Last 14</option>
-                                <option value="30" selected>Last 30</option>
-                                <option value="60">Last 60</option>
-                                <option value="90">Last 90</option>
-                            </select>
-                            <button class="btn btn-sm btn-outline-secondary" id="refreshTrendBtn">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-muted small mt-2 mb-0">
-                        <i class="fas fa-info-circle me-1"></i>Based on work schedule dates, not permit creation dates
-                    </p>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container chart-container-lg" style="height: 400px;">
-                        <canvas id="workScheduleChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- HRA Work Schedule Trend Section -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card report-card">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <h5 class="section-title mb-0"><i class="fas fa-exclamation-circle"></i>HRA Activities by Work Schedule</h5>
-                        <div class="d-flex gap-2 align-items-center">
-                            <span class="badge bg-light text-dark" id="hraPeriodLabel">Daily - Last 30</span>
-                            <small class="text-muted">(Synced with above)</small>
-                        </div>
-                    </div>
-                    <p class="text-muted small mt-2 mb-0">
-                        <i class="fas fa-info-circle me-1"></i>HRA count based on actual work dates (start_datetime - end_datetime)
-                    </p>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container chart-container-lg" style="height: 400px;">
-                        <canvas id="hraScheduleChart"></canvas>
-                    </div>
-                    <div class="mt-3">
-                        <div class="d-flex flex-wrap gap-2 justify-content-center" id="hraLegend">
-                            <span class="badge" style="background-color: rgba(255, 193, 7, 0.8);"><i class="fas fa-hard-hat me-1"></i>Work at Height</span>
-                            <span class="badge" style="background-color: rgba(220, 53, 69, 0.8);"><i class="fas fa-fire me-1"></i>Hot Work</span>
-                            <span class="badge" style="background-color: rgba(23, 162, 184, 0.8);"><i class="fas fa-lock me-1"></i>LOTO/Isolation</span>
-                            <span class="badge" style="background-color: rgba(108, 117, 125, 0.8);"><i class="fas fa-tools me-1"></i>Line Breaking</span>
-                            <span class="badge" style="background-color: rgba(255, 152, 0, 0.8);"><i class="fas fa-hard-hat me-1"></i>Excavation</span>
-                            <span class="badge" style="background-color: rgba(33, 37, 41, 0.8);"><i class="fas fa-door-closed me-1"></i>Confined Space</span>
-                            <span class="badge" style="background-color: rgba(156, 39, 176, 0.8);"><i class="fas fa-bomb me-1"></i>Explosive Atm.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hazard Risk Assessment Section -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card report-card">
                 <div class="card-header bg-transparent border-0 pt-4 px-4">
                     <h5 class="section-title mb-0"><i class="fas fa-exclamation-triangle"></i>Hazard Risk Assessment (HRA) Overview</h5>
                 </div>
@@ -829,44 +707,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'rgba(246, 211, 101, 0.8)', // yellow
     ];
 
-    // Monthly Chart
-    const monthlyData = @json($permitsByMonth);
-    new Chart(document.getElementById('monthlyChart'), {
-        type: 'line',
-        data: {
-            labels: monthlyData.map(m => m.month),
-            datasets: [{
-                label: 'Permits Created',
-                data: monthlyData.map(m => m.count),
-                borderColor: colors.primary,
-                backgroundColor: colors.primaryLight,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: colors.primary,
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                x: {
-                    grid: { display: false }
-                }
-            }
-        }
-    });
-
     // Status Distribution Chart
     const statusData = @json($permitsByStatus);
     const statusColors = {
@@ -899,71 +739,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             },
             cutout: '60%'
-        }
-    });
-
-    // Weekly Trend Chart
-    const weeklyData = @json($weeklyTrend);
-    new Chart(document.getElementById('weeklyChart'), {
-        type: 'bar',
-        data: {
-            labels: weeklyData.map(w => w.week),
-            datasets: [{
-                label: 'Created',
-                data: weeklyData.map(w => w.created),
-                backgroundColor: colors.primaryLight,
-                borderColor: colors.primary,
-                borderWidth: 2,
-                borderRadius: 4
-            }, {
-                label: 'Completed',
-                data: weeklyData.map(w => w.completed),
-                backgroundColor: colors.successLight,
-                borderColor: colors.success,
-                borderWidth: 2,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-    // Daily Activity Chart
-    const dailyData = @json($dailyActivity);
-    new Chart(document.getElementById('dailyChart'), {
-        type: 'bar',
-        data: {
-            labels: dailyData.map(d => d.day + '\n' + d.date),
-            datasets: [{
-                label: 'Permits',
-                data: dailyData.map(d => d.count),
-                backgroundColor: gradientColors.slice(0, 7),
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                x: { grid: { display: false } }
-            }
         }
     });
 
