@@ -356,6 +356,81 @@
         </div>
     </div>
 
+    <!-- Work Schedule Trend Section (Interactive) -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card report-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <h5 class="section-title mb-0"><i class="fas fa-calendar-alt"></i>Work Schedule Trend</h5>
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <div class="btn-group" role="group" id="periodSelector">
+                                <button type="button" class="btn btn-outline-primary btn-sm active" data-period="daily">Daily</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="weekly">Weekly</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="monthly">Monthly</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="yearly">Yearly</button>
+                            </div>
+                            <select class="form-select form-select-sm" id="rangeSelector" style="width: auto;">
+                                <option value="7">Last 7</option>
+                                <option value="14">Last 14</option>
+                                <option value="30" selected>Last 30</option>
+                                <option value="60">Last 60</option>
+                                <option value="90">Last 90</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-secondary" id="refreshTrendBtn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="fas fa-info-circle me-1"></i>Based on work schedule dates, not permit creation dates
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container chart-container-lg" style="height: 400px;">
+                        <canvas id="workScheduleChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HRA Work Schedule Trend Section -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card report-card">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <h5 class="section-title mb-0"><i class="fas fa-exclamation-circle"></i>HRA Activities by Work Schedule</h5>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="badge bg-light text-dark" id="hraPeriodLabel">Daily - Last 30</span>
+                            <small class="text-muted">(Synced with above)</small>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="fas fa-info-circle me-1"></i>HRA count based on actual work dates (start_datetime - end_datetime)
+                    </p>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container chart-container-lg" style="height: 400px;">
+                        <canvas id="hraScheduleChart"></canvas>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center" id="hraLegend">
+                            <span class="badge" style="background-color: rgba(255, 193, 7, 0.8);"><i class="fas fa-hard-hat me-1"></i>Work at Height</span>
+                            <span class="badge" style="background-color: rgba(220, 53, 69, 0.8);"><i class="fas fa-fire me-1"></i>Hot Work</span>
+                            <span class="badge" style="background-color: rgba(23, 162, 184, 0.8);"><i class="fas fa-lock me-1"></i>LOTO/Isolation</span>
+                            <span class="badge" style="background-color: rgba(108, 117, 125, 0.8);"><i class="fas fa-tools me-1"></i>Line Breaking</span>
+                            <span class="badge" style="background-color: rgba(255, 152, 0, 0.8);"><i class="fas fa-hard-hat me-1"></i>Excavation</span>
+                            <span class="badge" style="background-color: rgba(33, 37, 41, 0.8);"><i class="fas fa-door-closed me-1"></i>Confined Space</span>
+                            <span class="badge" style="background-color: rgba(156, 39, 176, 0.8);"><i class="fas fa-bomb me-1"></i>Explosive Atm.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Status Distribution & HRA Overview Row -->
     <div class="row g-4 mb-4">
         <!-- Status Distribution -->
@@ -426,81 +501,6 @@
                     <div class="mt-4">
                         <div class="chart-container chart-container-sm">
                             <canvas id="hraChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Work Schedule Trend Section (Interactive) -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card report-card">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <h5 class="section-title mb-0"><i class="fas fa-calendar-alt"></i>Work Schedule Trend</h5>
-                        <div class="d-flex gap-2 align-items-center flex-wrap">
-                            <div class="btn-group" role="group" id="periodSelector">
-                                <button type="button" class="btn btn-outline-primary btn-sm active" data-period="daily">Daily</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="weekly">Weekly</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="monthly">Monthly</button>
-                                <button type="button" class="btn btn-outline-primary btn-sm" data-period="yearly">Yearly</button>
-                            </div>
-                            <select class="form-select form-select-sm" id="rangeSelector" style="width: auto;">
-                                <option value="7">Last 7</option>
-                                <option value="14">Last 14</option>
-                                <option value="30" selected>Last 30</option>
-                                <option value="60">Last 60</option>
-                                <option value="90">Last 90</option>
-                            </select>
-                            <button class="btn btn-sm btn-outline-secondary" id="refreshTrendBtn">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-muted small mt-2 mb-0">
-                        <i class="fas fa-info-circle me-1"></i>Based on work schedule dates, not permit creation dates
-                    </p>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container chart-container-lg" style="height: 400px;">
-                        <canvas id="workScheduleChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- HRA Work Schedule Trend Section -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card report-card">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <h5 class="section-title mb-0"><i class="fas fa-exclamation-circle"></i>HRA Activities by Work Schedule</h5>
-                        <div class="d-flex gap-2 align-items-center">
-                            <span class="badge bg-light text-dark" id="hraPeriodLabel">Daily - Last 30</span>
-                            <small class="text-muted">(Synced with above)</small>
-                        </div>
-                    </div>
-                    <p class="text-muted small mt-2 mb-0">
-                        <i class="fas fa-info-circle me-1"></i>HRA count based on actual work dates (start_datetime - end_datetime)
-                    </p>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container chart-container-lg" style="height: 400px;">
-                        <canvas id="hraScheduleChart"></canvas>
-                    </div>
-                    <div class="mt-3">
-                        <div class="d-flex flex-wrap gap-2 justify-content-center" id="hraLegend">
-                            <span class="badge" style="background-color: rgba(255, 193, 7, 0.8);"><i class="fas fa-hard-hat me-1"></i>Work at Height</span>
-                            <span class="badge" style="background-color: rgba(220, 53, 69, 0.8);"><i class="fas fa-fire me-1"></i>Hot Work</span>
-                            <span class="badge" style="background-color: rgba(23, 162, 184, 0.8);"><i class="fas fa-lock me-1"></i>LOTO/Isolation</span>
-                            <span class="badge" style="background-color: rgba(108, 117, 125, 0.8);"><i class="fas fa-tools me-1"></i>Line Breaking</span>
-                            <span class="badge" style="background-color: rgba(255, 152, 0, 0.8);"><i class="fas fa-hard-hat me-1"></i>Excavation</span>
-                            <span class="badge" style="background-color: rgba(33, 37, 41, 0.8);"><i class="fas fa-door-closed me-1"></i>Confined Space</span>
-                            <span class="badge" style="background-color: rgba(156, 39, 176, 0.8);"><i class="fas fa-bomb me-1"></i>Explosive Atm.</span>
                         </div>
                     </div>
                 </div>
