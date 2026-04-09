@@ -564,44 +564,44 @@
     @if($permit->status === 'completed' && $permit->completed_at)
     <div class="page-break">
         <div class="header">
-            <div class="title">LAPORAN PENYELESAIAN PEKERJAAN</div>
+            <div class="title">WORK COMPLETION REPORT</div>
             <div style="font-size: 12px;">{{ $permit->permit_number }}</div>
         </div>
 
         <div class="section">
-            <div class="section-title" style="background-color: #d4edda; color: #155724;">
-                ✓ Pekerjaan Selesai
+            <div class="section-title">
+                Work Completed
             </div>
             
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <th style="width: 50%; background-color: #d4edda; border: 1px solid #ddd; padding: 8px;">Status Pekerjaan</th>
-                    <th style="width: 50%; background-color: #cce5ff; border: 1px solid #ddd; padding: 8px;">Status Area/Instalasi/Peralatan</th>
+                    <th style="width: 50%; background-color: #f5f5f5; border: 1px solid black; padding: 8px;">Status Pekerjaan</th>
+                    <th style="width: 50%; background-color: #f5f5f5; border: 1px solid black; padding: 8px;">Status Area/Instalasi/Peralatan</th>
                 </tr>
                 <tr>
-                    <td style="vertical-align: top; border: 1px solid #ddd; padding: 10px;">
+                    <td style="vertical-align: top; border: 1px solid black; padding: 10px;">
                         <div style="margin-bottom: 8px;">
                             <strong>Status:</strong>
-                            <span style="display: inline-block; padding: 2px 8px; border-radius: 8px; background-color: {{ $permit->work_status === 'selesai' ? '#28a745' : '#ffc107' }}; color: {{ $permit->work_status === 'selesai' ? '#fff' : '#000' }}; font-size: 10px;">
-                                {{ $permit->work_status === 'selesai' ? 'V Selesai' : 'Belum Selesai' }}
+                            <span style="display: inline-block; padding: 2px 8px; border: 1px solid black; font-size: 10px;">
+                                {{ $permit->work_status === 'selesai' ? '[V] Selesai' : '[ ] Belum Selesai' }}
                             </span>
                         </div>
                         @if($permit->work_status_detail)
-                        <div style="background-color: #f8f9fa; padding: 8px; border-left: 3px solid #28a745; margin-top: 8px;">
+                        <div style="background-color: #f5f5f5; padding: 8px; border-left: 3px solid #333; margin-top: 8px;">
                             <small style="color: #666; display: block; margin-bottom: 3px;">Detail:</small>
                             <span style="font-size: 11px;">{{ $permit->work_status_detail }}</span>
                         </div>
                         @endif
                     </td>
-                    <td style="vertical-align: top; border: 1px solid #ddd; padding: 10px;">
+                    <td style="vertical-align: top; border: 1px solid black; padding: 10px;">
                         <div style="margin-bottom: 8px;">
                             <strong>Status:</strong>
-                            <span style="display: inline-block; padding: 2px 8px; border-radius: 8px; background-color: {{ $permit->area_installation_status === 'siap_dioperasikan' ? '#28a745' : '#ffc107' }}; color: {{ $permit->area_installation_status === 'siap_dioperasikan' ? '#fff' : '#000' }}; font-size: 10px;">
-                                {{ $permit->area_installation_status === 'siap_dioperasikan' ? 'V Siap Dioperasikan' : 'Belum Siap' }}
+                            <span style="display: inline-block; padding: 2px 8px; border: 1px solid black; font-size: 10px;">
+                                {{ $permit->area_installation_status === 'siap_dioperasikan' ? '[V] Siap Dioperasikan' : '[ ] Belum Siap' }}
                             </span>
                         </div>
                         @if($permit->area_installation_detail)
-                        <div style="background-color: #f8f9fa; padding: 8px; border-left: 3px solid #17a2b8; margin-top: 8px;">
+                        <div style="background-color: #f5f5f5; padding: 8px; border-left: 3px solid #333; margin-top: 8px;">
                             <small style="color: #666; display: block; margin-bottom: 3px;">Detail:</small>
                             <span style="font-size: 11px;">{{ $permit->area_installation_detail }}</span>
                         </div>
@@ -628,7 +628,7 @@
             <div class="section-title">Tanda Tangan Penyelesaian</div>
             <table style="width: 50%; margin: 10px auto; border-collapse: collapse;">
                 <tr>
-                    <td style="border: 2px solid #28a745; padding: 15px; text-align: center; background-color: #d4edda;">
+                    <td style="border: 2px solid black; padding: 15px; text-align: center; background-color: #f5f5f5;">
                         <div style="font-weight: bold; margin-bottom: 5px;">Diselesaikan Oleh</div>
                         <div style="font-weight: bold; font-size: 14px;">{{ $permit->completedBy->name ?? 'N/A' }}</div>
                         <div style="font-size: 10px; margin-top: 5px;">{{ $permit->completed_at->format('d M Y H:i') }} WIB</div>
