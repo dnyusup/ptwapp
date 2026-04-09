@@ -636,6 +636,88 @@
     </div>
     @endif
 
+    <!-- Page 4: Completion Information (only if status is completed) -->
+    @if($permit->status === 'completed' && $permit->completed_at)
+    <div class="page-break">
+        <div class="header">
+            <div class="company-logo">COMPLETION REPORT</div>
+            <div class="document-title">LAPORAN PENYELESAIAN PEKERJAAN</div>
+            <div class="permit-number">{{ $permit->permit_number }}</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <span style="color: #198754;">✓</span> Pekerjaan Selesai
+            </div>
+            
+            <table class="risk-table">
+                <tr>
+                    <th style="width: 50%; background-color: #d1e7dd;">Status Pekerjaan</th>
+                    <th style="width: 50%; background-color: #cfe2ff;">Status Area/Instalasi/Peralatan</th>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; padding: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <strong>Status:</strong>
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 10px; background-color: {{ $permit->work_status === 'selesai' ? '#198754' : '#ffc107' }}; color: {{ $permit->work_status === 'selesai' ? '#fff' : '#000' }}; font-size: 11px;">
+                                {{ $permit->work_status === 'selesai' ? '✓ Selesai' : '⏱ Belum Selesai' }}
+                            </span>
+                        </div>
+                        @if($permit->work_status_detail)
+                        <div style="background-color: #f8f9fa; padding: 10px; border-left: 3px solid #198754; margin-top: 10px;">
+                            <small style="color: #666; display: block; margin-bottom: 5px;">Detail:</small>
+                            <span>{{ $permit->work_status_detail }}</span>
+                        </div>
+                        @endif
+                    </td>
+                    <td style="vertical-align: top; padding: 15px;">
+                        <div style="margin-bottom: 10px;">
+                            <strong>Status:</strong>
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 10px; background-color: {{ $permit->area_installation_status === 'siap_dioperasikan' ? '#198754' : '#ffc107' }}; color: {{ $permit->area_installation_status === 'siap_dioperasikan' ? '#fff' : '#000' }}; font-size: 11px;">
+                                {{ $permit->area_installation_status === 'siap_dioperasikan' ? '✓ Siap Dioperasikan' : '⚠ Belum Siap' }}
+                            </span>
+                        </div>
+                        @if($permit->area_installation_detail)
+                        <div style="background-color: #f8f9fa; padding: 10px; border-left: 3px solid #0dcaf0; margin-top: 10px;">
+                            <small style="color: #666; display: block; margin-bottom: 5px;">Detail:</small>
+                            <span>{{ $permit->area_installation_detail }}</span>
+                        </div>
+                        @endif
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Informasi Penyelesaian</div>
+            <div class="info-grid">
+                <div class="info-row">
+                    <div class="info-label">Diselesaikan oleh:</div>
+                    <div class="info-value">{{ $permit->completedBy->name ?? 'N/A' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Tanggal Selesai:</div>
+                    <div class="info-value">{{ $permit->completed_at->format('d M Y, H:i') }} WIB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Signature -->
+        <div class="signatures">
+            <div class="signature-grid">
+                <div class="signature-cell" style="width: 50%; float: left;">
+                    <div class="signature-title">Diselesaikan Oleh</div>
+                    <div class="digital-stamp" style="border-color: #198754; background-color: #d1e7dd;">
+                        <div style="font-weight: bold;">{{ $permit->completedBy->name ?? 'N/A' }}</div>
+                        <div style="font-size: 10px; margin-top: 5px;">{{ $permit->completed_at->format('d M Y H:i') }} WIB</div>
+                        <div style="font-size: 9px; color: #666; margin-top: 3px;">Ditandatangani secara elektronik</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="footer">
         <p>This document was generated electronically by the Permit to Work System on {{ now()->format('d M Y H:i:s') }} WIB</p>
         <p>Document Reference: {{ $permit->permit_number }} | Status: {{ strtoupper($permit->status) }}</p>
