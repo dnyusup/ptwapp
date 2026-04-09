@@ -52,8 +52,8 @@
             <i class="fas fa-users"></i>Team
         </a>
         @endif
-        @if(auth()->user()->role === 'administrator')
-        <a class="nav-link" href="#">
+        @if(auth()->user()->role !== 'contractor')
+        <a class="nav-link {{ Request::routeIs('reports.*') ? 'active' : '' }}" href="{{ route('reports.index') }}">
             <i class="fas fa-chart-bar"></i>Reports
         </a>
         @endif
