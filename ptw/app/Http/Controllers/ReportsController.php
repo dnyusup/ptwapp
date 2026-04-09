@@ -287,7 +287,7 @@ class ReportsController extends Controller
                 for ($i = $range - 1; $i >= 0; $i--) {
                     $weekStart = $now->copy()->subWeeks($i)->startOfWeek();
                     $weekEnd = $now->copy()->subWeeks($i)->endOfWeek();
-                    $labels[] = $weekStart->format('d M');
+                    $labels[] = 'Week ' . $weekStart->weekOfYear;
                     
                     // Count permits with work overlapping this week
                     $permits = PermitToWork::where('start_date', '<=', $weekEnd)
