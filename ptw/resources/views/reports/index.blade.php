@@ -356,22 +356,8 @@
         </div>
     </div>
 
-    <!-- Charts Row 1 -->
+    <!-- Status Distribution & HRA Overview Row -->
     <div class="row g-4 mb-4">
-        <!-- Monthly Permits Chart -->
-        <div class="col-xl-8">
-            <div class="card report-card h-100">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-chart-line"></i>Permits Trend (12 Months)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container chart-container-lg">
-                        <canvas id="monthlyChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Status Distribution -->
         <div class="col-xl-4">
             <div class="card report-card h-100">
@@ -379,39 +365,68 @@
                     <h5 class="section-title mb-0"><i class="fas fa-chart-pie"></i>Status Distribution</h5>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
+                    <div class="chart-container" style="height: 280px;">
                         <canvas id="statusChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Charts Row 2 -->
-    <div class="row g-4 mb-4">
-        <!-- Weekly Trend -->
-        <div class="col-xl-6">
+        <!-- Hazard Risk Assessment Overview -->
+        <div class="col-xl-8">
             <div class="card report-card h-100">
                 <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-calendar-week"></i>Weekly Activity</h5>
+                    <h5 class="section-title mb-0"><i class="fas fa-exclamation-triangle"></i>Hazard Risk Assessment (HRA) Overview</h5>
                 </div>
                 <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="weeklyChart"></canvas>
+                    <div class="row g-3">
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-hard-hat me-2 text-warning"></i>Work at Height</span>
+                                <span class="count">{{ $hraWorkAtHeight }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-fire me-2 text-danger"></i>Hot Work</span>
+                                <span class="count">{{ $hraHotWork }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-lock me-2 text-info"></i>LOTO/Isolation</span>
+                                <span class="count">{{ $hraLotoIsolation }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-tools me-2 text-secondary"></i>Line Breaking</span>
+                                <span class="count">{{ $hraLineBreaking }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-hard-hat me-2 text-warning"></i>Excavation</span>
+                                <span class="count">{{ $hraExcavation }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-door-closed me-2 text-dark"></i>Confined Space</span>
+                                <span class="count">{{ $hraConfinedSpace }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-6">
+                            <div class="hra-badge w-100 justify-content-between">
+                                <span><i class="fas fa-bomb me-2 text-danger"></i>Explosive Atm.</span>
+                                <span class="count">{{ $hraExplosiveAtmosphere }}</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Daily Activity -->
-        <div class="col-xl-6">
-            <div class="card report-card h-100">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-clock"></i>Daily Activity (Last 7 Days)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="dailyChart"></canvas>
+                    <div class="mt-4">
+                        <div class="chart-container chart-container-sm">
+                            <canvas id="hraChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -486,68 +501,6 @@
                             <span class="badge" style="background-color: rgba(255, 152, 0, 0.8);"><i class="fas fa-hard-hat me-1"></i>Excavation</span>
                             <span class="badge" style="background-color: rgba(33, 37, 41, 0.8);"><i class="fas fa-door-closed me-1"></i>Confined Space</span>
                             <span class="badge" style="background-color: rgba(156, 39, 176, 0.8);"><i class="fas fa-bomb me-1"></i>Explosive Atm.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hazard Risk Assessment Section -->
-    <div class="row g-4 mb-4">
-        <div class="col-12">
-            <div class="card report-card">
-                <div class="card-header bg-transparent border-0 pt-4 px-4">
-                    <h5 class="section-title mb-0"><i class="fas fa-exclamation-triangle"></i>Hazard Risk Assessment (HRA) Overview</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-hard-hat me-2 text-warning"></i>Work at Height</span>
-                                <span class="count">{{ $hraWorkAtHeight }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-fire me-2 text-danger"></i>Hot Work</span>
-                                <span class="count">{{ $hraHotWork }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-lock me-2 text-info"></i>LOTO/Isolation</span>
-                                <span class="count">{{ $hraLotoIsolation }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-tools me-2 text-secondary"></i>Line Breaking</span>
-                                <span class="count">{{ $hraLineBreaking }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-hard-hat me-2 text-warning"></i>Excavation</span>
-                                <span class="count">{{ $hraExcavation }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-door-closed me-2 text-dark"></i>Confined Space</span>
-                                <span class="count">{{ $hraConfinedSpace }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xl col-md-4 col-6">
-                            <div class="hra-badge w-100 justify-content-between">
-                                <span><i class="fas fa-bomb me-2 text-danger"></i>Explosive Atm.</span>
-                                <span class="count">{{ $hraExplosiveAtmosphere }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="chart-container chart-container-sm">
-                            <canvas id="hraChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -829,44 +782,6 @@ document.addEventListener('DOMContentLoaded', function() {
         'rgba(246, 211, 101, 0.8)', // yellow
     ];
 
-    // Monthly Chart
-    const monthlyData = @json($permitsByMonth);
-    new Chart(document.getElementById('monthlyChart'), {
-        type: 'line',
-        data: {
-            labels: monthlyData.map(m => m.month),
-            datasets: [{
-                label: 'Permits Created',
-                data: monthlyData.map(m => m.count),
-                borderColor: colors.primary,
-                backgroundColor: colors.primaryLight,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: colors.primary,
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                x: {
-                    grid: { display: false }
-                }
-            }
-        }
-    });
-
     // Status Distribution Chart
     const statusData = @json($permitsByStatus);
     const statusColors = {
@@ -899,71 +814,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             },
             cutout: '60%'
-        }
-    });
-
-    // Weekly Trend Chart
-    const weeklyData = @json($weeklyTrend);
-    new Chart(document.getElementById('weeklyChart'), {
-        type: 'bar',
-        data: {
-            labels: weeklyData.map(w => w.week),
-            datasets: [{
-                label: 'Created',
-                data: weeklyData.map(w => w.created),
-                backgroundColor: colors.primaryLight,
-                borderColor: colors.primary,
-                borderWidth: 2,
-                borderRadius: 4
-            }, {
-                label: 'Completed',
-                data: weeklyData.map(w => w.completed),
-                backgroundColor: colors.successLight,
-                borderColor: colors.success,
-                borderWidth: 2,
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-    // Daily Activity Chart
-    const dailyData = @json($dailyActivity);
-    new Chart(document.getElementById('dailyChart'), {
-        type: 'bar',
-        data: {
-            labels: dailyData.map(d => d.day + '\n' + d.date),
-            datasets: [{
-                label: 'Permits',
-                data: dailyData.map(d => d.count),
-                backgroundColor: gradientColors.slice(0, 7),
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(0,0,0,0.05)' }
-                },
-                x: { grid: { display: false } }
-            }
         }
     });
 

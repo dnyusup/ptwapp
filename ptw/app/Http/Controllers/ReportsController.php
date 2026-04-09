@@ -53,7 +53,6 @@ class ReportsController extends Controller
             'activeAreas' => Area::where('is_active', true)->count(),
 
             // Time-based statistics
-            'permitsByMonth' => $this->getPermitsByMonth(),
             'permitsByStatus' => $this->getPermitsByStatus(),
             'permitsByArea' => $this->getPermitsByArea(),
             'permitsByContractor' => $this->getPermitsByContractor(),
@@ -74,10 +73,6 @@ class ReportsController extends Controller
                 ->take(10)
                 ->get(),
 
-            // Trend data
-            'weeklyTrend' => $this->getWeeklyTrend(),
-            'dailyActivity' => $this->getDailyActivity(),
-
             // Top performers
             'topIssuers' => $this->getTopIssuers(),
             'topContractorCompanies' => $this->getTopContractorCompanies(),
@@ -90,22 +85,6 @@ class ReportsController extends Controller
         ];
 
         return view('reports.index', $data);
-    }
-
-    private function getPermitsByMonth()
-    {
-        $months = [];
-        for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
-            $count = PermitToWork::whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->count();
-            $months[] = [
-                'month' => $date->format('M Y'),
-                'count' => $count
-            ];
-        }
-        return $months;
     }
 
     private function getPermitsByStatus()
@@ -149,38 +128,6 @@ class ReportsController extends Controller
             ->limit(10)
             ->get()
             ->toArray();
-    }
-
-    private function getWeeklyTrend()
-    {
-        $weeks = [];
-        for ($i = 7; $i >= 0; $i--) {
-            $weekStart = Carbon::now()->subWeeks($i)->startOfWeek();
-            $weekEnd = Carbon::now()->subWeeks($i)->endOfWeek();
-            
-            $weeks[] = [
-                'week' => $weekStart->format('d M'),
-                'created' => PermitToWork::whereBetween('created_at', [$weekStart, $weekEnd])->count(),
-                'completed' => PermitToWork::where('status', 'completed')
-                    ->whereBetween('completed_at', [$weekStart, $weekEnd])
-                    ->count(),
-            ];
-        }
-        return $weeks;
-    }
-
-    private function getDailyActivity()
-    {
-        $days = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i);
-            $days[] = [
-                'day' => $date->format('D'),
-                'date' => $date->format('d M'),
-                'count' => PermitToWork::whereDate('created_at', $date)->count()
-            ];
-        }
-        return $days;
     }
 
     private function getTopIssuers()
