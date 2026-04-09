@@ -202,16 +202,13 @@ class ReportsController extends Controller
     private function getInspectionStats()
     {
         $totalInspections = Inspection::count();
-        $passedInspections = Inspection::where('is_approved', true)->count();
-        $failedInspections = Inspection::where('is_approved', false)->count();
-        $pendingInspections = Inspection::whereNull('is_approved')->count();
 
         return [
             'total' => $totalInspections,
-            'passed' => $passedInspections,
-            'failed' => $failedInspections,
-            'pending' => $pendingInspections,
-            'passRate' => $totalInspections > 0 ? round(($passedInspections / $totalInspections) * 100, 1) : 0
+            'passed' => 0,
+            'failed' => 0,
+            'pending' => $totalInspections,
+            'passRate' => 0
         ];
     }
 
