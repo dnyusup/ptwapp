@@ -224,6 +224,7 @@ class ReportsController extends Controller
         $now = Carbon::now();
         $labels = [];
         $workCounts = [];
+        $companyBreakdown = []; // Company breakdown for tooltips
         $hraCounts = [
             'workAtHeight' => [],
             'hotWork' => [],
@@ -241,10 +242,21 @@ class ReportsController extends Controller
                     $labels[] = $date->format('d M');
                     
                     // Count permits with work scheduled on this date
-                    $workCounts[] = PermitToWork::whereDate('start_date', '<=', $date)
+                    $permits = PermitToWork::whereDate('start_date', '<=', $date)
                         ->whereDate('end_date', '>=', $date)
                         ->whereIn('status', ['active', 'completed', 'expired'])
-                        ->count();
+                        ->get();
+                    
+                    $workCounts[] = $permits->count();
+                    
+                    // Get company breakdown
+                    $companyBreakdown[] = $permits->groupBy('receiver_company_name')
+                        ->map(function($group) {
+                            return $group->count();
+                        })
+                        ->sortDesc()
+                        ->take(10)
+                        ->toArray();
                     
                     // Count HRAs with work scheduled on this date
                     $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $date)
@@ -278,10 +290,21 @@ class ReportsController extends Controller
                     $labels[] = $weekStart->format('d M');
                     
                     // Count permits with work overlapping this week
-                    $workCounts[] = PermitToWork::where('start_date', '<=', $weekEnd)
+                    $permits = PermitToWork::where('start_date', '<=', $weekEnd)
                         ->where('end_date', '>=', $weekStart)
                         ->whereIn('status', ['active', 'completed', 'expired'])
-                        ->count();
+                        ->get();
+                    
+                    $workCounts[] = $permits->count();
+                    
+                    // Get company breakdown
+                    $companyBreakdown[] = $permits->groupBy('receiver_company_name')
+                        ->map(function($group) {
+                            return $group->count();
+                        })
+                        ->sortDesc()
+                        ->take(10)
+                        ->toArray();
                     
                     // Count HRAs with work overlapping this week
                     $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $weekEnd)
@@ -315,10 +338,21 @@ class ReportsController extends Controller
                     $labels[] = $monthStart->format('M Y');
                     
                     // Count permits with work overlapping this month
-                    $workCounts[] = PermitToWork::where('start_date', '<=', $monthEnd)
+                    $permits = PermitToWork::where('start_date', '<=', $monthEnd)
                         ->where('end_date', '>=', $monthStart)
                         ->whereIn('status', ['active', 'completed', 'expired'])
-                        ->count();
+                        ->get();
+                    
+                    $workCounts[] = $permits->count();
+                    
+                    // Get company breakdown
+                    $companyBreakdown[] = $permits->groupBy('receiver_company_name')
+                        ->map(function($group) {
+                            return $group->count();
+                        })
+                        ->sortDesc()
+                        ->take(10)
+                        ->toArray();
                     
                     // Count HRAs with work overlapping this month
                     $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $monthEnd)
@@ -352,10 +386,21 @@ class ReportsController extends Controller
                     $labels[] = $yearStart->format('Y');
                     
                     // Count permits with work overlapping this year
-                    $workCounts[] = PermitToWork::where('start_date', '<=', $yearEnd)
+                    $permits = PermitToWork::where('start_date', '<=', $yearEnd)
                         ->where('end_date', '>=', $yearStart)
                         ->whereIn('status', ['active', 'completed', 'expired'])
-                        ->count();
+                        ->get();
+                    
+                    $workCounts[] = $permits->count();
+                    
+                    // Get company breakdown
+                    $companyBreakdown[] = $permits->groupBy('receiver_company_name')
+                        ->map(function($group) {
+                            return $group->count();
+                        })
+                        ->sortDesc()
+                        ->take(10)
+                        ->toArray();
                     
                     // Count HRAs with work overlapping this year
                     $hraCounts['workAtHeight'][] = HraWorkAtHeight::whereDate('start_datetime', '<=', $yearEnd)
@@ -386,6 +431,7 @@ class ReportsController extends Controller
         return [
             'labels' => $labels,
             'workCounts' => $workCounts,
+            'companyBreakdown' => $companyBreakdown,
             'hraCounts' => $hraCounts,
             'period' => $period,
             'range' => $range

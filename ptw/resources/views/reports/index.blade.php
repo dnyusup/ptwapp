@@ -752,6 +752,7 @@
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -977,11 +978,17 @@ document.addEventListener('DOMContentLoaded', function() {
         explosiveAtmosphere: 'rgba(156, 39, 176, 0.8)',
     };
 
+    // Store company breakdown data for tooltips
+    let companyBreakdownData = [];
+
     // Initialize work schedule charts
     async function loadWorkScheduleTrend() {
         try {
             const response = await fetch(`{{ route('reports.work-schedule-trend') }}?period=${currentPeriod}&range=${currentRange}`);
             const data = await response.json();
+
+            // Store company breakdown for tooltip access
+            companyBreakdownData = data.companyBreakdown || [];
 
             // Update period label
             document.getElementById('hraPeriodLabel').textContent = 
@@ -1026,7 +1033,25 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return `${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}: ${context[0].label}`;
                                 },
                                 label: function(context) {
-                                    return `${context.dataset.label}: ${context.parsed.y} permit(s)`;
+                                    return `Total Permits: ${context.parsed.y}`;
+                                },
+                                afterBody: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const breakdown = companyBreakdownData[index];
+                                    
+                                    if (!breakdown || Object.keys(breakdown).length === 0) {
+                                        return ['', 'No company data'];
+                                    }
+                                    
+                                    const lines = ['', '── By Company ──'];
+                                    for (const [company, count] of Object.entries(breakdown)) {
+                                        const companyName = company || 'Unknown';
+                                        const displayName = companyName.length > 25 
+                                            ? companyName.substring(0, 22) + '...' 
+                                            : companyName;
+                                        lines.push(`  ${displayName}: ${count}`);
+                                    }
+                                    return lines;
                                 }
                             }
                         }
@@ -1132,6 +1157,50 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return `${currentPeriod.charAt(0).toUpperCase() + currentPeriod.slice(1)}: ${context[0].label}`;
                                 }
                             }
+                        },
+                        datalabels: {
+                            display: function(context) {
+                                // Only show label on the last (top) dataset that has a value
+                                const datasetIndex = context.datasetIndex;
+                                const dataIndex = context.dataIndex;
+                                const chart = context.chart;
+                                const datasets = chart.data.datasets;
+                                
+                                // Calculate total for this bar
+                                let total = 0;
+                                for (let i = 0; i < datasets.length; i++) {
+                                    total += datasets[i].data[dataIndex] || 0;
+                                }
+                                
+                                // Only show if this is the topmost dataset with data and total > 0
+                                if (total === 0) return false;
+                                
+                                // Find the topmost dataset that has data for this bar
+                                for (let i = datasets.length - 1; i >= 0; i--) {
+                                    if (datasets[i].data[dataIndex] > 0) {
+                                        return datasetIndex === i;
+                                    }
+                                }
+                                return false;
+                            },
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4,
+                            color: '#333',
+                            font: {
+                                weight: 'bold',
+                                size: 11
+                            },
+                            formatter: function(value, context) {
+                                // Calculate and show total for this bar
+                                const dataIndex = context.dataIndex;
+                                const datasets = context.chart.data.datasets;
+                                let total = 0;
+                                for (let i = 0; i < datasets.length; i++) {
+                                    total += datasets[i].data[dataIndex] || 0;
+                                }
+                                return total;
+                            }
                         }
                     },
                     scales: {
@@ -1153,7 +1222,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         }
                     }
-                }
+                },
+                plugins: [ChartDataLabels]
             });
 
         } catch (error) {
