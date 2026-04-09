@@ -46,7 +46,7 @@
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-3">
+                <div class="col-lg-3 col-md-4">
                     <label class="form-label">Work Date</label>
                     <div class="d-flex gap-1 align-items-center">
                         <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From" onchange="this.form.submit()">
@@ -63,7 +63,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-3">
+                <div class="col-lg-1 col-md-2">
                     <label for="area" class="form-label">Area</label>
                     <select name="area" id="area" class="form-select" onchange="this.form.submit()">
                         <option value="">All Area</option>
