@@ -145,7 +145,15 @@ class PermitToWorkController extends Controller
             'receiver_email' => 'nullable|email|max:255',
             'receiver_company_name' => 'nullable|string|max:255',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => ['required', 'date', 'after_or_equal:start_date', function($attribute, $value, $fail) use ($request) {
+                if ($request->start_date && $value) {
+                    $start = new \DateTime($request->start_date);
+                    $end = new \DateTime($value);
+                    if ($start->diff($end)->days > 60) {
+                        $fail('Tanggal selesai tidak boleh lebih dari 60 hari setelah tanggal mulai.');
+                    }
+                }
+            }],
             'authorizer_id' => 'nullable|exists:users,id',
             'risk_method_assessment' => 'nullable|in:ya,tidak',
             'chemical_usage_storage' => 'nullable|in:ya,tidak',
@@ -298,7 +306,15 @@ class PermitToWorkController extends Controller
             'receiver_email' => 'nullable|email|max:255',
             'receiver_company_name' => 'nullable|string|max:255',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => ['required', 'date', 'after_or_equal:start_date', function($attribute, $value, $fail) use ($request) {
+                if ($request->start_date && $value) {
+                    $start = new \DateTime($request->start_date);
+                    $end = new \DateTime($value);
+                    if ($start->diff($end)->days > 60) {
+                        $fail('Tanggal selesai tidak boleh lebih dari 60 hari setelah tanggal mulai.');
+                    }
+                }
+            }],
             'authorizer_id' => 'nullable|exists:users,id',
             'risk_method_assessment' => 'nullable|in:ya,tidak',
             'chemical_usage_storage' => 'nullable|in:ya,tidak',
