@@ -1428,76 +1428,97 @@ class PermitToWorkController extends Controller
             }
         ])->latest()->get();
 
-        $filename = 'permits_export_' . date('Y-m-d_His') . '.xls';
+        $today    = \Carbon\Carbon::today();
+        $filename = 'permits_export_' . date('Y-m-d_His') . '.xlsx';
 
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Permits');
+
+        // Header row
         $headers = [
-            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Cache-Control' => 'max-age=0',
+            'A' => 'Permit Number',
+            'B' => 'Work Title',
+            'C' => 'Company/Contractor',
+            'D' => 'Permit Receiver',
+            'E' => 'Location',
+            'F' => 'Location Owner',
+            'G' => 'Start Date',
+            'H' => 'End Date',
+            'I' => 'Days',
+            'J' => 'Target Inspections',
+            'K' => 'Total Inspections',
+            'L' => 'Achievement (%)',
+            'M' => 'Inspections Today',
+            'N' => 'Status',
+            'O' => 'Created By',
+            'P' => 'Permit Issuer',
+            'Q' => 'Created At',
         ];
 
-        $today = \Carbon\Carbon::today();
+        $headerStyle = [
+            'font'      => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF1A3A6B']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+        ];
 
-        $html  = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">';
-        $html .= '<head><meta charset="UTF-8">';
-        $html .= '<style>';
-        $html .= 'th { background-color: #1a3a6b; color: white; font-weight: bold; text-align: center; }';
-        $html .= 'td { vertical-align: middle; }';
-        $html .= '.pct-good { color: green; font-weight: bold; }';
-        $html .= '.pct-mid { color: orange; font-weight: bold; }';
-        $html .= '.pct-bad { color: red; font-weight: bold; }';
-        $html .= '</style></head><body>';
-        $html .= '<table border="1" cellspacing="0" cellpadding="5">';
-        $html .= '<thead><tr>';
-        $html .= '<th>Permit Number</th>';
-        $html .= '<th>Work Title</th>';
-        $html .= '<th>Company/Contractor</th>';
-        $html .= '<th>Permit Receiver</th>';
-        $html .= '<th>Location</th>';
-        $html .= '<th>Location Owner</th>';
-        $html .= '<th>Start Date</th>';
-        $html .= '<th>End Date</th>';
-        $html .= '<th>Days</th>';
-        $html .= '<th>Target Inspections</th>';
-        $html .= '<th>Total Inspections</th>';
-        $html .= '<th>Achievement (%)</th>';
-        $html .= '<th>Inspections Today</th>';
-        $html .= '<th>Status</th>';
-        $html .= '<th>Created By</th>';
-        $html .= '<th>Permit Issuer</th>';
-        $html .= '<th>Created At</th>';
-        $html .= '</tr></thead><tbody>';
-
-        foreach ($permits as $permit) {
-            $days   = $permit->start_date ? $permit->start_date->diffInDays($today) : 0;
-            $target = $days * 2;
-            $count  = $permit->inspections_count ?? 0;
-            $pct    = $target > 0 ? round($count / $target * 100) : 0;
-            $pctClass = $pct >= 100 ? 'pct-good' : ($pct >= 50 ? 'pct-mid' : 'pct-bad');
-
-            $html .= '<tr>';
-            $html .= '<td>' . e($permit->permit_number) . '</td>';
-            $html .= '<td>' . e($permit->work_title) . '</td>';
-            $html .= '<td>' . e($permit->receiver_company_name ?? '-') . '</td>';
-            $html .= '<td>' . e($permit->receiver->name ?? ($permit->receiver_name ?? '-')) . '</td>';
-            $html .= '<td>' . e($permit->work_location ?? '-') . '</td>';
-            $html .= '<td>' . e($permit->locationOwner->name ?? '-') . '</td>';
-            $html .= '<td>' . ($permit->start_date ? $permit->start_date->format('d/m/Y') : '-') . '</td>';
-            $html .= '<td>' . ($permit->end_date ? $permit->end_date->format('d/m/Y') : '-') . '</td>';
-            $html .= '<td style="text-align:center">' . ($permit->start_date ? $days : '-') . '</td>';
-            $html .= '<td style="text-align:center">' . ($permit->start_date ? $target : '-') . '</td>';
-            $html .= '<td style="text-align:center">' . $count . '</td>';
-            $html .= '<td style="text-align:center" class="' . $pctClass . '">' . ($permit->start_date ? $pct . '%' : '-') . '</td>';
-            $html .= '<td style="text-align:center">' . ($permit->inspections_today_count ?? 0) . '</td>';
-            $html .= '<td>' . ucfirst(str_replace('_', ' ', $permit->status)) . '</td>';
-            $html .= '<td>' . e($permit->user->name ?? '-') . '</td>';
-            $html .= '<td>' . e($permit->permitIssuer->name ?? '-') . '</td>';
-            $html .= '<td>' . ($permit->created_at ? $permit->created_at->format('d/m/Y H:i') : '-') . '</td>';
-            $html .= '</tr>';
+        foreach ($headers as $col => $label) {
+            $sheet->setCellValue($col . '1', $label);
+            $sheet->getStyle($col . '1')->applyFromArray($headerStyle);
+            $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        $html .= '</tbody></table></body></html>';
+        // Data rows
+        $row = 2;
+        foreach ($permits as $permit) {
+            $days   = $permit->start_date ? (int) $permit->start_date->diffInDays($today) : null;
+            $target = $days !== null ? $days * 2 : null;
+            $count  = $permit->inspections_count ?? 0;
+            $pct    = ($target > 0) ? round($count / $target * 100) : null;
 
-        return response($html, 200, $headers);
+            $sheet->setCellValue('A' . $row, $permit->permit_number);
+            $sheet->setCellValue('B' . $row, $permit->work_title);
+            $sheet->setCellValue('C' . $row, $permit->receiver_company_name ?? '-');
+            $sheet->setCellValue('D' . $row, $permit->receiver->name ?? ($permit->receiver_name ?? '-'));
+            $sheet->setCellValue('E' . $row, $permit->work_location ?? '-');
+            $sheet->setCellValue('F' . $row, $permit->locationOwner->name ?? '-');
+            $sheet->setCellValue('G' . $row, $permit->start_date ? $permit->start_date->format('d/m/Y') : '-');
+            $sheet->setCellValue('H' . $row, $permit->end_date ? $permit->end_date->format('d/m/Y') : '-');
+            $sheet->setCellValue('I' . $row, $days ?? '-');
+            $sheet->setCellValue('J' . $row, $target ?? '-');
+            $sheet->setCellValue('K' . $row, $count);
+            $sheet->setCellValue('L' . $row, $pct !== null ? $pct . '%' : '-');
+            $sheet->setCellValue('M' . $row, $permit->inspections_today_count ?? 0);
+            $sheet->setCellValue('N' . $row, ucfirst(str_replace('_', ' ', $permit->status)));
+            $sheet->setCellValue('O' . $row, $permit->user->name ?? '-');
+            $sheet->setCellValue('P' . $row, $permit->permitIssuer->name ?? '-');
+            $sheet->setCellValue('Q' . $row, $permit->created_at ? $permit->created_at->format('d/m/Y H:i') : '-');
+
+            // Color achievement column
+            if ($pct !== null) {
+                $argb = $pct >= 100 ? 'FF28A745' : ($pct >= 50 ? 'FFFD7E14' : 'FFDC3545');
+                $sheet->getStyle('L' . $row)->getFont()->getColor()->setARGB($argb);
+                $sheet->getStyle('L' . $row)->getFont()->setBold(true);
+            }
+
+            // Alternate row background
+            if ($row % 2 === 0) {
+                $sheet->getStyle('A' . $row . ':Q' . $row)->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('FFF8F9FA');
+            }
+
+            $row++;
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->stream(function () use ($writer) {
+            $writer->save('php://output');
+        }, 200, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'max-age=0',
+        ]);
     }
 }
