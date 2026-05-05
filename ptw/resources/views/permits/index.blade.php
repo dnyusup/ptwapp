@@ -148,9 +148,9 @@
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th class="text-center">Days</th>
-                                <th class="text-center">Target</th>
+                                <th class="text-center">Inspections Target</th>
                                 <th class="text-center">Inspections</th>
-                                <th class="text-center">Today</th>
+                                <th class="text-center">Inspection Today</th>
                                 <th>Status</th>
                                 <th>Created By</th>
                                 <th class="text-center">Actions</th>
