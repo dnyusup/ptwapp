@@ -26,7 +26,7 @@
                         $canEdit = true;
                     }
                     // User as responsible person in permit
-                    elseif ($currentUser->id === $permit->permit_issuer_id || $currentUser->id === $permit->receiver_id) {
+                    elseif ($currentUser->id == $permit->permit_issuer_id || $currentUser->id == $permit->receiver_id) {
                         $canEdit = true;
                     }
                 @endphp

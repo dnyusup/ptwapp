@@ -1029,7 +1029,7 @@
                                 <a href="{{ route('emergency-plans.show', $permit->permit_number) }}" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-eye me-1"></i>View
                                 </a>
-                                @if($permit->emergencyPlan->status === 'draft' || auth()->user()->role === 'administrator' || (in_array($permit->status, ['rejected']) && $permit->permit_issuer_id === auth()->id()))
+                                @if($permit->emergencyPlan->status === 'draft' || auth()->user()->role === 'administrator')
                                 <a href="{{ route('emergency-plans.edit', $permit->permit_number) }}" class="btn btn-outline-warning btn-sm">
                                     <i class="fas fa-edit me-1"></i>Edit
                                 </a>
