@@ -671,13 +671,21 @@ $(document).ready(function() {
             // Set minimum end_date to same as start_date
             endDateInput.setAttribute('min', startDateInput.value);
             
-            // No maximum end_date limit - users can select any date after start_date
+            // Set maximum end_date to 60 days after start_date
+            const maxDate = new Date(startDate);
+            maxDate.setDate(maxDate.getDate() + 60);
+            const maxDateString = maxDate.toISOString().split('T')[0];
+            endDateInput.setAttribute('max', maxDateString);
+            console.log('Set max date to:', maxDateString);
 
-            // Clear end_date if it's before start_date
+            // Clear end_date if it's before start_date or after 60 days
             if (endDateInput.value) {
                 const currentEndDate = new Date(endDateInput.value);
                 if (currentEndDate < startDate) {
                     console.log('Clearing invalid end date:', endDateInput.value);
+                    endDateInput.value = '';
+                } else if (currentEndDate > maxDate) {
+                    console.log('Clearing end date exceeding 60-day limit:', endDateInput.value);
                     endDateInput.value = '';
                 }
             }
@@ -685,6 +693,7 @@ $(document).ready(function() {
             // Reset end_date constraints if no start_date is selected
             console.log('Resetting constraints');
             endDateInput.removeAttribute('min');
+            endDateInput.removeAttribute('max');
         }
     }
 
@@ -710,6 +719,15 @@ $(document).ready(function() {
                 console.log('Invalid end date detected via input, clearing');
                 this.value = '';
                 alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
+            } else {
+                // Check if end date is more than 60 days after start date
+                const maxDate = new Date(startDate);
+                maxDate.setDate(maxDate.getDate() + 60);
+                if (endDate > maxDate) {
+                    console.log('End date exceeds 60-day limit, clearing');
+                    this.value = '';
+                    alert('Tanggal selesai tidak boleh lebih dari 60 hari setelah tanggal mulai!');
+                }
             }
         }
     });
@@ -724,6 +742,15 @@ $(document).ready(function() {
 
             if (endDate < startDate) {
                 alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
+                endDateInput.value = '';
+                return;
+            }
+            
+            // Check if end date is more than 60 days after start date
+            const maxDate = new Date(startDate);
+            maxDate.setDate(maxDate.getDate() + 60);
+            if (endDate > maxDate) {
+                alert('Tanggal selesai tidak boleh lebih dari 60 hari setelah tanggal mulai!');
                 endDateInput.value = '';
                 return;
             }
