@@ -274,6 +274,22 @@
                                     <td class="info-label">Inspection Date:</td>
                                     <td class="info-value">{{ $inspection->created_at->format('d M Y H:i') }}</td>
                                 </tr>
+                                @if($inspection->inspection_category)
+                                <tr>
+                                    <td class="info-label">Inspection Category:</td>
+                                    <td class="info-value">{{ $inspection->inspection_category }}</td>
+                                </tr>
+                                @endif
+                                @if($inspection->finding_type)
+                                <tr>
+                                    <td class="info-label">Finding Type:</td>
+                                    <td class="info-value">
+                                        <span style="font-weight: bold; color: {{ $inspection->finding_type === 'OK' ? '#28a745' : '#dc3545' }};">
+                                            {{ $inspection->finding_type }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @endif
                             </table>
                             
                             <!-- Findings Section -->

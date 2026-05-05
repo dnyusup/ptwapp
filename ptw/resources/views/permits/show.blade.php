@@ -1881,8 +1881,8 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="inspection_category" class="form-label fw-semibold">Inspection Category</label>
-                            <select class="form-select" id="inspection_category" name="inspection_category">
+                            <label for="inspection_category" class="form-label fw-semibold">Inspection Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="inspection_category" name="inspection_category" required>
                                 <option value="">-- Pilih Kategori --</option>
                                 <option value="Kepatuhan APD">Kepatuhan APD</option>
                                 <option value="Kebersihan/Penempatan Barang/Akses/5R">Kebersihan/Penempatan Barang/Akses/5R</option>
@@ -1895,8 +1895,8 @@
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="finding_type" class="form-label fw-semibold">Finding Type</label>
-                            <select class="form-select" id="finding_type" name="finding_type">
+                            <label for="finding_type" class="form-label fw-semibold">Finding Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="finding_type" name="finding_type" required>
                                 <option value="">-- Pilih Tipe --</option>
                                 <option value="OK">OK</option>
                                 <option value="NOK">NOK</option>

@@ -28,8 +28,8 @@ class InspectionController extends Controller
                 'inspector_name' => 'required|string|max:255',
                 'inspector_email' => 'required|email|max:255', 
                 'findings' => 'required|string',
-                'inspection_category' => 'nullable|string|max:255',
-                'finding_type' => 'nullable|in:OK,NOK',
+                'inspection_category' => 'required|string|max:255',
+                'finding_type' => 'required|in:OK,NOK',
                 'inspection_photo' => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
                 'inspection_photo_data' => 'nullable|string'
             ]);
