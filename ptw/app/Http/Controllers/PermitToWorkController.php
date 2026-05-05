@@ -1421,59 +1421,83 @@ class PermitToWorkController extends Controller
             $query->where('receiver_company_name', $request->get('company'));
         }
 
-        $permits = $query->latest()->get();
+        $permits = $query->withCount([
+            'inspections',
+            'inspections as inspections_today_count' => function ($q) {
+                $q->whereDate('created_at', today());
+            }
+        ])->latest()->get();
 
-        // Create CSV content
-        $filename = 'permits_export_' . date('Y-m-d_His') . '.csv';
-        
+        $filename = 'permits_export_' . date('Y-m-d_His') . '.xls';
+
         $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control' => 'max-age=0',
         ];
 
-        $callback = function() use ($permits) {
-            $file = fopen('php://output', 'w');
-            
-            // Add BOM for Excel UTF-8 compatibility
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Header row
-            fputcsv($file, [
-                'Permit Number',
-                'Work Title',
-                'Company/Contractor',
-                'Permit Receiver',
-                'Location',
-                'Location Owner',
-                'Start Date',
-                'End Date',
-                'Status',
-                'Created By',
-                'Permit Issuer',
-                'Created At'
-            ]);
+        $today = \Carbon\Carbon::today();
 
-            // Data rows
-            foreach ($permits as $permit) {
-                fputcsv($file, [
-                    $permit->permit_number,
-                    $permit->work_title,
-                    $permit->receiver_company_name ?? '-',
-                    $permit->receiver->name ?? ($permit->receiver_name ?? '-'),
-                    $permit->work_location,
-                    $permit->locationOwner->name ?? '-',
-                    $permit->start_date ? \Carbon\Carbon::parse($permit->start_date)->format('d/m/Y') : '-',
-                    $permit->end_date ? \Carbon\Carbon::parse($permit->end_date)->format('d/m/Y') : '-',
-                    ucfirst(str_replace('_', ' ', $permit->status)),
-                    $permit->user->name ?? '-',
-                    $permit->permitIssuer->name ?? '-',
-                    $permit->created_at ? $permit->created_at->format('d/m/Y H:i') : '-'
-                ]);
-            }
+        $html  = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">';
+        $html .= '<head><meta charset="UTF-8">';
+        $html .= '<style>';
+        $html .= 'th { background-color: #1a3a6b; color: white; font-weight: bold; text-align: center; }';
+        $html .= 'td { vertical-align: middle; }';
+        $html .= '.pct-good { color: green; font-weight: bold; }';
+        $html .= '.pct-mid { color: orange; font-weight: bold; }';
+        $html .= '.pct-bad { color: red; font-weight: bold; }';
+        $html .= '</style></head><body>';
+        $html .= '<table border="1" cellspacing="0" cellpadding="5">';
+        $html .= '<thead><tr>';
+        $html .= '<th>Permit Number</th>';
+        $html .= '<th>Work Title</th>';
+        $html .= '<th>Company/Contractor</th>';
+        $html .= '<th>Permit Receiver</th>';
+        $html .= '<th>Location</th>';
+        $html .= '<th>Location Owner</th>';
+        $html .= '<th>Start Date</th>';
+        $html .= '<th>End Date</th>';
+        $html .= '<th>Days</th>';
+        $html .= '<th>Target Inspections</th>';
+        $html .= '<th>Total Inspections</th>';
+        $html .= '<th>Achievement (%)</th>';
+        $html .= '<th>Inspections Today</th>';
+        $html .= '<th>Status</th>';
+        $html .= '<th>Created By</th>';
+        $html .= '<th>Permit Issuer</th>';
+        $html .= '<th>Created At</th>';
+        $html .= '</tr></thead><tbody>';
 
-            fclose($file);
-        };
+        foreach ($permits as $permit) {
+            $days   = $permit->start_date ? $permit->start_date->diffInDays($today) : 0;
+            $target = $days * 2;
+            $count  = $permit->inspections_count ?? 0;
+            $pct    = $target > 0 ? round($count / $target * 100) : 0;
+            $pctClass = $pct >= 100 ? 'pct-good' : ($pct >= 50 ? 'pct-mid' : 'pct-bad');
 
-        return response()->stream($callback, 200, $headers);
+            $html .= '<tr>';
+            $html .= '<td>' . e($permit->permit_number) . '</td>';
+            $html .= '<td>' . e($permit->work_title) . '</td>';
+            $html .= '<td>' . e($permit->receiver_company_name ?? '-') . '</td>';
+            $html .= '<td>' . e($permit->receiver->name ?? ($permit->receiver_name ?? '-')) . '</td>';
+            $html .= '<td>' . e($permit->work_location ?? '-') . '</td>';
+            $html .= '<td>' . e($permit->locationOwner->name ?? '-') . '</td>';
+            $html .= '<td>' . ($permit->start_date ? $permit->start_date->format('d/m/Y') : '-') . '</td>';
+            $html .= '<td>' . ($permit->end_date ? $permit->end_date->format('d/m/Y') : '-') . '</td>';
+            $html .= '<td style="text-align:center">' . ($permit->start_date ? $days : '-') . '</td>';
+            $html .= '<td style="text-align:center">' . ($permit->start_date ? $target : '-') . '</td>';
+            $html .= '<td style="text-align:center">' . $count . '</td>';
+            $html .= '<td style="text-align:center" class="' . $pctClass . '">' . ($permit->start_date ? $pct . '%' : '-') . '</td>';
+            $html .= '<td style="text-align:center">' . ($permit->inspections_today_count ?? 0) . '</td>';
+            $html .= '<td>' . ucfirst(str_replace('_', ' ', $permit->status)) . '</td>';
+            $html .= '<td>' . e($permit->user->name ?? '-') . '</td>';
+            $html .= '<td>' . e($permit->permitIssuer->name ?? '-') . '</td>';
+            $html .= '<td>' . ($permit->created_at ? $permit->created_at->format('d/m/Y H:i') : '-') . '</td>';
+            $html .= '</tr>';
+        }
+
+        $html .= '</tbody></table></body></html>';
+
+        return response($html, 200, $headers);
     }
 }
