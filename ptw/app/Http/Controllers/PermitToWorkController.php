@@ -645,6 +645,7 @@ class PermitToWorkController extends Controller
 
         $permit->update([
             'status' => 'rejected',
+            'ehs_approval_status' => 'rejected',
             'rejection_reason' => $validated['rejection_reason'],
             'rejected_at' => now(),
             'rejected_by' => Auth::id(),

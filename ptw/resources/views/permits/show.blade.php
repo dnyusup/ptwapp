@@ -433,7 +433,7 @@
             </div>
 
             <!-- Approval Status Tracking Card -->
-            @if(in_array($permit->status, ['pending_approval', 'resubmitted', 'active', 'approved']) || $permit->ehs_approval_status || $permit->location_owner_approval_status)
+            @if(in_array($permit->status, ['pending_approval', 'resubmitted', 'active', 'approved', 'rejected']) || $permit->ehs_approval_status || $permit->location_owner_approval_status)
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0 text-white">
@@ -444,9 +444,9 @@
                     <div class="row g-4">
                         <!-- EHS Approval Status -->
                         <div class="col-md-6">
-                            <div class="approval-status-box p-3 rounded-3 border {{ $permit->ehs_approval_status === 'approved' ? 'border-success bg-success bg-opacity-10' : 'bg-light' }}">
+                            <div class="approval-status-box p-3 rounded-3 border {{ $permit->ehs_approval_status === 'approved' ? 'border-success bg-success bg-opacity-10' : ($permit->ehs_approval_status === 'rejected' ? 'border-danger bg-danger bg-opacity-10' : 'bg-light') }}">
                                 <div class="d-flex align-items-center mb-2">
-                                    <div class="icon-box {{ $permit->ehs_approval_status === 'approved' ? 'bg-success text-white' : 'bg-secondary bg-opacity-10 text-secondary' }} me-3">
+                                    <div class="icon-box {{ $permit->ehs_approval_status === 'approved' ? 'bg-success text-white' : ($permit->ehs_approval_status === 'rejected' ? 'bg-danger text-white' : 'bg-secondary bg-opacity-10 text-secondary') }} me-3">
                                         <i class="fas fa-hard-hat"></i>
                                     </div>
                                     <div>
@@ -458,6 +458,16 @@
                                     @if($permit->ehs_approval_status === 'approved')
                                         <span class="badge bg-success">
                                             <i class="fas fa-check me-1"></i>Approved
+                                        </span>
+                                        @if($permit->ehs_approved_at)
+                                            <small class="text-muted d-block mt-1">{{ $permit->ehs_approved_at->format('d M Y, H:i') }}</small>
+                                        @endif
+                                        @if($permit->authorizer)
+                                            <small class="text-muted d-block">oleh {{ $permit->authorizer->name }}</small>
+                                        @endif
+                                    @elseif($permit->ehs_approval_status === 'rejected')
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-times me-1"></i>Ditolak
                                         </span>
                                         @if($permit->ehs_approved_at)
                                             <small class="text-muted d-block mt-1">{{ $permit->ehs_approved_at->format('d M Y, H:i') }}</small>
@@ -481,9 +491,9 @@
                         <!-- Location Owner Approval Status -->
                         @if($permit->location_owner_as_approver && $permit->location_owner_id)
                         <div class="col-md-6">
-                            <div class="approval-status-box p-3 rounded-3 border {{ $permit->location_owner_approval_status === 'approved' ? 'border-success bg-success bg-opacity-10' : 'bg-light' }}">
+                            <div class="approval-status-box p-3 rounded-3 border {{ $permit->location_owner_approval_status === 'approved' ? 'border-success bg-success bg-opacity-10' : ($permit->location_owner_approval_status === 'rejected' ? 'border-danger bg-danger bg-opacity-10' : 'bg-light') }}">
                                 <div class="d-flex align-items-center mb-2">
-                                    <div class="icon-box {{ $permit->location_owner_approval_status === 'approved' ? 'bg-success text-white' : 'bg-secondary bg-opacity-10 text-secondary' }} me-3">
+                                    <div class="icon-box {{ $permit->location_owner_approval_status === 'approved' ? 'bg-success text-white' : ($permit->location_owner_approval_status === 'rejected' ? 'bg-danger text-white' : 'bg-secondary bg-opacity-10 text-secondary') }} me-3">
                                         <i class="fas fa-user-cog"></i>
                                     </div>
                                     <div>
