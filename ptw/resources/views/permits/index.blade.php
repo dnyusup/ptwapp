@@ -173,17 +173,25 @@
                                 <td class="text-center">
                                     @if($permit->start_date)
                                         @php
-                                            $days = $permit->start_date->diffInDays(\Carbon\Carbon::today());
+                                            $days = (int) \Carbon\Carbon::today()->diffInDays($permit->start_date, false) * -1;
                                         @endphp
-                                        {{ $days }}
+                                        @if($days < 1)
+                                            <span class="text-muted fst-italic">Not Started</span>
+                                        @else
+                                            {{ $days }}
+                                        @endif
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
                                     @if($permit->start_date)
-                                        @php $target = $days * 2; @endphp
-                                        {{ $target }}
+                                        @php $target = isset($days) && $days >= 1 ? $days * 2 : 0; @endphp
+                                        @if($days < 1)
+                                            <span class="text-muted fst-italic">Not Started</span>
+                                        @else
+                                            {{ $target }}
+                                        @endif
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
@@ -191,19 +199,20 @@
                                 <td class="text-center">
                                     @php
                                         $count = $permit->inspections_count;
-                                        $pct = (isset($target) && $target > 0) ? round($count / $target * 100) : 0;
+                                        $notStarted = isset($days) && $days < 1;
+                                        $pct = (!$notStarted && isset($target) && $target > 0) ? round($count / $target * 100) : 0;
                                         $pctColor = $pct >= 100 ? 'success' : ($pct >= 50 ? 'warning' : 'danger');
                                     @endphp
                                     @if($count > 0)
                                         <a href="{{ route('inspections.index', $permit->permit_number) }}" class="text-decoration-none">
                                             {{ $count }}
                                         </a>
-                                        @if(isset($target) && $target > 0)
+                                        @if(!$notStarted && isset($target) && $target > 0)
                                             <br><small class="text-{{ $pctColor }}">{{ $pct }}%</small>
                                         @endif
                                     @else
                                         0
-                                        @if(isset($target) && $target > 0)
+                                        @if(!$notStarted && isset($target) && $target > 0)
                                             <br><small class="text-danger">0%</small>
                                         @endif
                                     @endif
