@@ -776,12 +776,19 @@ $(document).ready(function() {
             if (startDateInput.value && endDateInput.value) {
                 const startDate = new Date(startDateInput.value);
                 const endDate = new Date(endDateInput.value);
-                const maxDate = new Date(startDate);
-                maxDate.setDate(maxDate.getDate() + 4);
 
+                if (endDate < startDate) {
+                    e.preventDefault();
+                    alert('Tanggal selesai tidak boleh lebih awal dari tanggal mulai!');
+                    endDateInput.focus();
+                    return false;
+                }
+
+                const maxDate = new Date(startDate);
+                maxDate.setDate(maxDate.getDate() + 60);
                 if (endDate > maxDate) {
                     e.preventDefault();
-                    alert('Tanggal selesai maksimal 5 hari termasuk tanggal mulai!');
+                    alert('Tanggal selesai tidak boleh lebih dari 60 hari setelah tanggal mulai!');
                     endDateInput.focus();
                     return false;
                 }
