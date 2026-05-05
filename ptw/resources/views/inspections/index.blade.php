@@ -64,11 +64,38 @@
     <!-- Inspections List -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="mb-0">
                     <i class="fas fa-clipboard-check me-2 text-primary"></i>Inspection Records
                 </h6>
-                <span class="badge bg-primary">{{ $inspections->count() }} Total</span>
+                <span class="badge bg-primary" id="totalBadge">{{ $inspections->count() }} Total</span>
+            </div>
+            <!-- Filters -->
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <select class="form-select form-select-sm" id="filterCategory">
+                        <option value="">-- All Categories --</option>
+                        <option value="Kepatuhan APD">Kepatuhan APD</option>
+                        <option value="Kebersihan/Penempatan Barang/Akses/5R">Kebersihan/Penempatan Barang/Akses/5R</option>
+                        <option value="Kepatuhan standar Hotwork">Kepatuhan standar Hotwork</option>
+                        <option value="Kepatuhan standar WaH">Kepatuhan standar WaH</option>
+                        <option value="Kepatuhan standar LOTOTO">Kepatuhan standar LOTOTO</option>
+                        <option value="Bahan Kimia">Bahan Kimia</option>
+                        <option value="Lain-lain">Lain-lain</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select form-select-sm" id="filterFindingType">
+                        <option value="">-- All Finding Types --</option>
+                        <option value="OK">OK</option>
+                        <option value="NOK">NOK</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-sm btn-outline-secondary w-100" id="clearFilters">
+                        <i class="fas fa-times me-1"></i>Clear
+                    </button>
+                </div>
             </div>
         </div>
         <div class="card-body p-0">
@@ -77,17 +104,21 @@
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th width="5%">#</th>
-                                <th width="15%">Date & Time</th>
-                                <th width="15%">Inspector</th>
-                                <th width="15%">Email</th>
-                                <th width="35%">Findings</th>
-                                <th width="15%">Foto</th>
+                                <th width="4%">#</th>
+                                <th width="12%">Date & Time</th>
+                                <th width="12%">Inspector</th>
+                                <th width="12%">Email</th>
+                                <th width="20%">Category</th>
+                                <th width="7%">Finding Type</th>
+                                <th width="25%">Findings</th>
+                                <th width="8%">Foto</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($inspections as $index => $inspection)
-                            <tr>
+                            <tr class="inspection-row"
+                                data-category="{{ $inspection->inspection_category }}"
+                                data-finding-type="{{ $inspection->finding_type }}">
                                 <td>{{ $index + 1 }}</td>
                                 <td>
                                     <div class="fw-semibold">{{ $inspection->created_at->format('d M Y') }}</div>
@@ -100,9 +131,27 @@
                                     <small class="text-muted">{{ $inspection->inspector_email }}</small>
                                 </td>
                                 <td>
+                                    @if($inspection->inspection_category)
+                                        <span class="badge bg-light text-dark border" style="white-space: normal; text-align:left;">
+                                            {{ $inspection->inspection_category }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($inspection->finding_type === 'OK')
+                                        <span class="badge bg-success">OK</span>
+                                    @elseif($inspection->finding_type === 'NOK')
+                                        <span class="badge bg-danger">NOK</span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
                                     <div class="inspection-findings">
-                                        {{ Str::limit($inspection->findings, 100) }}
-                                        @if(strlen($inspection->findings) > 100)
+                                        {{ Str::limit($inspection->findings, 80) }}
+                                        @if(strlen($inspection->findings) > 80)
                                             <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#findingModal{{ $inspection->id }}">
                                                 Read more...
                                             </a>
@@ -163,6 +212,22 @@
                         <strong>Email:</strong> {{ $inspection->inspector_email }}
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-md-7">
+                        <strong>Inspection Category:</strong>
+                        {{ $inspection->inspection_category ?? '-' }}
+                    </div>
+                    <div class="col-md-5">
+                        <strong>Finding Type:</strong>
+                        @if($inspection->finding_type === 'OK')
+                            <span class="badge bg-success">OK</span>
+                        @elseif($inspection->finding_type === 'NOK')
+                            <span class="badge bg-danger">NOK</span>
+                        @else
+                            -
+                        @endif
+                    </div>
+                </div>
                 <hr>
                 <div class="mb-3">
                     <strong>Inspection Findings:</strong>
@@ -191,4 +256,45 @@
 @endforeach
 
 @include('layouts.sidebar-scripts')
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filterCategory = document.getElementById('filterCategory');
+    const filterFindingType = document.getElementById('filterFindingType');
+    const clearBtn = document.getElementById('clearFilters');
+    const totalBadge = document.getElementById('totalBadge');
+
+    function applyFilters() {
+        const category = filterCategory.value;
+        const findingType = filterFindingType.value;
+        const rows = document.querySelectorAll('.inspection-row');
+        let visible = 0;
+
+        rows.forEach(function (row) {
+            const rowCategory = row.getAttribute('data-category');
+            const rowFindingType = row.getAttribute('data-finding-type');
+            const matchCategory = !category || rowCategory === category;
+            const matchFindingType = !findingType || rowFindingType === findingType;
+
+            if (matchCategory && matchFindingType) {
+                row.style.display = '';
+                visible++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        totalBadge.textContent = visible + ' Total';
+    }
+
+    filterCategory.addEventListener('change', applyFilters);
+    filterFindingType.addEventListener('change', applyFilters);
+
+    clearBtn.addEventListener('click', function () {
+        filterCategory.value = '';
+        filterFindingType.value = '';
+        applyFilters();
+    });
+});
+</script>
 @endsection
