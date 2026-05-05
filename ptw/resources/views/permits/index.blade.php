@@ -170,18 +170,11 @@
                                 <td>{{ $permit->start_date ? $permit->start_date->format('d M Y') : 'Not set' }}</td>
                                 <td>{{ $permit->end_date ? $permit->end_date->format('d M Y') : 'Not set' }}</td>
                                 <td>
-                                    @if($permit->end_date)
+                                    @if($permit->start_date)
                                         @php
-                                            $today = \Carbon\Carbon::today();
-                                            $diff = $today->diffInDays($permit->end_date, false);
+                                            $days = $permit->start_date->diffInDays(\Carbon\Carbon::today());
                                         @endphp
-                                        @if($diff > 0)
-                                            <span class="badge bg-success">{{ $diff }}d left</span>
-                                        @elseif($diff == 0)
-                                            <span class="badge bg-warning text-dark">Today</span>
-                                        @else
-                                            <span class="badge bg-danger">{{ abs($diff) }}d ago</span>
-                                        @endif
+                                        {{ $days }}
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
@@ -202,6 +195,7 @@
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
+                                <td>
                                     @if($permit->status === 'draft')
                                         <span class="badge bg-secondary">Draft</span>
                                     @elseif($permit->status === 'pending_approval')
