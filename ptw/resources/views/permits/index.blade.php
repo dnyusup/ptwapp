@@ -147,7 +147,8 @@
                                 <th>Location</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>Days</th>
+                                <th class="text-center">Days</th>
+                                <th class="text-center">Target</th>
                                 <th class="text-center">Inspections</th>
                                 <th class="text-center">Today</th>
                                 <th>Status</th>
@@ -169,7 +170,7 @@
                                 <td>{{ $permit->work_location ?: 'Not specified' }}</td>
                                 <td>{{ $permit->start_date ? $permit->start_date->format('d M Y') : 'Not set' }}</td>
                                 <td>{{ $permit->end_date ? $permit->end_date->format('d M Y') : 'Not set' }}</td>
-                                <td>
+                                <td class="text-center">
                                     @if($permit->start_date)
                                         @php
                                             $days = $permit->start_date->diffInDays(\Carbon\Carbon::today());
@@ -180,12 +181,31 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    @if($permit->inspections_count > 0)
-                                        <a href="{{ route('inspections.index', $permit->permit_number) }}" class="badge bg-primary text-decoration-none">
-                                            {{ $permit->inspections_count }}
-                                        </a>
+                                    @if($permit->start_date)
+                                        @php $target = $days * 2; @endphp
+                                        {{ $target }}
                                     @else
-                                        <span class="text-muted">0</span>
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @php
+                                        $count = $permit->inspections_count;
+                                        $pct = (isset($target) && $target > 0) ? round($count / $target * 100) : 0;
+                                        $pctColor = $pct >= 100 ? 'success' : ($pct >= 50 ? 'warning' : 'danger');
+                                    @endphp
+                                    @if($count > 0)
+                                        <a href="{{ route('inspections.index', $permit->permit_number) }}" class="text-decoration-none">
+                                            {{ $count }}
+                                        </a>
+                                        @if(isset($target) && $target > 0)
+                                            <br><small class="text-{{ $pctColor }}">{{ $pct }}%</small>
+                                        @endif
+                                    @else
+                                        0
+                                        @if(isset($target) && $target > 0)
+                                            <br><small class="text-danger">0%</small>
+                                        @endif
                                     @endif
                                 </td>
                                 <td class="text-center">
