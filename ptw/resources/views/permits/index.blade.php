@@ -147,6 +147,9 @@
                                 <th>Location</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
+                                <th>Days</th>
+                                <th class="text-center">Inspections</th>
+                                <th class="text-center">Today</th>
                                 <th>Status</th>
                                 <th>Created By</th>
                                 <th class="text-center">Actions</th>
@@ -167,6 +170,38 @@
                                 <td>{{ $permit->start_date ? $permit->start_date->format('d M Y') : 'Not set' }}</td>
                                 <td>{{ $permit->end_date ? $permit->end_date->format('d M Y') : 'Not set' }}</td>
                                 <td>
+                                    @if($permit->end_date)
+                                        @php
+                                            $today = \Carbon\Carbon::today();
+                                            $diff = $today->diffInDays($permit->end_date, false);
+                                        @endphp
+                                        @if($diff > 0)
+                                            <span class="badge bg-success">{{ $diff }}d left</span>
+                                        @elseif($diff == 0)
+                                            <span class="badge bg-warning text-dark">Today</span>
+                                        @else
+                                            <span class="badge bg-danger">{{ abs($diff) }}d ago</span>
+                                        @endif
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($permit->inspections_count > 0)
+                                        <a href="{{ route('inspections.index', $permit->permit_number) }}" class="badge bg-primary text-decoration-none">
+                                            {{ $permit->inspections_count }}
+                                        </a>
+                                    @else
+                                        <span class="text-muted">0</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($permit->inspections_today_count > 0)
+                                        <span class="badge bg-info">{{ $permit->inspections_today_count }}</span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
                                     @if($permit->status === 'draft')
                                         <span class="badge bg-secondary">Draft</span>
                                     @elseif($permit->status === 'pending_approval')

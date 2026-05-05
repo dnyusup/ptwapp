@@ -97,7 +97,12 @@ class PermitToWorkController extends Controller
         // Get areas for dropdown
         $areas = Area::where('is_active', true)->orderBy('name')->get();
 
-        $permits = $query->latest()->paginate(15)->withQueryString();
+        $permits = $query->withCount([
+            'inspections',
+            'inspections as inspections_today_count' => function ($q) {
+                $q->whereDate('created_at', today());
+            }
+        ])->latest()->paginate(15)->withQueryString();
 
         return view('permits.index', compact('permits', 'companies', 'areas'));
     }
