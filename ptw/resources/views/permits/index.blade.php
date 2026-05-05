@@ -173,9 +173,10 @@
                                 <td class="text-center">
                                     @if($permit->start_date)
                                         @php
-                                            $days = (int) \Carbon\Carbon::today()->diffInDays($permit->start_date, false) * -1;
+                                            $rawDays = (int) \Carbon\Carbon::today()->diffInDays($permit->start_date, false) * -1;
+                                            $days = $rawDays < 0 ? $rawDays : $rawDays + 1;
                                         @endphp
-                                        @if($days < 1)
+                                        @if($days <= 0)
                                             <span class="text-muted fst-italic">Not Started</span>
                                         @else
                                             {{ $days }}
@@ -186,8 +187,8 @@
                                 </td>
                                 <td class="text-center">
                                     @if($permit->start_date)
-                                        @php $target = isset($days) && $days >= 1 ? $days * 2 : 0; @endphp
-                                        @if($days < 1)
+                                        @php $target = isset($days) && $days > 0 ? $days * 2 : 0; @endphp
+                                        @if($days <= 0)
                                             <span class="text-muted fst-italic">Not Started</span>
                                         @else
                                             {{ $target }}
@@ -199,7 +200,7 @@
                                 <td class="text-center">
                                     @php
                                         $count = $permit->inspections_count;
-                                        $notStarted = isset($days) && $days < 1;
+                                        $notStarted = isset($days) && $days <= 0;
                                         $pct = (!$notStarted && isset($target) && $target > 0) ? round($count / $target * 100) : 0;
                                         $pctColor = $pct >= 100 ? 'success' : ($pct >= 50 ? 'warning' : 'danger');
                                     @endphp
