@@ -270,12 +270,16 @@
                             </div>
                         </div>
 
+                        @php
+                            $startVal = old('start_date', $permit->start_date ? $permit->start_date->format('Y-m-d') : '');
+                            $maxEndDate = $startVal ? \Carbon\Carbon::parse($startVal)->addDays(60)->format('Y-m-d') : '';
+                        @endphp
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="start_date" class="form-label">Start Date *</label>
                                 <input type="date" class="form-control @error('start_date') is-invalid @enderror" 
                                        id="start_date" name="start_date" 
-                                       value="{{ old('start_date', $permit->start_date ? $permit->start_date->format('Y-m-d') : '') }}" 
+                                       value="{{ $startVal }}" 
                                        min="{{ date('Y-m-d') }}" required>
                                 <div class="form-text">
                                     <small class="text-muted">Tidak dapat memilih tanggal sebelum hari ini</small>
@@ -288,7 +292,12 @@
                                 <label for="end_date" class="form-label">End Date *</label>
                                 <input type="date" class="form-control @error('end_date') is-invalid @enderror" 
                                        id="end_date" name="end_date" 
-                                       value="{{ old('end_date', $permit->end_date ? $permit->end_date->format('Y-m-d') : '') }}" required>
+                                       value="{{ old('end_date', $permit->end_date ? $permit->end_date->format('Y-m-d') : '') }}"
+                                       min="{{ $startVal }}"
+                                       max="{{ $maxEndDate }}" required>
+                                <div class="form-text">
+                                    <small class="text-muted">Maksimal 60 hari setelah tanggal mulai</small>
+                                </div>
                                 @error('end_date')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
