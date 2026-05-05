@@ -1090,7 +1090,7 @@ class PermitToWorkController extends Controller
 
         // Simplified validation - calculate max date properly
         $originalEndDate = \Carbon\Carbon::parse($permit->end_date);
-        $maxExtensionDate = $originalEndDate->copy()->addDays(5);
+        $maxExtensionDate = $originalEndDate->copy()->addDays(60);
         
         $validated = $request->validate([
             'end_date' => [

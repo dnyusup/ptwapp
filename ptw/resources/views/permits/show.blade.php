@@ -2422,10 +2422,10 @@ document.getElementById('inspectionModal').addEventListener('hidden.bs.modal', f
 // Extend Permit Modal functionality
 document.addEventListener('DOMContentLoaded', function() {
     @if($permit->status === 'expired' && ($permit->permit_issuer_id == auth()->id() || auth()->user()->role === 'administrator'))
-    // Calculate max extend date (5 days after current end date)
+    // Calculate max extend date (60 days after current end date)
     const endDate = new Date('{{ $permit->end_date->format('Y-m-d') }}');
     const maxDate = new Date(endDate);
-    maxDate.setDate(maxDate.getDate() + 5);
+    maxDate.setDate(maxDate.getDate() + 60);
     
     // Set min date to current end date + 1 day
     const minDate = new Date(endDate);
@@ -2622,7 +2622,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-warning">
                         <i class="fas fa-info-circle me-2"></i>
                         <strong>Current End Date:</strong> {{ $permit->end_date->format('d M Y') }}<br>
-                        <small>You can extend this permit up to <strong>5 days</strong> from the original end date.</small>
+                        <small>You can extend this permit up to <strong>60 days</strong> from the original end date.</small>
                     </div>
                     
                     <div class="mb-3">
@@ -2633,7 +2633,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                name="end_date" 
                                required>
                         <div class="form-text">
-                            Maximum date: {{ $permit->end_date->addDays(5)->format('d M Y') }}
+                            Maximum date: {{ $permit->end_date->addDays(60)->format('d M Y') }}
                         </div>
                     </div>
                     
