@@ -174,7 +174,9 @@
                                     @if($permit->start_date)
                                         @php
                                             $rawDays = (int) \Carbon\Carbon::today()->diffInDays($permit->start_date, false) * -1;
-                                            $days = $rawDays < 0 ? $rawDays : $rawDays + 1;
+                                            $daysElapsed = $rawDays < 0 ? $rawDays : $rawDays + 1;
+                                            $maxDays = $permit->end_date ? (int) $permit->start_date->diffInDays($permit->end_date) + 1 : null;
+                                            $days = ($maxDays !== null && $daysElapsed > $maxDays) ? $maxDays : $daysElapsed;
                                         @endphp
                                         @if($days <= 0)
                                             <span class="text-muted fst-italic">Not Started</span>
