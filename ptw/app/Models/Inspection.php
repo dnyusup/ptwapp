@@ -11,6 +11,8 @@ class Inspection extends Model
         'inspector_name', 
         'inspector_email',
         'findings',
+        'inspection_category',
+        'finding_type',
         'photo_path'
     ];
 

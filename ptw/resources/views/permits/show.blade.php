@@ -1879,6 +1879,32 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="inspection_category" class="form-label fw-semibold">Inspection Category</label>
+                            <select class="form-select" id="inspection_category" name="inspection_category">
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="Kepatuhan APD">Kepatuhan APD</option>
+                                <option value="Kebersihan/Penempatan Barang/Akses/5R">Kebersihan/Penempatan Barang/Akses/5R</option>
+                                <option value="Kepatuhan standar Hotwork">Kepatuhan standar Hotwork</option>
+                                <option value="Kepatuhan standar WaH">Kepatuhan standar WaH</option>
+                                <option value="Kepatuhan standar LOTOTO">Kepatuhan standar LOTOTO</option>
+                                <option value="Bahan Kimia">Bahan Kimia</option>
+                                <option value="Lain-lain">Lain-lain</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="finding_type" class="form-label fw-semibold">Finding Type</label>
+                            <select class="form-select" id="finding_type" name="finding_type">
+                                <option value="">-- Pilih Tipe --</option>
+                                <option value="OK">OK</option>
+                                <option value="NOK">NOK</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="findings" class="form-label fw-semibold">Inspection Findings <span class="text-danger">*</span></label>
                         <textarea class="form-control" id="findings" name="findings" rows="6" 
