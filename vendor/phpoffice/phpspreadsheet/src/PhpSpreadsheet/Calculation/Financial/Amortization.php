@@ -9,6 +9,8 @@ use PhpOffice\PhpSpreadsheet\Calculation\Functions;
 
 class Amortization
 {
+    private const ROUNDING_ADJUSTMENT = (PHP_VERSION_ID < 80400) ? 0 : 1e-14;
+
     /**
      * AMORDEGRC.
      *
@@ -54,7 +56,9 @@ class Amortization
         $salvage = Functions::flattenSingleValue($salvage);
         $period = Functions::flattenSingleValue($period);
         $rate = Functions::flattenSingleValue($rate);
-        $basis = Functions::flattenSingleValue($basis) ?? FinancialConstants::BASIS_DAYS_PER_YEAR_NASD;
+        $basis = ($basis === null)
+            ? FinancialConstants::BASIS_DAYS_PER_YEAR_NASD
+            : Functions::flattenSingleValue($basis);
 
         try {
             $cost = FinancialValidations::validateFloat($cost);
@@ -78,7 +82,7 @@ class Amortization
         $amortiseCoeff = self::getAmortizationCoefficient($rate);
 
         $rate *= $amortiseCoeff;
-        $rate = (float) (string) $rate; // ugly way to avoid rounding problem
+        $rate += self::ROUNDING_ADJUSTMENT;
         $fNRate = round($yearFrac * $rate * $cost, 0);
         $cost -= $fNRate;
         $fRest = $cost - $salvage;
@@ -139,7 +143,9 @@ class Amortization
         $salvage = Functions::flattenSingleValue($salvage);
         $period = Functions::flattenSingleValue($period);
         $rate = Functions::flattenSingleValue($rate);
-        $basis = Functions::flattenSingleValue($basis) ?? FinancialConstants::BASIS_DAYS_PER_YEAR_NASD;
+        $basis = ($basis === null)
+            ? FinancialConstants::BASIS_DAYS_PER_YEAR_NASD
+            : Functions::flattenSingleValue($basis);
 
         try {
             $cost = FinancialValidations::validateFloat($cost);
@@ -167,13 +173,9 @@ class Amortization
         if (
             $basis == FinancialConstants::BASIS_DAYS_PER_YEAR_ACTUAL
             && $yearFrac < 1
+            && DateTimeExcel\Helpers::isLeapYear(Functions::scalar($purchasedYear))
         ) {
-            $temp = Functions::scalar($purchasedYear);
-            if (is_int($temp) || is_string($temp)) {
-                if (DateTimeExcel\Helpers::isLeapYear($temp)) {
-                    $yearFrac *= 365 / 366;
-                }
-            }
+            $yearFrac *= 365 / 366;
         }
 
         $f0Rate = $yearFrac * $rate * $cost;
