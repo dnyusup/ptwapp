@@ -14,9 +14,6 @@
                 <p>Welcome back, {{ auth()->user()->name }}!</p>
             </div>
             <div class="d-flex gap-2 align-items-center">
-                <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
-                    <i class="fas fa-sync-alt me-2"></i>Refresh
-                </button>
                 <div class="form-check form-switch mb-0 d-flex align-items-center gap-2 px-2 py-1 border rounded"
                      style="background: {{ $myDashboard ? '#fff3cd' : '#f8f9fa' }}; border-color: {{ $myDashboard ? '#ffc107' : '#dee2e6' }} !important; cursor: pointer;"
                      onclick="toggleMyDashboard()" title="Tampilkan hanya permit milik Anda">
@@ -28,6 +25,9 @@
                         <i class="fas fa-user me-1"></i>My Dashboard
                     </label>
                 </div>
+                <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
                 <a href="{{ route('permits.create') }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus me-2"></i>New Permit
                 </a>
