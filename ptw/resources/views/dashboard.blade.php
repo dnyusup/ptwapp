@@ -13,10 +13,21 @@
                 <h2>Dashboard</h2>
                 <p>Welcome back, {{ auth()->user()->name }}!</p>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
                 <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
                     <i class="fas fa-sync-alt me-2"></i>Refresh
                 </button>
+                <div class="form-check form-switch mb-0 d-flex align-items-center gap-2 px-2 py-1 border rounded"
+                     style="background: {{ $myDashboard ? '#fff3cd' : '#f8f9fa' }}; border-color: {{ $myDashboard ? '#ffc107' : '#dee2e6' }} !important; cursor: pointer;"
+                     onclick="toggleMyDashboard()" title="Tampilkan hanya permit milik Anda">
+                    <input class="form-check-input mt-0" type="checkbox" id="myDashboardToggle"
+                           {{ $myDashboard ? 'checked' : '' }} onclick="event.stopPropagation(); toggleMyDashboard()"
+                           style="cursor: pointer;">
+                    <label class="form-check-label mb-0 small fw-semibold" for="myDashboardToggle"
+                           style="cursor: pointer; color: {{ $myDashboard ? '#856404' : '#6c757d' }}; white-space: nowrap;">
+                        <i class="fas fa-user me-1"></i>My Dashboard
+                    </label>
+                </div>
                 <a href="{{ route('permits.create') }}" class="btn btn-primary btn-sm">
                     <i class="fas fa-plus me-2"></i>New Permit
                 </a>
@@ -359,4 +370,17 @@
 </div>
 
 @include('layouts.sidebar-scripts')
+
+<script>
+function toggleMyDashboard() {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('my_dashboard') === '1') {
+        url.searchParams.delete('my_dashboard');
+    } else {
+        url.searchParams.set('my_dashboard', '1');
+    }
+    window.location.href = url.toString();
+}
+</script>
+
 @endsection
