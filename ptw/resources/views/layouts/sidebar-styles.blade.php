@@ -150,6 +150,7 @@
             list-style: none;
             flex: 1;
             overflow-y: auto;
+            overflow-x: hidden;
             min-height: 0; /* Important for flex scrolling */
         }
 
@@ -196,7 +197,7 @@
             color: white !important;
             background: rgba(255, 255, 255, 0.15);
             border-left-color: #60a5fa;
-            transform: translateX(5px);
+            padding-left: 30px;
         }
 
         .sidebar .nav-link.active {
