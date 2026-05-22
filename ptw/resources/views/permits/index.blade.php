@@ -173,12 +173,22 @@
                                 <td class="text-center">
                                     @if($permit->start_date)
                                         @php
-                                            $rawDays = (int) \Carbon\Carbon::today()->diffInDays($permit->start_date, false) * -1;
-                                            $daysElapsed = $rawDays < 0 ? $rawDays : $rawDays + 1;
-                                            $maxDays = $permit->end_date ? (int) $permit->start_date->diffInDays($permit->end_date) + 1 : null;
-                                            $days = ($maxDays !== null && $daysElapsed > $maxDays) ? $maxDays : $daysElapsed;
+                                            $today = \Carbon\Carbon::today();
+                                            $startDate = $permit->start_date->copy()->startOfDay();
+                                            $notStarted = $today->lt($startDate);
+                                            if ($notStarted) {
+                                                $days = 0;
+                                            } else {
+                                                $days = collect(\Carbon\CarbonPeriod::create($startDate, $today))
+                                                    ->filter(fn($d) => $d->isWeekday())->count();
+                                                if ($permit->end_date) {
+                                                    $maxDays = collect(\Carbon\CarbonPeriod::create($startDate, $permit->end_date->copy()->startOfDay()))
+                                                        ->filter(fn($d) => $d->isWeekday())->count();
+                                                    if ($days > $maxDays) $days = $maxDays;
+                                                }
+                                            }
                                         @endphp
-                                        @if($days <= 0)
+                                        @if($notStarted)
                                             <span class="text-muted fst-italic">Not Started</span>
                                         @else
                                             {{ $days }}
