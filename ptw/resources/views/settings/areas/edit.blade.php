@@ -160,6 +160,7 @@
         </div>
     </div>
 </div>
+@include('layouts.sidebar-scripts')
 @endsection
 
 @push('scripts')
