@@ -549,7 +549,7 @@ form .btn-danger:hover,
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
-        padding: 1rem;
+        padding: 80px 15px 20px 15px;
     }
     
     .sidebar {

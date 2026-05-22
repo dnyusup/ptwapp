@@ -8,12 +8,12 @@
 <div class="main-content">
     <!-- Header Dashboard -->
     <div class="dashboard-header">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
             <div>
                 <h2>Dashboard</h2>
                 <p>Welcome back, {{ auth()->user()->name }}!</p>
             </div>
-            <div class="d-flex gap-2 align-items-center">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
                 <div class="form-check form-switch mb-0 d-flex align-items-center gap-2 px-2 py-1 border rounded"
                      style="background: {{ $myDashboard ? '#fff3cd' : '#f8f9fa' }}; border-color: {{ $myDashboard ? '#ffc107' : '#dee2e6' }} !important; cursor: pointer;"
                      onclick="toggleMyDashboard()" title="Tampilkan hanya permit milik Anda">
