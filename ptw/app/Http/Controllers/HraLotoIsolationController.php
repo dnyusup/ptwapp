@@ -155,10 +155,20 @@ class HraLotoIsolationController extends Controller
             'permit_number' => $permit->permit_number,
             'user_id' => Auth::id(),
             'status' => 'draft',
+            'created_via' => $this->detectDevice($request),
         ]));
 
         return redirect()->route('hra.loto-isolations.show', [$permit, $hraLotoIsolation])
                         ->with('success', 'HRA LOTO/Isolation created successfully with permit number: ' . $hraPermitNumber);
+    }
+
+    private function detectDevice(Request $request): string
+    {
+        $ua = strtolower($request->userAgent() ?? '');
+        foreach (['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'opera mini', 'opera mobi'] as $kw) {
+            if (str_contains($ua, $kw)) return 'Mobile';
+        }
+        return 'Desktop';
     }
 
     /**

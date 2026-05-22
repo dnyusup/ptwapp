@@ -109,6 +109,7 @@ class HraWorkAtHeight extends Model
         'rejection_reason',
         'rejected_at',
         'rejected_by',
+        'created_via',
     ];
 
     protected $casts = [

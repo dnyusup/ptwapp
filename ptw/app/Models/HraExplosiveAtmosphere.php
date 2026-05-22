@@ -23,6 +23,7 @@ class HraExplosiveAtmosphere extends Model
         'end_datetime',
         'work_description',
         'status',
+        'created_via',
     ];
 
     protected $casts = [

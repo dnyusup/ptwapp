@@ -268,6 +268,14 @@
                             <div class="mt-2 p-3 bg-light rounded">{{ $hraHotWork->work_description ?? '-' }}</div>
                         </div>
                     </div>
+                    @if($hraHotWork->created_via)
+                    <div class="mt-2 pt-2 border-top">
+                        <small class="text-muted">
+                            <i class="fas fa-{{ $hraHotWork->created_via === 'Mobile' ? 'mobile-alt' : 'desktop' }} me-1"></i>
+                            Dibuat dari: <strong>{{ $hraHotWork->created_via }}</strong>
+                        </small>
+                    </div>
+                    @endif
                 </div>
             </div>
 

@@ -252,7 +252,6 @@
                     <div class="mt-2 p-3 bg-light rounded">{{ $hraLotoIsolation->work_description }}</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <strong>Status:</strong>
                     <div class="mt-1">
                         @if($hraLotoIsolation->status == 'draft')
                             <span class="badge bg-secondary">Draft</span>
@@ -269,6 +268,14 @@
                     <strong>Created At:</strong>
                     <div class="mt-1">{{ $hraLotoIsolation->created_at->format('d/m/Y H:i') }}</div>
                 </div>
+                @if($hraLotoIsolation->created_via)
+                <div class="col-12">
+                    <small class="text-muted">
+                        <i class="fas fa-{{ $hraLotoIsolation->created_via === 'Mobile' ? 'mobile-alt' : 'desktop' }} me-1"></i>
+                        Dibuat dari: <strong>{{ $hraLotoIsolation->created_via }}</strong>
+                    </small>
+                </div>
+                @endif
             </div>
         </div>
     </div>

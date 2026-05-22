@@ -91,10 +91,20 @@ class HraExcavationController extends Controller
             'end_datetime' => $validated['end_datetime'],
             'work_description' => $validated['work_description'],
             'status' => 'draft',
+            'created_via' => $this->detectDevice($request),
         ]);
 
         return redirect()->route('permits.show', $permit)
                         ->with('success', 'HRA Excavation created successfully with permit number: ' . $hraPermitNumber);
+    }
+
+    private function detectDevice(Request $request): string
+    {
+        $ua = strtolower($request->userAgent() ?? '');
+        foreach (['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'opera mini', 'opera mobi'] as $kw) {
+            if (str_contains($ua, $kw)) return 'Mobile';
+        }
+        return 'Desktop';
     }
 
     /**

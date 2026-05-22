@@ -244,6 +244,14 @@
                     <div class="mt-2 p-3 bg-light rounded">{{ $hraWorkAtHeight->work_description }}</div>
                 </div>
             </div>
+            @if($hraWorkAtHeight->created_via)
+            <div class="mt-2 pt-2 border-top">
+                <small class="text-muted">
+                    <i class="fas fa-{{ $hraWorkAtHeight->created_via === 'Mobile' ? 'mobile-alt' : 'desktop' }} me-1"></i>
+                    Dibuat dari: <strong>{{ $hraWorkAtHeight->created_via }}</strong>
+                </small>
+            </div>
+            @endif
         </div>
     </div>
 

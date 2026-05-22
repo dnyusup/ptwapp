@@ -135,11 +135,21 @@ class HraHotWorkController extends Controller
         $validated['permit_to_work_id'] = $permit->id;
         $validated['permit_number'] = $permit->permit_number;
         $validated['user_id'] = auth()->id(); // Add current user as creator
+        $validated['created_via'] = $this->detectDevice($request);
         
         $hraPermit = HraHotWork::create($validated);
         
         return redirect()->route('hra.hot-works.show', [$permit, $hraPermit])
             ->with('success', 'HRA Hot Work permit created successfully!');
+    }
+
+    private function detectDevice(Request $request): string
+    {
+        $ua = strtolower($request->userAgent() ?? '');
+        foreach (['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'opera mini', 'opera mobi'] as $kw) {
+            if (str_contains($ua, $kw)) return 'Mobile';
+        }
+        return 'Desktop';
     }
 
     /**
