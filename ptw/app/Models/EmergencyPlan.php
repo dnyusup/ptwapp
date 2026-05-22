@@ -29,7 +29,8 @@ class EmergencyPlan extends Model
         'alat_keselamatan_digunakan',
         'deskripsi_rencana_penyelamatan',
         'status',
-        'created_by'
+        'created_by',
+        'created_via'
     ];
 
     protected $casts = [

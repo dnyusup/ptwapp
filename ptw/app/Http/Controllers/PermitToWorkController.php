@@ -192,6 +192,7 @@ class PermitToWorkController extends Controller
             $validated['work_area_photo'] = $path;
         }
 
+        $validated['created_via'] = $this->detectDevice($request);
         $permit = PermitToWork::create($validated);
 
         // Check if user wants to submit for approval immediately
@@ -199,6 +200,7 @@ class PermitToWorkController extends Controller
             $permit->update([
                 'status' => 'pending_approval',
                 'issued_at' => now(),
+                'issued_via' => $this->detectDevice($request),
             ]);
             return redirect()->route('permits.show', $permit)->with('success', 'Permit created and submitted for approval successfully!');
         }
@@ -425,6 +427,7 @@ class PermitToWorkController extends Controller
         $permit->update([
             'status' => 'pending_approval',
             'issued_at' => now(),
+            'issued_via' => $this->detectDevice($request),
         ]);
 
         return redirect()->route('permits.show', $permit)
@@ -461,7 +464,7 @@ class PermitToWorkController extends Controller
         ]);
         
         // Check if all required approvals are done
-        $this->checkAndActivatePermit($permit);
+        $this->checkAndActivatePermit($permit, $this->detectDevice($request));
         
         // Refresh permit to get updated status
         $permit->refresh();
@@ -529,7 +532,7 @@ class PermitToWorkController extends Controller
         ]);
         
         // Check if all required approvals are done
-        $this->checkAndActivatePermit($permit);
+        $this->checkAndActivatePermit($permit, $this->detectDevice($request));
         
         // Refresh permit to get updated status
         $permit->refresh();
@@ -585,6 +588,7 @@ class PermitToWorkController extends Controller
             'rejection_reason' => 'Ditolak oleh Location Owner: ' . $validated['rejection_reason'],
             'rejected_at' => now(),
             'rejected_by' => Auth::id(),
+            'rejected_via' => $this->detectDevice($request),
         ]);
         
         // Send notification email to permit creator (CC EHS)
@@ -607,7 +611,7 @@ class PermitToWorkController extends Controller
     /**
      * Check if all required approvals are done and activate permit
      */
-    private function checkAndActivatePermit(PermitToWork $permit)
+    private function checkAndActivatePermit(PermitToWork $permit, string $device = null)
     {
         // Check if EHS has approved
         $ehsApproved = $permit->ehs_approval_status === 'approved';
@@ -618,7 +622,11 @@ class PermitToWorkController extends Controller
         
         // If all required approvals are done, activate the permit
         if ($ehsApproved && $locationOwnerApproved) {
-            $permit->update(['status' => 'active']);
+            $updateData = ['status' => 'active'];
+            if ($device) {
+                $updateData['authorized_via'] = $device;
+            }
+            $permit->update($updateData);
             
             // Also approve method statement if exists
             if ($permit->methodStatement && $permit->methodStatement->status !== 'approved') {
@@ -654,6 +662,7 @@ class PermitToWorkController extends Controller
             'rejection_reason' => $validated['rejection_reason'],
             'rejected_at' => now(),
             'rejected_by' => Auth::id(),
+            'rejected_via' => $this->detectDevice($request),
             'authorizer_id' => null,
             'authorized_at' => null,
         ]);
@@ -770,6 +779,20 @@ class PermitToWorkController extends Controller
 
         return redirect()->route('permits.show', $permit)
             ->with('success', $message);
+    }
+
+    /**
+     * Detect whether request came from a mobile or desktop device.
+     */
+    private function detectDevice(Request $request): string
+    {
+        $ua = strtolower($request->userAgent() ?? '');
+        foreach (['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'opera mini', 'opera mobi'] as $kw) {
+            if (str_contains($ua, $kw)) {
+                return 'Mobile';
+            }
+        }
+        return 'Desktop';
     }
 
     /**
@@ -1032,7 +1055,8 @@ class PermitToWorkController extends Controller
                 'area_installation_status' => $validated['area_installation_status'],
                 'area_installation_detail' => $validated['area_installation_detail'],
                 'completed_at' => now(),
-                'completed_by' => auth()->id()
+                'completed_by' => auth()->id(),
+                'completed_via' => $this->detectDevice($request),
             ]);
 
             \Log::info('Complete request successful', [

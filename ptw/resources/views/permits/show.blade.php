@@ -1622,7 +1622,8 @@
                                 'timestamp' => $permit->created_at,
                                 'title' => 'Permit Draft',
                                 'by' => $permit->permitIssuer->name ?? 'N/A',
-                                'color' => 'bg-secondary'
+                                'color' => 'bg-secondary',
+                                'device' => $permit->created_via,
                             ]);
                             
                             // Method Statement Created
@@ -1631,7 +1632,8 @@
                                     'timestamp' => $permit->methodStatement->created_at,
                                     'title' => 'Method Statement Created',
                                     'by' => $permit->methodStatement->creator->name ?? 'N/A',
-                                    'color' => 'bg-warning'
+                                    'color' => 'bg-warning',
+                                    'device' => $permit->methodStatement->created_via,
                                 ]);
                             }
                             
@@ -1641,7 +1643,8 @@
                                     'timestamp' => $permit->emergencyPlan->created_at,
                                     'title' => 'Emergency & Escape Plan Created',
                                     'by' => $permit->emergencyPlan->creator->name ?? 'N/A',
-                                    'color' => 'bg-danger'
+                                    'color' => 'bg-danger',
+                                    'device' => $permit->emergencyPlan->created_via,
                                 ]);
                             }
                             
@@ -1651,35 +1654,40 @@
                                     'timestamp' => $permit->updated_at,
                                     'title' => 'Pending Approval',
                                     'by' => null,
-                                    'color' => 'bg-warning'
+                                    'color' => 'bg-warning',
+                                    'device' => $permit->issued_via,
                                 ]);
                             } elseif ($permit->status === 'approved') {
                                 $timelineEvents->push([
                                     'timestamp' => $permit->updated_at,
                                     'title' => 'Permit Approved',
                                     'by' => null,
-                                    'color' => 'bg-success'
+                                    'color' => 'bg-success',
+                                    'device' => $permit->authorized_via,
                                 ]);
                             } elseif ($permit->status === 'active') {
                                 $timelineEvents->push([
                                     'timestamp' => $permit->updated_at,
                                     'title' => 'Permit Activated',
                                     'by' => $permit->authorizer ? $permit->authorizer->name : null,
-                                    'color' => 'bg-success'
+                                    'color' => 'bg-success',
+                                    'device' => $permit->authorized_via,
                                 ]);
                             } elseif ($permit->status === 'rejected') {
                                 $timelineEvents->push([
                                     'timestamp' => $permit->updated_at,
                                     'title' => 'Permit Rejected',
                                     'by' => null,
-                                    'color' => 'bg-danger'
+                                    'color' => 'bg-danger',
+                                    'device' => $permit->rejected_via,
                                 ]);
                             } elseif ($permit->status === 'completed') {
                                 $timelineEvents->push([
                                     'timestamp' => $permit->updated_at,
                                     'title' => 'Work Completed',
                                     'by' => null,
-                                    'color' => 'bg-info'
+                                    'color' => 'bg-info',
+                                    'device' => $permit->completed_via,
                                 ]);
                             }
                             
@@ -1695,6 +1703,11 @@
                                 <small class="text-muted">{{ $event['timestamp']->format('d M Y H:i') }}</small>
                                 @if($event['by'])
                                     <p class="small mb-0">By {{ $event['by'] }}</p>
+                                @endif
+                                @if(!empty($event['device']))
+                                    <p class="small mb-0 text-muted">
+                                        <i class="fas fa-{{ $event['device'] === 'Mobile' ? 'mobile-alt' : 'desktop' }} me-1"></i>{{ $event['device'] }}
+                                    </p>
                                 @endif
                             </div>
                         </div>

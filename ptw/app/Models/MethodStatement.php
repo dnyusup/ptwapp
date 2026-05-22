@@ -37,7 +37,8 @@ class MethodStatement extends Model
         'risk_levels',
         'control_measures',
         'status',
-        'created_by'
+        'created_by',
+        'created_via'
     ];
 
     protected $casts = [

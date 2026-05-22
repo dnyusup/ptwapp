@@ -89,6 +89,7 @@ class MethodStatementController extends Controller
 
         $validatedData['permit_number'] = $permitNumber;
         $validatedData['created_by'] = Auth::id();
+        $validatedData['created_via'] = $this->detectDevice($request);
         $validatedData['status'] = $request->has('submit') ? 'completed' : 'draft';
 
         MethodStatement::create($validatedData);
@@ -98,6 +99,17 @@ class MethodStatementController extends Controller
 
         return redirect()->route('permits.show', $permit->id)
             ->with('success', 'Method Statement created successfully.');
+    }
+
+    private function detectDevice(Request $request): string
+    {
+        $ua = strtolower($request->userAgent() ?? '');
+        foreach (['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'opera mini', 'opera mobi'] as $kw) {
+            if (str_contains($ua, $kw)) {
+                return 'Mobile';
+            }
+        }
+        return 'Desktop';
     }
 
     public function show($permitNumber)
