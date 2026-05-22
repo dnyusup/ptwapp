@@ -417,7 +417,7 @@ class PermitToWorkController extends Controller
     /**
      * Submit permit for approval
      */
-    public function submit(PermitToWork $permit)
+    public function submit(Request $request, PermitToWork $permit)
     {
         if ($permit->status !== 'draft') {
             return redirect()->route('permits.show', $permit)
@@ -437,7 +437,7 @@ class PermitToWorkController extends Controller
     /**
      * Approve permit
      */
-    public function approve(PermitToWork $permit)
+    public function approve(Request $request, PermitToWork $permit)
     {
         if (!in_array($permit->status, ['pending_approval', 'resubmitted'])) {
             return redirect()->route('permits.show', $permit)
@@ -506,7 +506,7 @@ class PermitToWorkController extends Controller
     /**
      * Approve permit by Location Owner
      */
-    public function approveByLocationOwner(PermitToWork $permit)
+    public function approveByLocationOwner(Request $request, PermitToWork $permit)
     {
         if (!in_array($permit->status, ['pending_approval', 'resubmitted'])) {
             return redirect()->route('permits.show', $permit)
