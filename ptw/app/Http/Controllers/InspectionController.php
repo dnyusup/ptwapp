@@ -44,6 +44,8 @@ class InspectionController extends Controller
                 $photo = $request->file('inspection_photo');
                 $filename = 'inspection_' . time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
                 $photoPath = $photo->storeAs('inspections', $filename, 'public');
+                // Resize to save storage
+                $this->resizeStoredImage(Storage::disk('public')->path($photoPath));
             } elseif ($request->filled('inspection_photo_data')) {
                 // Handle base64 data (fallback for camera capture)
                 $base64Data = $request->input('inspection_photo_data');
@@ -56,6 +58,8 @@ class InspectionController extends Controller
                         $filename = 'inspection_' . time() . '_' . uniqid() . '.' . $extension;
                         $photoPath = 'inspections/' . $filename;
                         Storage::disk('public')->put($photoPath, $imageData);
+                        // Resize to save storage
+                        $this->resizeStoredImage(Storage::disk('public')->path($photoPath));
                     }
                 }
             }
@@ -145,5 +149,60 @@ class InspectionController extends Controller
         $inspections = $permit->inspections()->orderBy('created_at', 'desc')->get();
 
         return view('inspections.index', compact('permit', 'inspections'));
+    }
+
+    /**
+     * Resize an already-saved image to max 1280×960 using PHP GD.
+     * Falls back silently if GD is unavailable or the file cannot be processed.
+     */
+    private function resizeStoredImage(string $filePath, int $maxWidth = 1280, int $maxHeight = 960): void
+    {
+        if (!function_exists('imagecreatefromjpeg') || !file_exists($filePath)) {
+            return;
+        }
+
+        try {
+            $info = @getimagesize($filePath);
+            if (!$info) return;
+
+            [$origW, $origH, $type] = $info;
+
+            // Skip if already within limits
+            if ($origW <= $maxWidth && $origH <= $maxHeight) return;
+
+            $ratio = min($maxWidth / $origW, $maxHeight / $origH);
+            $newW  = (int) round($origW * $ratio);
+            $newH  = (int) round($origH * $ratio);
+
+            $src = match ($type) {
+                IMAGETYPE_JPEG => imagecreatefromjpeg($filePath),
+                IMAGETYPE_PNG  => imagecreatefrompng($filePath),
+                IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? imagecreatefromwebp($filePath) : null,
+                default        => null,
+            };
+
+            if (!$src) return;
+
+            $dst = imagecreatetruecolor($newW, $newH);
+            // Preserve transparency for PNG
+            if ($type === IMAGETYPE_PNG) {
+                imagealphablending($dst, false);
+                imagesavealpha($dst, true);
+            }
+
+            imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+
+            match ($type) {
+                IMAGETYPE_JPEG => imagejpeg($dst, $filePath, 85),
+                IMAGETYPE_PNG  => imagepng($dst, $filePath, 8),
+                IMAGETYPE_WEBP => function_exists('imagewebp') ? imagewebp($dst, $filePath, 85) : null,
+                default        => null,
+            };
+
+            imagedestroy($src);
+            imagedestroy($dst);
+        } catch (\Throwable $e) {
+            Log::warning('Image resize failed', ['file' => $filePath, 'error' => $e->getMessage()]);
+        }
     }
 }

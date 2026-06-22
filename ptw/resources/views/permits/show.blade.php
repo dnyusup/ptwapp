@@ -1937,9 +1937,9 @@
                         <!-- Mobile Camera Capture (using native file input with capture) -->
                         <div id="mobileCameraContainer" class="border rounded p-3 bg-light" style="display: none;">
                             <div id="mobilePhotoInput" class="text-center">
-                                <label for="mobile_photo_input" class="btn btn-outline-primary mb-2">
+                                <button type="button" id="mobileCaptureTrigger" class="btn btn-outline-primary mb-2">
                                     <i class="fas fa-camera me-2"></i>Ambil Foto
-                                </label>
+                                </button>
                                 <input type="file" id="mobile_photo_input" accept="image/*" capture="environment" 
                                        class="d-none" onchange="handleMobilePhoto(this)">
                                 <p class="text-muted small mb-0">
@@ -1949,9 +1949,9 @@
                             <div id="mobilePhotoPreview" style="display: none;" class="text-center">
                                 <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded mb-2" style="max-height: 300px;">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    <label for="mobile_photo_input" class="btn btn-warning mb-0">
+                                    <button type="button" id="mobileRetakeTrigger" class="btn btn-warning mb-0">
                                         <i class="fas fa-redo me-1"></i>Ambil Ulang
-                                    </label>
+                                    </button>
                                     <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
                                         <i class="fas fa-trash me-1"></i>Hapus
                                     </button>
@@ -2171,6 +2171,9 @@ document.getElementById('inspectionModal').addEventListener('show.bs.modal', fun
 
     // Detect device and show appropriate camera interface
     initCameraInterface();
+
+    // Setup Android back-navigation fix (runs once; safe to call multiple times)
+    setupMobileCameraBackNavFix();
     
     // Block file input click on desktop
     blockFileInputOnDesktop();
@@ -2265,38 +2268,118 @@ function showNoCameraMessage() {
     document.getElementById('capturedPhotoPanel').style.display = 'none';
 }
 
+// Track whether camera is being opened (for back-nav fix)
+let mobileCapturePending = false;
+
+// Fix Android back-navigation issue when using capture="environment"
+function setupMobileCameraBackNavFix() {
+    if (!isMobileDevice()) return;
+
+    const mobileInput  = document.getElementById('mobile_photo_input');
+    const triggerBtn   = document.getElementById('mobileCaptureTrigger');
+    const retakeBtn    = document.getElementById('mobileRetakeTrigger');
+
+    function openMobileCamera() {
+        // Push a dummy history entry so pressing Back won't leave the page
+        history.pushState({ inspectionCameraOpen: true }, '');
+        mobileCapturePending = true;
+        mobileInput.click();
+    }
+
+    if (triggerBtn) triggerBtn.addEventListener('click', openMobileCamera);
+    if (retakeBtn)  retakeBtn.addEventListener('click', openMobileCamera);
+
+    // If user presses Back after camera closes, absorb the popstate
+    window.addEventListener('popstate', function(e) {
+        if (mobileCapturePending) {
+            mobileCapturePending = false;
+            // Re-push so a second Back also doesn't navigate away
+            history.pushState({ inspectionCameraOpen: true }, '');
+        }
+    });
+
+    // When the page re-appears after camera app (some Android browsers)
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible' && mobileCapturePending) {
+            mobileCapturePending = false;
+            // Re-show the modal if Bootstrap hid it
+            const modalEl = document.getElementById('inspectionModal');
+            if (modalEl) {
+                const bsModal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                bsModal.show();
+            }
+        }
+    });
+
+    // Handle bfcache restore (iOS Safari, some Android Chrome)
+    window.addEventListener('pageshow', function(e) {
+        if (e.persisted) {
+            const modalEl = document.getElementById('inspectionModal');
+            if (modalEl && modalEl.classList.contains('show')) {
+                // Modal was visible when page was cached – re-init camera UI
+                initCameraInterface();
+            }
+        }
+    });
+}
+
 // Mobile photo handling
 function handleMobilePhoto(input) {
     const file = input.files[0];
-    if (file) {
-        // Validate file size (5MB max)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Ukuran foto maksimal 5MB');
-            input.value = '';
-            return;
-        }
-        
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('mobilePreviewImage').src = e.target.result;
+    if (!file) return;
+
+    mobileCapturePending = false;
+
+    // Allow up to 15 MB raw before resize
+    if (file.size > 15 * 1024 * 1024) {
+        alert('Ukuran foto terlalu besar (maks 15 MB sebelum resize)');
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // --- Resize to max 1280 × 960 ---
+            const MAX_W = 1280, MAX_H = 960;
+            let w = img.width, h = img.height;
+            if (w > MAX_W || h > MAX_H) {
+                const ratio = Math.min(MAX_W / w, MAX_H / h);
+                w = Math.round(w * ratio);
+                h = Math.round(h * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width  = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+
+            document.getElementById('mobilePreviewImage').src = resizedBase64;
             document.getElementById('mobilePhotoInput').style.display = 'none';
             document.getElementById('mobilePhotoPreview').style.display = 'block';
-            
-            // Copy file to main input for form submission
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            
-            // Mark as programmatic
-            const fileInput = document.getElementById('inspection_photo');
-            fileInput.dataset.programmatic = 'true';
-            fileInput.files = dataTransfer.files;
-            
-            // Also store as base64 for backup
-            document.getElementById('inspection_photo_data').value = e.target.result;
+
+            // Store base64 (primary path – always works)
+            document.getElementById('inspection_photo_data').value = resizedBase64;
+
+            // Also set file input if DataTransfer is supported
+            canvas.toBlob(function(blob) {
+                try {
+                    const resizedFile = new File([blob], 'inspection_photo.jpg', { type: 'image/jpeg' });
+                    const dt = new DataTransfer();
+                    dt.items.add(resizedFile);
+                    const fileInput = document.getElementById('inspection_photo');
+                    fileInput.dataset.programmatic = 'true';
+                    fileInput.files = dt.files;
+                } catch (err) {
+                    // DataTransfer not supported – base64 backup will be used by server
+                }
+            }, 'image/jpeg', 0.82);
         };
-        reader.readAsDataURL(file);
-    }
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 function removeMobilePhoto() {
@@ -2389,13 +2472,19 @@ document.getElementById('capturePhotoBtn').addEventListener('click', function() 
     const video = document.getElementById('cameraVideo');
     const canvas = document.getElementById('photoCanvas');
     const ctx = canvas.getContext('2d');
-    
-    // Set canvas size to video size
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    
-    // Draw video frame to canvas
-    ctx.drawImage(video, 0, 0);
+
+    // Resize to max 1280×720 before capture
+    const MAX_W = 1280, MAX_H = 720;
+    let vw = video.videoWidth, vh = video.videoHeight;
+    if (vw > MAX_W || vh > MAX_H) {
+        const ratio = Math.min(MAX_W / vw, MAX_H / vh);
+        vw = Math.round(vw * ratio);
+        vh = Math.round(vh * ratio);
+    }
+    canvas.width  = vw;
+    canvas.height = vh;
+
+    ctx.drawImage(video, 0, 0, vw, vh);
     
     // Convert to blob
     canvas.toBlob(function(blob) {
