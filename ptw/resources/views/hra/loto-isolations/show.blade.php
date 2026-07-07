@@ -256,17 +256,29 @@
                     <strong><i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja:</strong>
                     <div class="mt-2">
                         @php
-                            $photoPath = 'storage/' . $hraLotoIsolation->work_area_photo;
-                            $fullPath = public_path($photoPath);
-                            $fileExists = file_exists($fullPath);
+                            // Try both storage paths
+                            $storagePath = 'storage/' . $hraLotoIsolation->work_area_photo;
+                            $mediaPath = 'media/' . $hraLotoIsolation->work_area_photo;
+                            $storageFullPath = public_path($storagePath);
+                            $mediaFullPath = public_path($mediaPath);
+                            $storageExists = file_exists($storageFullPath);
+                            $mediaExists = file_exists($mediaFullPath);
+                            
+                            // Determine which path to use
+                            if ($storageExists) {
+                                $photoUrl = url($storagePath);
+                            } elseif ($mediaExists) {
+                                $photoUrl = url($mediaPath);
+                            } else {
+                                $photoUrl = null;
+                            }
                         @endphp
                         
-                        @if($fileExists)
-                        <img src="{{ asset($photoPath) }}" 
-                             alt="Work Area Photo" 
-                             class="img-fluid rounded" 
-                             style="max-height: 400px; cursor: pointer;" 
-                             onclick="window.open(this.src, '_blank')">
+                        @if($photoUrl)
+                        <a href="{{ $photoUrl }}" target="_blank" data-bs-toggle="tooltip" title="Klik untuk melihat ukuran penuh">
+                            <img src="{{ $photoUrl }}" alt="Work Area Photo" class="img-fluid rounded" style="max-height: 400px; cursor: pointer;" 
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-muted\'>Foto tidak dapat dimuat</span>';">
+                        </a>
                         <p class="text-muted small mt-2 mb-0">
                             <i class="fas fa-info-circle me-1"></i>Klik foto untuk melihat dalam ukuran penuh
                         </p>
@@ -276,8 +288,15 @@
                             Foto tidak ditemukan di storage.
                             <br>
                             <small class="text-muted">
-                                Path: {{ $hraLotoIsolation->work_area_photo }}<br>
-                                Expected: {{ $fullPath }}
+                                Path DB: {{ $hraLotoIsolation->work_area_photo }}<br>
+                                Checked: {{ $storageFullPath }}<br>
+                                Also checked: {{ $mediaFullPath }}
+                            </small>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
                             </small>
                         </div>
                         @endif

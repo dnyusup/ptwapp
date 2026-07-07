@@ -193,17 +193,42 @@ class HraWorkAtHeightController extends Controller
     private function handlePhotoUpload(Request $request): ?string
     {
         try {
+            \Log::info('handlePhotoUpload started', [
+                'has_file' => $request->hasFile('work_area_photo'),
+                'has_data' => $request->filled('work_area_photo_data')
+            ]);
+            
             // Try file upload first
             if ($request->hasFile('work_area_photo')) {
                 $file = $request->file('work_area_photo');
                 $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
+                
+                // Ensure directory exists
+                $directory = storage_path('app/public/hra_photos');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+                
                 $path = $file->storeAs('hra_photos', $filename, 'public');
+                
+                \Log::info('File upload successful', [
+                    'filename' => $filename,
+                    'path' => $path,
+                    'full_path' => storage_path('app/public/' . $path),
+                    'exists' => file_exists(storage_path('app/public/' . $path))
+                ]);
+                
                 return $path;
             }
             
             // Handle base64 data
             if ($request->filled('work_area_photo_data')) {
                 $base64Data = $request->input('work_area_photo_data');
+                
+                \Log::info('Processing base64 data', [
+                    'data_length' => strlen($base64Data),
+                    'has_prefix' => strpos($base64Data, 'data:image') === 0
+                ]);
                 
                 // Remove data URI prefix if present
                 if (strpos($base64Data, 'data:image') === 0) {
@@ -213,22 +238,47 @@ class HraWorkAtHeightController extends Controller
                 $imageData = base64_decode($base64Data);
                 
                 if ($imageData === false) {
+                    \Log::error('Base64 decode failed');
                     return null;
+                }
+                
+                \Log::info('Base64 decoded', ['decoded_length' => strlen($imageData)]);
+                
+                // Ensure directory exists
+                $directory = storage_path('app/public/hra_photos');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                    \Log::info('Created directory', ['path' => $directory]);
                 }
                 
                 // Create filename and save
                 $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
                 $path = 'hra_photos/' . $filename;
                 
-                \Storage::disk('public')->put($path, $imageData);
+                $result = \Storage::disk('public')->put($path, $imageData);
+                
+                $fullPath = storage_path('app/public/' . $path);
+                
+                \Log::info('Base64 save attempt', [
+                    'filename' => $filename,
+                    'path' => $path,
+                    'full_path' => $fullPath,
+                    'result' => $result,
+                    'exists' => file_exists($fullPath),
+                    'size' => file_exists($fullPath) ? filesize($fullPath) : 0
+                ]);
                 
                 return $path;
             }
         } catch (\Exception $e) {
-            \Log::error('Photo upload failed: ' . $e->getMessage());
+            \Log::error('Photo upload failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return null;
         }
         
+        \Log::warning('No photo data provided');
         return null;
     }
 
