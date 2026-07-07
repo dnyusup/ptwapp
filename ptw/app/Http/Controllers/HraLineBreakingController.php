@@ -65,7 +65,7 @@ class HraLineBreakingController extends Controller
             'start_datetime' => 'required|date',
             'end_datetime' => 'required|date|after:start_datetime',
             'work_description' => 'required|string',
-            'work_area_photo' => 'nullable|file|image|max:2048',
+            'work_area_photo' => 'nullable',
             'work_area_photo_data' => 'nullable|string',
         ]);
 

@@ -67,7 +67,7 @@ class HraConfinedSpaceController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
-            'work_area_photo' => 'nullable|file|image|max:2048',
+            'work_area_photo' => 'nullable',
             'work_area_photo_data' => 'nullable|string',
         ]);
         

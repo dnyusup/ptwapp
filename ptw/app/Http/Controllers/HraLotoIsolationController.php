@@ -72,8 +72,8 @@ class HraLotoIsolationController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
-            'work_area_photo' => 'nullable|file|image|max:2048',
-            'work_area_photo_data' => 'nullable|string',
+            'work_area_photo' => 'required_without:work_area_photo_data',
+            'work_area_photo_data' => 'required_without:work_area_photo|nullable|string',
             // Pre Isolation
             'pid_reviewed' => 'required|string|in:ya,tidak',
             // Electrical Isolation

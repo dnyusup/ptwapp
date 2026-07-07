@@ -316,7 +316,7 @@ function isCheckedNo($value) {
                             <!-- Work Area Photo -->
                             <div class="col-12 mb-3">
                                 <label class="form-label">
-                                    <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja
+                                    <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja <span class="text-danger">*</span>
                                 </label>
                                 
                                 @if($hraWorkAtHeight->work_area_photo)
@@ -1404,6 +1404,21 @@ $(document).ready(function() {
 
     // Show validation feedback on page load if there are old values
     console.log('HRA Work at Heights form validation loaded successfully ✅');
+
+    // Form validation - ensure photo is captured before submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const photoData = document.getElementById('work_area_photo_data')?.value || '';
+        const photoFile = document.getElementById('work_area_photo')?.value || '';
+        const existingPhoto = '{{ $hraWorkAtHeight->work_area_photo ?? "" }}';
+        
+        if (!photoData && !photoFile && !existingPhoto) {
+            e.preventDefault();
+            alert('Foto Lokasi Area Kerja wajib diisi! Silakan ambil foto terlebih dahulu.');
+            // Scroll to photo field
+            document.querySelector('.form-label:has(.fa-camera)')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+    });
 });
 </script>
 @endpush

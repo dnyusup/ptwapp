@@ -176,7 +176,7 @@
                             <!-- Work Area Photo -->
                             <div class="col-12 mb-3">
                                 <label class="form-label">
-                                    <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja
+                                    <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja <span class="text-danger">*</span>
                                 </label>
                                 
                                 <!-- Desktop Camera Interface -->
@@ -1288,6 +1288,20 @@ document.getElementById('retakePhotoBtn').addEventListener('click', () => {
 });
 
 document.getElementById('removePhotoBtn').addEventListener('click', () => resetCameraInterface());
+
+// Form validation - ensure photo is captured before submit
+document.querySelector('form').addEventListener('submit', function(e) {
+    const photoData = document.getElementById('work_area_photo_data').value;
+    const photoFile = document.getElementById('work_area_photo').value;
+    
+    if (!photoData && !photoFile) {
+        e.preventDefault();
+        alert('Foto Lokasi Area Kerja wajib diisi! Silakan ambil foto terlebih dahulu.');
+        // Scroll to photo field
+        document.querySelector('[for="work_area_photo"]')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+    }
+});
 </script>
 @endpush
 @endsection
