@@ -132,7 +132,10 @@ class HraHotWorkController extends Controller
         
         // Handle work area photo
         if ($request->hasFile('work_area_photo') || $request->filled('work_area_photo_data')) {
-            $validated['work_area_photo'] = $this->handlePhotoUpload($request);
+            $photoPath = $this->handlePhotoUpload($request);
+            if ($photoPath) {
+                $validated['work_area_photo'] = $photoPath;
+            }
         }
         unset($validated['work_area_photo_data']);
         
@@ -166,30 +169,79 @@ class HraHotWorkController extends Controller
     private function handlePhotoUpload(Request $request): ?string
     {
         try {
+            \Log::info('[HRA Hot Work] handlePhotoUpload started', [
+                'has_file' => $request->hasFile('work_area_photo'),
+                'has_data' => $request->filled('work_area_photo_data')
+            ]);
+            
             if ($request->hasFile('work_area_photo')) {
                 $file = $request->file('work_area_photo');
                 $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
+                
+                // Ensure directory exists
+                $directory = storage_path('app/public/hra_photos');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+                
                 $path = $file->storeAs('hra_photos', $filename, 'public');
+                \Log::info('[HRA Hot Work] File upload successful', ['path' => $path]);
                 return $path;
             }
             
             if ($request->filled('work_area_photo_data')) {
                 $base64Data = $request->input('work_area_photo_data');
+                
+                \Log::info('[HRA Hot Work] Processing base64 data', [
+                    'data_length' => strlen($base64Data),
+                    'has_prefix' => strpos($base64Data, 'data:image') === 0
+                ]);
+                
                 if (strpos($base64Data, 'data:image') === 0) {
                     $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
                 }
                 $imageData = base64_decode($base64Data);
-                if ($imageData === false) return null;
+                if ($imageData === false) {
+                    \Log::error('[HRA Hot Work] Base64 decode failed');
+                    return null;
+                }
+                
+                \Log::info('[HRA Hot Work] Base64 decoded', ['decoded_length' => strlen($imageData)]);
+                
+                // Ensure directory exists
+                $directory = storage_path('app/public/hra_photos');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                    \Log::info('[HRA Hot Work] Created directory', ['path' => $directory]);
+                }
                 
                 $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
                 $path = 'hra_photos/' . $filename;
-                \Storage::disk('public')->put($path, $imageData);
+                $result = \Storage::disk('public')->put($path, $imageData);
+                
+                \Log::info('[HRA Hot Work] Base64 save result', [
+                    'filename' => $filename,
+                    'path' => $path,
+                    'result' => $result,
+                    'decoded_size' => strlen($imageData)
+                ]);
+                
+                if (!$result) {
+                    \Log::error('[HRA Hot Work] Storage::put returned false');
+                    return null;
+                }
+                
                 return $path;
             }
         } catch (\Exception $e) {
-            \Log::error('Photo upload failed: ' . $e->getMessage());
+            \Log::error('[HRA Hot Work] Photo upload exception', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return null;
         }
+        
+        \Log::warning('[HRA Hot Work] No photo data provided');
         return null;
     }
 

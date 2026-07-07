@@ -157,7 +157,10 @@ class HraWorkAtHeightController extends Controller
         
         // Handle work area photo
         if ($request->hasFile('work_area_photo') || $request->filled('work_area_photo_data')) {
-            $validated['work_area_photo'] = $this->handlePhotoUpload($request);
+            $photoPath = $this->handlePhotoUpload($request);
+            if ($photoPath) {
+                $validated['work_area_photo'] = $photoPath;
+            }
         }
         
         // Remove photo_data from validated array (we don't save it to DB)
@@ -257,16 +260,19 @@ class HraWorkAtHeightController extends Controller
                 
                 $result = \Storage::disk('public')->put($path, $imageData);
                 
-                $fullPath = storage_path('app/public/' . $path);
-                
-                \Log::info('Base64 save attempt', [
+                \Log::info('Base64 save result', [
                     'filename' => $filename,
                     'path' => $path,
-                    'full_path' => $fullPath,
                     'result' => $result,
-                    'exists' => file_exists($fullPath),
-                    'size' => file_exists($fullPath) ? filesize($fullPath) : 0
+                    'storage_path' => storage_path('app/public/' . $path),
+                    'decoded_size' => strlen($imageData)
                 ]);
+                
+                // If Storage::put returns false, upload failed
+                if (!$result) {
+                    \Log::error('Storage::put returned false - upload failed');
+                    return null;
+                }
                 
                 return $path;
             }
