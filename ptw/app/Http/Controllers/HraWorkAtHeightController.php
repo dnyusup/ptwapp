@@ -275,6 +275,8 @@ class HraWorkAtHeightController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required',
             'work_description' => 'required|string',
+            'work_area_photo' => 'nullable|file|image|max:2048',
+            'work_area_photo_data' => 'nullable|string',
             
             // Overhead Hazards
             'overhead_hazards_checked' => 'boolean',
@@ -350,6 +352,12 @@ class HraWorkAtHeightController extends Controller
         
         // Remove the separate date and time fields as they're not needed in database
         unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
+        
+        // Handle work area photo
+        if ($request->hasFile('work_area_photo') || $request->filled('work_area_photo_data')) {
+            $validated['work_area_photo'] = $this->handlePhotoUpload($request);
+        }
+        unset($validated['work_area_photo_data']);
         
         $hraWorkAtHeight->update($validated);
         

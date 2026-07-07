@@ -294,6 +294,90 @@ input[type="radio"].is-invalid {
                                 <textarea class="form-control" id="work_description" name="work_description" 
                                           rows="3" placeholder="Jelaskan detail pekerjaan yang akan dilakukan..." required>{{ old('work_description') }}</textarea>
                             </div>
+
+                            <!-- Work Area Photo -->
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja
+                                </label>
+                                
+                                <!-- Desktop Camera Interface -->
+                                <div id="desktopCameraInterface" class="d-none d-md-block">
+                                    <!-- No camera message -->
+                                    <div id="noCameraPanel" style="display: none;">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Kamera tidak tersedia di perangkat ini. Silakan gunakan HP untuk mengambil foto.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Start camera button -->
+                                    <div id="cameraStartPanel">
+                                        <button type="button" class="btn btn-primary w-100" id="startCameraBtn">
+                                            <i class="fas fa-camera me-2"></i>Buka Kamera
+                                        </button>
+                                        <p class="text-muted small mt-2 mb-0">
+                                            <i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Camera preview -->
+                                    <div id="cameraPreviewPanel" style="display: none;">
+                                        <video id="cameraVideo" autoplay playsinline class="w-100 rounded" style="max-height: 300px; background: #000;"></video>
+                                        <div class="d-flex gap-2 mt-2 justify-content-center">
+                                            <button type="button" class="btn btn-success" id="capturePhotoBtn">
+                                                <i class="fas fa-camera me-1"></i>Ambil Foto
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="stopCameraBtn">
+                                                <i class="fas fa-times me-1"></i>Tutup Kamera
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Captured photo preview -->
+                                    <div id="capturedPhotoPanel" style="display: none;">
+                                        <img id="capturedImage" src="" alt="Captured" class="img-fluid rounded" style="max-height: 300px;">
+                                        <div class="d-flex gap-2 mt-2 justify-content-center">
+                                            <button type="button" class="btn btn-warning" id="retakePhotoBtn">
+                                                <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                            </button>
+                                            <button type="button" class="btn btn-danger" id="removePhotoBtn">
+                                                <i class="fas fa-trash me-1"></i>Hapus Foto
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hidden canvas for capturing -->
+                                    <canvas id="photoCanvas" style="display: none;"></canvas>
+                                </div>
+
+                                <!-- Mobile Camera Interface -->
+                                <div id="mobileCameraInterface" class="d-md-none">
+                                    <div id="mobilePhotoInput">
+                                        <input type="file" class="form-control" id="mobile_photo_input" 
+                                               accept="image/*" capture="environment">
+                                        <p class="text-muted small mt-2 mb-0">
+                                            <i class="fas fa-info-circle me-1"></i>Tekan untuk mengambil foto menggunakan kamera HP
+                                        </p>
+                                    </div>
+                                    
+                                    <div id="mobilePhotoPreview" style="display: none;">
+                                        <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px;">
+                                        <div class="d-flex gap-2 mt-2 justify-content-center">
+                                            <button type="button" class="btn btn-warning" onclick="retakeMobilePhoto()">
+                                                <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                            </button>
+                                            <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
+                                                <i class="fas fa-trash me-1"></i>Hapus Foto
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hidden inputs for form submission -->
+                                <input type="hidden" id="work_area_photo_data" name="work_area_photo_data">
+                                <input type="file" id="work_area_photo" name="work_area_photo" style="display: none;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -825,93 +909,6 @@ input[type="radio"].is-invalid {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Work Area Photo Card -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header text-white" style="background: linear-gradient(135deg, #6f42c1 0%, #d63384 100%);">
-                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                            <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- Desktop Camera Interface -->
-                        <div id="desktopCameraInterface" class="d-none d-md-block">
-                            <!-- No camera message -->
-                            <div id="noCameraPanel" style="display: none;">
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    Kamera tidak tersedia di perangkat ini. Silakan gunakan HP untuk mengambil foto.
-                                </div>
-                            </div>
-                            
-                            <!-- Start camera button -->
-                            <div id="cameraStartPanel">
-                                <button type="button" class="btn btn-primary w-100" id="startCameraBtn">
-                                    <i class="fas fa-camera me-2"></i>Buka Kamera
-                                </button>
-                                <p class="text-muted small mt-2 mb-0">
-                                    <i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera
-                                </p>
-                            </div>
-                            
-                            <!-- Camera preview -->
-                            <div id="cameraPreviewPanel" style="display: none;">
-                                <video id="cameraVideo" autoplay playsinline class="w-100 rounded" style="max-height: 300px; background: #000;"></video>
-                                <div class="d-flex gap-2 mt-2 justify-content-center">
-                                    <button type="button" class="btn btn-success" id="capturePhotoBtn">
-                                        <i class="fas fa-camera me-1"></i>Ambil Foto
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" id="stopCameraBtn">
-                                        <i class="fas fa-times me-1"></i>Tutup Kamera
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Captured photo preview -->
-                            <div id="capturedPhotoPanel" style="display: none;">
-                                <img id="capturedImage" src="" alt="Captured" class="img-fluid rounded" style="max-height: 300px;">
-                                <div class="d-flex gap-2 mt-2 justify-content-center">
-                                    <button type="button" class="btn btn-warning" id="retakePhotoBtn">
-                                        <i class="fas fa-redo me-1"></i>Ambil Ulang
-                                    </button>
-                                    <button type="button" class="btn btn-danger" id="removePhotoBtn">
-                                        <i class="fas fa-trash me-1"></i>Hapus Foto
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Hidden canvas for capturing -->
-                            <canvas id="photoCanvas" style="display: none;"></canvas>
-                        </div>
-
-                        <!-- Mobile Camera Interface -->
-                        <div id="mobileCameraInterface" class="d-md-none">
-                            <div id="mobilePhotoInput">
-                                <input type="file" class="form-control" id="mobile_photo_input" 
-                                       accept="image/*" capture="environment">
-                                <p class="text-muted small mt-2 mb-0">
-                                    <i class="fas fa-info-circle me-1"></i>Tekan untuk mengambil foto menggunakan kamera HP
-                                </p>
-                            </div>
-                            
-                            <div id="mobilePhotoPreview" style="display: none;">
-                                <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px;">
-                                <div class="d-flex gap-2 mt-2 justify-content-center">
-                                    <button type="button" class="btn btn-warning" onclick="retakeMobilePhoto()">
-                                        <i class="fas fa-redo me-1"></i>Ambil Ulang
-                                    </button>
-                                    <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
-                                        <i class="fas fa-trash me-1"></i>Hapus Foto
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Hidden inputs for form submission -->
-                        <input type="hidden" id="work_area_photo_data" name="work_area_photo_data">
-                        <input type="file" id="work_area_photo" name="work_area_photo" style="display: none;">
                     </div>
                 </div>
 

@@ -312,9 +312,139 @@ function isCheckedNo($value) {
                                 <textarea class="form-control" id="work_description" name="work_description" 
                                           rows="3" placeholder="Jelaskan detail pekerjaan yang akan dilakukan..." required>{{ old('work_description', $hraWorkAtHeight->work_description) }}</textarea>
                             </div>
+
+                            <!-- Work Area Photo -->
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja
+                                </label>
+                                
+                                @if($hraWorkAtHeight->work_area_photo)
+                                <!-- Current Photo -->
+                                <div id="currentPhoto" class="mb-3">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>Foto saat ini:
+                                    </div>
+                                    <img src="{{ asset('storage/' . $hraWorkAtHeight->work_area_photo) }}" 
+                                         alt="Current Work Area Photo" 
+                                         class="img-fluid rounded mb-2" 
+                                         style="max-height: 300px;">
+                                    <div>
+                                        <button type="button" class="btn btn-warning btn-sm" onclick="showPhotoReplacement()">
+                                            <i class="fas fa-sync me-1"></i>Ganti Foto
+                                        </button>
+                                    </div>
+                                </div>
+                                @endif
+                                
+                                <!-- Photo Replacement Interface -->
+                                <div id="photoReplacement" style="display: {{ $hraWorkAtHeight->work_area_photo ? 'none' : 'block' }};">
+                                    <!-- Desktop Camera Interface -->
+                                    <div id="desktopCameraInterface" class="d-none d-md-block">
+                                        <div id="noCameraPanel" style="display: none;">
+                                            <div class="alert alert-warning">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                Kamera tidak tersedia di perangkat ini. Silakan gunakan HP untuk mengambil foto.
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="cameraStartPanel">
+                                            <button type="button" class="btn btn-primary w-100" id="startCameraBtn">
+                                                <i class="fas fa-camera me-2"></i>Buka Kamera
+                                            </button>
+                                            <p class="text-muted small mt-2 mb-0">
+                                                <i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera
+                                            </p>
+                                        </div>
+                                        
+                                        <div id="cameraPreviewPanel" style="display: none;">
+                                            <video id="cameraVideo" autoplay playsinline class="w-100 rounded" style="max-height: 300px; background: #000;"></video>
+                                            <div class="d-flex gap-2 mt-2 justify-content-center">
+                                                <button type="button" class="btn btn-success" id="capturePhotoBtn">
+                                                    <i class="fas fa-camera me-1"></i>Ambil Foto
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" id="stopCameraBtn">
+                                                    <i class="fas fa-times me-1"></i>Tutup Kamera
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="capturedPhotoPanel" style="display: none;">
+                                            <img id="capturedImage" src="" alt="Captured" class="img-fluid rounded" style="max-height: 300px;">
+                                            <div class="d-flex gap-2 mt-2 justify-content-center">
+                                                <button type="button" class="btn btn-warning" id="retakePhotoBtn">
+                                                    <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                                </button>
+                                                <button type="button" class="btn btn-danger" id="removePhotoBtn">
+                                                    <i class="fas fa-trash me-1"></i>Hapus Foto
+                                                </button>
+                                                @if($hraWorkAtHeight->work_area_photo)
+                                                <button type="button" class="btn btn-secondary" onclick="cancelPhotoReplacement()">
+                                                    <i class="fas fa-times me-1"></i>Batal
+                                                </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        
+                                        <canvas id="photoCanvas" style="display: none;"></canvas>
+                                    </div>
+
+                                    <!-- Mobile Camera Interface -->
+                                    <div id="mobileCameraInterface" class="d-md-none">
+                                        <div id="mobilePhotoInput">
+                                            <input type="file" class="form-control" id="mobile_photo_input" 
+                                                   accept="image/*" capture="environment">
+                                            <p class="text-muted small mt-2 mb-0">
+                                                <i class="fas fa-info-circle me-1"></i>Tekan untuk mengambil foto menggunakan kamera HP
+                                            </p>
+                                        </div>
+                                        
+                                        <div id="mobilePhotoPreview" style="display: none;">
+                                            <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px;">
+                                            <div class="d-flex gap-2 mt-2 justify-content-center">
+                                                <button type="button" class="btn btn-warning" onclick="retakeMobilePhoto()">
+                                                    <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                                </button>
+                                                <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
+                                                    <i class="fas fa-trash me-1"></i>Hapus Foto
+                                                </button>
+                                                @if($hraWorkAtHeight->work_area_photo)
+                                                <button type="button" class="btn btn-secondary" onclick="cancelPhotoReplacement()">
+                                                    <i class="fas fa-times me-1"></i>Batal
+                                                </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" id="work_area_photo_data" name="work_area_photo_data">
+                                <input type="file" id="work_area_photo" name="work_area_photo" style="display: none;">
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <script>
+                function showPhotoReplacement() {
+                    document.getElementById('currentPhoto').style.display = 'none';
+                    document.getElementById('photoReplacement').style.display = 'block';
+                }
+                function cancelPhotoReplacement() {
+                    document.getElementById('currentPhoto').style.display = 'block';
+                    document.getElementById('photoReplacement').style.display = 'none';
+                    // Reset camera interface
+                    if (document.getElementById('capturedPhotoPanel')) {
+                        document.getElementById('capturedPhotoPanel').style.display = 'none';
+                        document.getElementById('cameraStartPanel').style.display = 'block';
+                    }
+                    if (document.getElementById('mobilePhotoPreview')) {
+                        document.getElementById('mobilePhotoPreview').style.display = 'none';
+                        document.getElementById('mobilePhotoInput').style.display = 'block';
+                    }
+                }
+                </script>
+
 
                 <!-- HRA Assessment Card -->
                 <div class="card border-0 shadow-sm mb-4">

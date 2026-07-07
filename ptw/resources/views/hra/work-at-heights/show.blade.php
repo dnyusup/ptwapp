@@ -243,6 +243,21 @@
                     <strong>Work Description:</strong>
                     <div class="mt-2 p-3 bg-light rounded">{{ $hraWorkAtHeight->work_description }}</div>
                 </div>
+                @if($hraWorkAtHeight->work_area_photo)
+                <div class="col-12 mb-3">
+                    <strong><i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja:</strong>
+                    <div class="mt-2">
+                        <img src="{{ asset('storage/' . $hraWorkAtHeight->work_area_photo) }}" 
+                             alt="Work Area Photo" 
+                             class="img-fluid rounded" 
+                             style="max-height: 400px; cursor: pointer;" 
+                             onclick="window.open(this.src, '_blank')">
+                        <p class="text-muted small mt-2 mb-0">
+                            <i class="fas fa-info-circle me-1"></i>Klik foto untuk melihat dalam ukuran penuh
+                        </p>
+                    </div>
+                </div>
+                @endif
             </div>
             @if($hraWorkAtHeight->created_via)
             <div class="mt-2 pt-2 border-top">
