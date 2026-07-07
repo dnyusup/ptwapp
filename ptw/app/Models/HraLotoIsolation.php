@@ -22,6 +22,7 @@ class HraLotoIsolation extends Model
         'start_datetime',
         'end_datetime',
         'work_description',
+        'work_area_photo',
         'status',
         // Pre Isolation
         'pid_reviewed',

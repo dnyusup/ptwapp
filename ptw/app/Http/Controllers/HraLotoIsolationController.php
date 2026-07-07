@@ -72,6 +72,8 @@ class HraLotoIsolationController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
+            'work_area_photo' => 'nullable|file|image|max:2048',
+            'work_area_photo_data' => 'nullable|string',
             // Pre Isolation
             'pid_reviewed' => 'required|string|in:ya,tidak',
             // Electrical Isolation
@@ -146,6 +148,12 @@ class HraLotoIsolationController extends Controller
             $validated['utility_isolations'] = json_encode($validated['utility_isolations']);
         }
 
+        // Handle work area photo
+        if ($request->hasFile('work_area_photo') || $request->filled('work_area_photo_data')) {
+            $validated['work_area_photo'] = $this->handlePhotoUpload($request);
+        }
+        unset($validated['work_area_photo_data']);
+
         // Generate HRA permit number
         $hraPermitNumber = HraLotoIsolation::generateHraPermitNumber($permit->permit_number);
 
@@ -169,6 +177,39 @@ class HraLotoIsolationController extends Controller
             if (str_contains($ua, $kw)) return 'Mobile';
         }
         return 'Desktop';
+    }
+
+    /**
+     * Handle photo upload from file or base64 data
+     */
+    private function handlePhotoUpload(Request $request): ?string
+    {
+        try {
+            if ($request->hasFile('work_area_photo')) {
+                $file = $request->file('work_area_photo');
+                $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
+                $path = $file->storeAs('hra_photos', $filename, 'public');
+                return $path;
+            }
+            
+            if ($request->filled('work_area_photo_data')) {
+                $base64Data = $request->input('work_area_photo_data');
+                if (strpos($base64Data, 'data:image') === 0) {
+                    $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                }
+                $imageData = base64_decode($base64Data);
+                if ($imageData === false) return null;
+                
+                $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
+                $path = 'hra_photos/' . $filename;
+                \Storage::disk('public')->put($path, $imageData);
+                return $path;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Photo upload failed: ' . $e->getMessage());
+            return null;
+        }
+        return null;
     }
 
     /**

@@ -22,6 +22,7 @@ class HraHotWork extends Model
         'start_datetime',
         'end_datetime',
         'work_description',
+        'work_area_photo',
         'hot_work_avoidable',
         'hot_work_designated_area',
         'status',

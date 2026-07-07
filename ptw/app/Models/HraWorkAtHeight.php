@@ -22,6 +22,7 @@ class HraWorkAtHeight extends Model
         'start_datetime',
         'end_datetime',
         'work_description',
+        'work_area_photo',
         // Checklist items
         'overhead_hazards_checked',
         'overhead_hazards_minimal_guards',

@@ -67,6 +67,8 @@ class HraExplosiveAtmosphereController extends Controller
             'end_date' => 'required|date',
             'end_time' => 'required|date_format:H:i',
             'work_description' => 'required|string',
+            'work_area_photo' => 'nullable|file|image|max:2048',
+            'work_area_photo_data' => 'nullable|string',
         ]);
         
         // Combine date and time fields into datetime
@@ -75,6 +77,12 @@ class HraExplosiveAtmosphereController extends Controller
         
         // Remove the separate date and time fields as they're not needed in database
         unset($validated['start_date'], $validated['start_time'], $validated['end_date'], $validated['end_time']);
+
+        // Handle work area photo
+        $photoPath = null;
+        if ($request->hasFile('work_area_photo') || $request->filled('work_area_photo_data')) {
+            $photoPath = $this->handlePhotoUpload($request);
+        }
 
         // Generate HRA permit number
         $hraPermitNumber = HraExplosiveAtmosphere::generateHraPermitNumber();
@@ -90,6 +98,7 @@ class HraExplosiveAtmosphereController extends Controller
             'start_datetime' => $validated['start_datetime'],
             'end_datetime' => $validated['end_datetime'],
             'work_description' => $validated['work_description'],
+            'work_area_photo' => $photoPath,
             'status' => 'draft',
             'created_via' => $this->detectDevice($request),
         ]);
@@ -105,6 +114,39 @@ class HraExplosiveAtmosphereController extends Controller
             if (str_contains($ua, $kw)) return 'Mobile';
         }
         return 'Desktop';
+    }
+
+    /**
+     * Handle photo upload from file or base64 data
+     */
+    private function handlePhotoUpload(Request $request): ?string
+    {
+        try {
+            if ($request->hasFile('work_area_photo')) {
+                $file = $request->file('work_area_photo');
+                $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
+                $path = $file->storeAs('hra_photos', $filename, 'public');
+                return $path;
+            }
+            
+            if ($request->filled('work_area_photo_data')) {
+                $base64Data = $request->input('work_area_photo_data');
+                if (strpos($base64Data, 'data:image') === 0) {
+                    $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+                }
+                $imageData = base64_decode($base64Data);
+                if ($imageData === false) return null;
+                
+                $filename = 'hra_work_area_' . time() . '_' . uniqid() . '.jpg';
+                $path = 'hra_photos/' . $filename;
+                \Storage::disk('public')->put($path, $imageData);
+                return $path;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Photo upload failed: ' . $e->getMessage());
+            return null;
+        }
+        return null;
     }
 
     /**

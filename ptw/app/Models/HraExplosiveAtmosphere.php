@@ -22,6 +22,7 @@ class HraExplosiveAtmosphere extends Model
         'start_datetime',
         'end_datetime',
         'work_description',
+        'work_area_photo',
         'status',
         'created_via',
     ];

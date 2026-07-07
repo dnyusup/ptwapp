@@ -176,6 +176,93 @@
                     </div>
                 </div>
 
+                <!-- Work Area Photo Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #6f42c1 0%, #d63384 100%);">
+                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Desktop Camera Interface -->
+                        <div id="desktopCameraInterface" class="d-none d-md-block">
+                            <!-- No camera message -->
+                            <div id="noCameraPanel" style="display: none;">
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Kamera tidak tersedia di perangkat ini. Silakan gunakan HP untuk mengambil foto.
+                                </div>
+                            </div>
+                            
+                            <!-- Start camera button -->
+                            <div id="cameraStartPanel">
+                                <button type="button" class="btn btn-primary w-100" id="startCameraBtn">
+                                    <i class="fas fa-camera me-2"></i>Buka Kamera
+                                </button>
+                                <p class="text-muted small mt-2 mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera
+                                </p>
+                            </div>
+                            
+                            <!-- Camera preview -->
+                            <div id="cameraPreviewPanel" style="display: none;">
+                                <video id="cameraVideo" autoplay playsinline class="w-100 rounded" style="max-height: 300px; background: #000;"></video>
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" class="btn btn-success" id="capturePhotoBtn">
+                                        <i class="fas fa-camera me-1"></i>Ambil Foto
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="stopCameraBtn">
+                                        <i class="fas fa-times me-1"></i>Tutup Kamera
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Captured photo preview -->
+                            <div id="capturedPhotoPanel" style="display: none;">
+                                <img id="capturedImage" src="" alt="Captured" class="img-fluid rounded" style="max-height: 300px;">
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" class="btn btn-warning" id="retakePhotoBtn">
+                                        <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                    </button>
+                                    <button type="button" class="btn btn-danger" id="removePhotoBtn">
+                                        <i class="fas fa-trash me-1"></i>Hapus Foto
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden canvas for capturing -->
+                            <canvas id="photoCanvas" style="display: none;"></canvas>
+                        </div>
+
+                        <!-- Mobile Camera Interface -->
+                        <div id="mobileCameraInterface" class="d-md-none">
+                            <div id="mobilePhotoInput">
+                                <input type="file" class="form-control" id="mobile_photo_input" 
+                                       accept="image/*" capture="environment">
+                                <p class="text-muted small mt-2 mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>Tekan untuk mengambil foto menggunakan kamera HP
+                                </p>
+                            </div>
+                            
+                            <div id="mobilePhotoPreview" style="display: none;">
+                                <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px;">
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" class="btn btn-warning" onclick="retakeMobilePhoto()">
+                                        <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                    </button>
+                                    <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
+                                        <i class="fas fa-trash me-1"></i>Hapus Foto
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden inputs for form submission -->
+                        <input type="hidden" id="work_area_photo_data" name="work_area_photo_data">
+                        <input type="file" id="work_area_photo" name="work_area_photo" style="display: none;">
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-body text-center">
@@ -316,6 +403,166 @@ $(document).ready(function() {
             return false;
         }
     });
+});
+
+// ========================
+// Camera Functionality
+// ========================
+
+// Mobile Photo handling
+document.getElementById('mobile_photo_input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        handleMobilePhoto(file);
+    }
+});
+
+function handleMobilePhoto(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const MAX_W = 1280, MAX_H = 960;
+            let w = img.width, h = img.height;
+            if (w > MAX_W || h > MAX_H) {
+                const ratio = Math.min(MAX_W / w, MAX_H / h);
+                w = Math.round(w * ratio);
+                h = Math.round(h * ratio);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width  = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const resizedBase64 = canvas.toDataURL('image/jpeg', 0.82);
+            document.getElementById('mobilePreviewImage').src = resizedBase64;
+            document.getElementById('mobilePhotoInput').style.display = 'none';
+            document.getElementById('mobilePhotoPreview').style.display = 'block';
+            document.getElementById('work_area_photo_data').value = resizedBase64;
+            canvas.toBlob(function(blob) {
+                try {
+                    const resizedFile = new File([blob], 'work_area_photo.jpg', { type: 'image/jpeg' });
+                    const dt = new DataTransfer();
+                    dt.items.add(resizedFile);
+                    document.getElementById('work_area_photo').files = dt.files;
+                } catch (err) {}
+            }, 'image/jpeg', 0.82);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function retakeMobilePhoto() { resetMobilePhoto(); }
+function removeMobilePhoto() { resetMobilePhoto(); }
+function resetMobilePhoto() {
+    document.getElementById('mobile_photo_input').value = '';
+    document.getElementById('work_area_photo').value = '';
+    document.getElementById('work_area_photo_data').value = '';
+    document.getElementById('mobilePreviewImage').src = '';
+    document.getElementById('mobilePhotoInput').style.display = 'block';
+    document.getElementById('mobilePhotoPreview').style.display = 'none';
+}
+
+let cameraStream = null;
+let capturedBlob = null;
+
+function resetCameraInterface() {
+    stopCamera();
+    document.getElementById('noCameraPanel').style.display = 'none';
+    document.getElementById('cameraStartPanel').style.display = 'block';
+    document.getElementById('cameraPreviewPanel').style.display = 'none';
+    document.getElementById('capturedPhotoPanel').style.display = 'none';
+    document.getElementById('capturedImage').src = '';
+    capturedBlob = null;
+    document.getElementById('work_area_photo').value = '';
+    document.getElementById('work_area_photo_data').value = '';
+}
+
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+    const video = document.getElementById('cameraVideo');
+    if (video) video.srcObject = null;
+}
+
+function showNoCameraMessage() {
+    document.getElementById('cameraStartPanel').style.display = 'none';
+    document.getElementById('cameraPreviewPanel').style.display = 'none';
+    document.getElementById('capturedPhotoPanel').style.display = 'none';
+    document.getElementById('noCameraPanel').style.display = 'block';
+}
+
+document.getElementById('startCameraBtn').addEventListener('click', async function() {
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        const video = document.getElementById('cameraVideo');
+        video.srcObject = cameraStream;
+        document.getElementById('cameraStartPanel').style.display = 'none';
+        document.getElementById('cameraPreviewPanel').style.display = 'block';
+    } catch (error) {
+        console.error('Camera error:', error);
+        showNoCameraMessage();
+        let message = 'Tidak dapat mengakses kamera. ';
+        if (error.name === 'NotAllowedError') message += 'Izin kamera ditolak.';
+        else if (error.name === 'NotFoundError') message += 'Kamera tidak ditemukan.';
+        else message += 'Silakan gunakan HP untuk mengambil foto.';
+        alert(message);
+    }
+});
+
+document.getElementById('capturePhotoBtn').addEventListener('click', function() {
+    const video = document.getElementById('cameraVideo');
+    const canvas = document.getElementById('photoCanvas');
+    const ctx = canvas.getContext('2d');
+    const MAX_W = 1280, MAX_H = 720;
+    let vw = video.videoWidth, vh = video.videoHeight;
+    if (vw > MAX_W || vh > MAX_H) {
+        const ratio = Math.min(MAX_W / vw, MAX_H / vh);
+        vw = Math.round(vw * ratio);
+        vh = Math.round(vh * ratio);
+    }
+    canvas.width = vw;
+    canvas.height = vh;
+    ctx.drawImage(video, 0, 0, vw, vh);
+    canvas.toBlob(function(blob) {
+        capturedBlob = blob;
+        document.getElementById('capturedImage').src = URL.createObjectURL(blob);
+        stopCamera();
+        document.getElementById('cameraPreviewPanel').style.display = 'none';
+        document.getElementById('capturedPhotoPanel').style.display = 'block';
+        const reader = new FileReader();
+        reader.onloadend = function() { document.getElementById('work_area_photo_data').value = reader.result; };
+        reader.readAsDataURL(blob);
+        try {
+            const file = new File([blob], 'work_area_photo.jpg', { type: 'image/jpeg' });
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('work_area_photo').files = dt.files;
+        } catch (err) {}
+    }, 'image/jpeg', 0.82);
+});
+
+document.getElementById('stopCameraBtn').addEventListener('click', function() {
+    stopCamera();
+    document.getElementById('cameraPreviewPanel').style.display = 'none';
+    document.getElementById('cameraStartPanel').style.display = 'block';
+});
+
+document.getElementById('retakePhotoBtn').addEventListener('click', function() {
+    document.getElementById('capturedPhotoPanel').style.display = 'none';
+    document.getElementById('cameraStartPanel').style.display = 'block';
+    document.getElementById('capturedImage').src = '';
+    document.getElementById('work_area_photo').value = '';
+    document.getElementById('work_area_photo_data').value = '';
+    capturedBlob = null;
+});
+
+document.getElementById('removePhotoBtn').addEventListener('click', function() {
+    resetCameraInterface();
 });
 </script>
 @endpush
