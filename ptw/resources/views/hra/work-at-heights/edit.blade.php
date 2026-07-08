@@ -325,10 +325,16 @@ function isCheckedNo($value) {
                                     <div class="alert alert-info">
                                         <i class="fas fa-info-circle me-2"></i>Foto saat ini:
                                     </div>
-                                    <img src="{{ asset('storage/' . $hraWorkAtHeight->work_area_photo) }}" 
-                                         alt="Current Work Area Photo" 
-                                         class="img-fluid rounded mb-2" 
-                                         style="max-height: 300px;">
+                                    @php
+                                        $photoUrl = url('media/' . $hraWorkAtHeight->work_area_photo);
+                                    @endphp
+                                    <a href="{{ $photoUrl }}" target="_blank">
+                                        <img src="{{ $photoUrl }}" 
+                                             alt="Current Work Area Photo" 
+                                             class="img-fluid rounded mb-2" 
+                                             style="max-height: 300px; cursor: pointer;"
+                                             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'alert alert-warning\'>Foto tidak dapat dimuat</div>';">
+                                    </a>
                                     <div>
                                         <button type="button" class="btn btn-warning btn-sm" onclick="showPhotoReplacement()">
                                             <i class="fas fa-sync me-1"></i>Ganti Foto
