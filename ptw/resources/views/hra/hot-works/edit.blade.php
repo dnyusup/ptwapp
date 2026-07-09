@@ -252,7 +252,7 @@
                                              onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'alert alert-warning\'>Foto tidak dapat dimuat</div>';">
                                     </a>
                                     <div>
-                                        <button type="button" class="btn btn-warning btn-sm" onclick="showPhotoReplacement()">
+                                        <button type="button" class="btn btn-warning btn-sm" onclick="showPhotoReplacement()" style="background-color: #ffc107; color: #000; border-color: #ffc107;">
                                             <i class="fas fa-sync me-1"></i>Ganti Foto
                                         </button>
                                     </div>

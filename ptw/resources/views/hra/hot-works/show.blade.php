@@ -153,7 +153,7 @@
 
                 <!-- Edit Button - only visible when not pending or approved -->
                 @if($canEdit)
-                <a href="{{ route('hra.hot-works.edit', ['permit' => $permit, 'hraHotWork' => $hraHotWork]) }}" class="btn btn-outline-warning" style="border-color: #ffc107; color: #ffc107; background-color: transparent;">
+                <a href="{{ route('hra.hot-works.edit', ['permit' => $permit, 'hraHotWork' => $hraHotWork]) }}" class="btn btn-warning" style="background-color: #ffc107; color: #000; border-color: #ffc107;">
                     <i class="fas fa-edit me-2"></i>Edit HRA
                 </a>
                 @endif
