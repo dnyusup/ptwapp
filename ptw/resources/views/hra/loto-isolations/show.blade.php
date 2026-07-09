@@ -270,13 +270,8 @@
                     </div>
                 </div>
                 @endif
-                            </small>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @endif
                 <div class="col-md-6 mb-3">
+                    <strong>Status:</strong>
                     <div class="mt-1">
                         @if($hraLotoIsolation->status == 'draft')
                             <span class="badge bg-secondary">Draft</span>
