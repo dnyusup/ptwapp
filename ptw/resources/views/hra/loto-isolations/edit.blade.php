@@ -166,6 +166,142 @@
                         <label for="work_description" class="form-label">Work Description</label>
                         <textarea class="form-control" id="work_description" name="work_description" rows="3" required>{{ old('work_description', $hraLotoIsolation->work_description) }}</textarea>
                     </div>
+
+                    <!-- Work Area Photo -->
+                    <div class="col-12 mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-camera me-2"></i>Foto Lokasi Area Kerja <span class="text-danger">*</span>
+                        </label>
+                        
+                        @if($hraLotoIsolation->work_area_photo)
+                        <!-- Current Photo -->
+                        <div id="currentPhoto" class="mb-3">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Foto saat ini:
+                            </div>
+                            @php
+                                $photoUrl = url('media/' . $hraLotoIsolation->work_area_photo);
+                            @endphp
+                            <a href="{{ $photoUrl }}" target="_blank">
+                                <img src="{{ $photoUrl }}" 
+                                     alt="Current Work Area Photo" 
+                                     class="img-fluid rounded mb-2" 
+                                     style="max-height: 300px; cursor: pointer;"
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'alert alert-warning\'>Foto tidak dapat dimuat</div>';">
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-warning btn-sm" onclick="showPhotoReplacement()">
+                                    <i class="fas fa-sync me-1"></i>Ganti Foto
+                                </button>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        <!-- Photo Replacement Interface -->
+                        <div id="photoReplacement" style="display: {{ $hraLotoIsolation->work_area_photo ? 'none' : 'block' }};">
+                            <!-- Desktop Camera Interface -->
+                            <div id="desktopCameraInterface" class="d-none d-md-block">
+                                <div id="noCameraPanel" style="display: none;">
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        Kamera tidak tersedia di perangkat ini. Silakan gunakan HP untuk mengambil foto.
+                                    </div>
+                                </div>
+                                
+                                <div id="cameraStartPanel">
+                                    <button type="button" class="btn btn-primary w-100" id="startCameraBtn">
+                                        <i class="fas fa-camera me-2"></i>Buka Kamera
+                                    </button>
+                                    <p class="text-muted small mt-2 mb-0">
+                                        <i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera
+                                    </p>
+                                </div>
+                                
+                                <div id="cameraPreviewPanel" style="display: none;">
+                                    <video id="cameraVideo" autoplay playsinline class="w-100 rounded" style="max-height: 300px; background: #000;"></video>
+                                    <div class="d-flex gap-2 mt-2 justify-content-center">
+                                        <button type="button" class="btn btn-success" id="capturePhotoBtn">
+                                            <i class="fas fa-camera me-1"></i>Ambil Foto
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="stopCameraBtn">
+                                            <i class="fas fa-times me-1"></i>Tutup Kamera
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="capturedPhotoPanel" style="display: none;">
+                                    <img id="capturedImage" src="" alt="Captured" class="img-fluid rounded" style="max-height: 300px;">
+                                    <div class="d-flex gap-2 mt-2 justify-content-center">
+                                        <button type="button" class="btn btn-warning" id="retakePhotoBtn">
+                                            <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                        </button>
+                                        <button type="button" class="btn btn-danger" id="removePhotoBtn">
+                                            <i class="fas fa-trash me-1"></i>Hapus Foto
+                                        </button>
+                                        @if($hraLotoIsolation->work_area_photo)
+                                        <button type="button" class="btn btn-secondary" onclick="cancelPhotoReplacement()">
+                                            <i class="fas fa-times me-1"></i>Batal
+                                        </button>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <canvas id="photoCanvas" style="display: none;"></canvas>
+                            </div>
+
+                            <!-- Mobile Camera Interface -->
+                            <div id="mobileCameraInterface" class="d-md-none">
+                                <div id="mobilePhotoInput">
+                                    <input type="file" class="form-control" id="mobile_photo_input" 
+                                           accept="image/*" capture="environment">
+                                    <p class="text-muted small mt-2 mb-0">
+                                        <i class="fas fa-info-circle me-1"></i>Tekan untuk mengambil foto menggunakan kamera HP
+                                    </p>
+                                </div>
+                                
+                                <div id="mobilePhotoPreview" style="display: none;">
+                                    <img id="mobilePreviewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px;">
+                                    <div class="d-flex gap-2 mt-2 justify-content-center">
+                                        <button type="button" class="btn btn-warning" onclick="retakeMobilePhoto()">
+                                            <i class="fas fa-redo me-1"></i>Ambil Ulang
+                                        </button>
+                                        <button type="button" class="btn btn-danger" onclick="removeMobilePhoto()">
+                                            <i class="fas fa-trash me-1"></i>Hapus Foto
+                                        </button>
+                                        @if($hraLotoIsolation->work_area_photo)
+                                        <button type="button" class="btn btn-secondary" onclick="cancelPhotoReplacement()">
+                                            <i class="fas fa-times me-1"></i>Batal
+                                        </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden fields for photo data -->
+                            <input type="hidden" id="work_area_photo_data" name="work_area_photo_data" value="">
+                            <input type="file" id="work_area_photo" name="work_area_photo" style="display: none;" accept="image/*">
+                        </div>
+                        
+                        <script>
+                        function showPhotoReplacement() {
+                            document.getElementById('currentPhoto').style.display = 'none';
+                            document.getElementById('photoReplacement').style.display = 'block';
+                        }
+                        function cancelPhotoReplacement() {
+                            document.getElementById('currentPhoto').style.display = 'block';
+                            document.getElementById('photoReplacement').style.display = 'none';
+                            // Reset camera interface
+                            if (document.getElementById('capturedPhotoPanel')) {
+                                document.getElementById('capturedPhotoPanel').style.display = 'none';
+                                document.getElementById('cameraStartPanel').style.display = 'block';
+                            }
+                            if (document.getElementById('mobilePhotoPreview')) {
+                                document.getElementById('mobilePhotoPreview').style.display = 'none';
+                                document.getElementById('mobilePhotoInput').style.display = 'block';
+                            }
+                        }
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
@@ -987,6 +1123,224 @@ document.addEventListener('DOMContentLoaded', function() {
     setupIsolationToggle('mechanical_enabled', 'mechanical_body');
     setupIsolationToggle('process_enabled', 'process_body');
     setupIsolationToggle('utility_enabled', 'utility_body');
+
+    // Camera handling for work area photo
+    setupCameraHandling();
 });
+
+// Mobile Photo handling
+document.getElementById('mobile_photo_input')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('mobilePreviewImage').src = event.target.result;
+            document.getElementById('work_area_photo_data').value = event.target.result;
+            document.getElementById('mobilePhotoInput').style.display = 'none';
+            document.getElementById('mobilePhotoPreview').style.display = 'block';
+            
+            // Set file input
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById('work_area_photo').files = dt.files;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+function retakeMobilePhoto() {
+    document.getElementById('work_area_photo_data').value = '';
+    document.getElementById('mobilePreviewImage').src = '';
+    document.getElementById('mobilePhotoInput').style.display = 'block';
+    document.getElementById('mobilePhotoPreview').style.display = 'none';
+    document.getElementById('mobile_photo_input').value = '';
+}
+
+function removeMobilePhoto() {
+    document.getElementById('work_area_photo').value = '';
+    document.getElementById('work_area_photo_data').value = '';
+    document.getElementById('mobilePreviewImage').src = '';
+    document.getElementById('mobilePhotoInput').style.display = 'block';
+    document.getElementById('mobilePhotoPreview').style.display = 'none';
+    document.getElementById('mobile_photo_input').value = '';
+}
+
+// Desktop Camera capture functionality
+function setupCameraHandling() {
+    let cameraStream = null;
+    let capturedBlob = null;
+
+    function resetCameraInterface() {
+        stopCamera();
+        if (document.getElementById('noCameraPanel')) {
+            document.getElementById('noCameraPanel').style.display = 'none';
+        }
+        if (document.getElementById('cameraStartPanel')) {
+            document.getElementById('cameraStartPanel').style.display = 'block';
+        }
+        if (document.getElementById('cameraPreviewPanel')) {
+            document.getElementById('cameraPreviewPanel').style.display = 'none';
+        }
+        if (document.getElementById('capturedPhotoPanel')) {
+            document.getElementById('capturedPhotoPanel').style.display = 'none';
+        }
+        if (document.getElementById('capturedImage')) {
+            document.getElementById('capturedImage').src = '';
+        }
+        capturedBlob = null;
+        
+        const fileInput = document.getElementById('work_area_photo');
+        if (fileInput) fileInput.value = '';
+        const dataInput = document.getElementById('work_area_photo_data');
+        if (dataInput) dataInput.value = '';
+    }
+
+    function stopCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+        const video = document.getElementById('cameraVideo');
+        if (video) video.srcObject = null;
+    }
+
+    function showNoCameraMessage() {
+        if (document.getElementById('cameraStartPanel')) {
+            document.getElementById('cameraStartPanel').style.display = 'none';
+        }
+        if (document.getElementById('cameraPreviewPanel')) {
+            document.getElementById('cameraPreviewPanel').style.display = 'none';
+        }
+        if (document.getElementById('capturedPhotoPanel')) {
+            document.getElementById('capturedPhotoPanel').style.display = 'none';
+        }
+        if (document.getElementById('noCameraPanel')) {
+            document.getElementById('noCameraPanel').style.display = 'block';
+        }
+    }
+
+    // Start camera button
+    const startBtn = document.getElementById('startCameraBtn');
+    if (startBtn) {
+        startBtn.addEventListener('click', async function() {
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+                
+                document.getElementById('cameraStartPanel').style.display = 'none';
+                document.getElementById('cameraPreviewPanel').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Camera error:', error);
+                showNoCameraMessage();
+                
+                let message = 'Tidak dapat mengakses kamera. ';
+                
+                if (error.name === 'NotAllowedError') {
+                    message += 'Izin kamera ditolak. Silakan gunakan HP untuk mengambil foto.';
+                } else if (error.name === 'NotFoundError') {
+                    message += 'Kamera tidak ditemukan. Silakan gunakan HP untuk mengambil foto.';
+                } else if (error.name === 'NotSupportedError' || error.name === 'SecurityError') {
+                    message += 'HTTPS diperlukan. Silakan gunakan HP untuk mengambil foto.';
+                } else {
+                    message += 'Silakan gunakan HP untuk mengambil foto.';
+                }
+                
+                alert(message);
+            }
+        });
+    }
+
+    // Capture photo button  
+    const captureBtn = document.getElementById('capturePhotoBtn');
+    if (captureBtn) {
+        captureBtn.addEventListener('click', function() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('photoCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Resize to max 1280×720
+            const MAX_W = 1280, MAX_H = 720;
+            let vw = video.videoWidth, vh = video.videoHeight;
+            if (vw > MAX_W || vh > MAX_H) {
+                const ratio = Math.min(MAX_W / vw, MAX_H / vh);
+                vw = Math.round(vw * ratio);
+                vh = Math.round(vh * ratio);
+            }
+            canvas.width  = vw;
+            canvas.height = vh;
+
+            ctx.drawImage(video, 0, 0, vw, vh);
+            
+            // Convert to blob
+            canvas.toBlob(function(blob) {
+                capturedBlob = blob;
+                
+                const capturedImage = document.getElementById('capturedImage');
+                capturedImage.src = URL.createObjectURL(blob);
+                
+                stopCamera();
+                document.getElementById('cameraPreviewPanel').style.display = 'none';
+                document.getElementById('capturedPhotoPanel').style.display = 'block';
+                
+                // Store as base64
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    document.getElementById('work_area_photo_data').value = reader.result;
+                };
+                reader.readAsDataURL(blob);
+                
+                // Set file input
+                try {
+                    const file = new File([blob], 'work_area_photo.jpg', { type: 'image/jpeg' });
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    document.getElementById('work_area_photo').files = dt.files;
+                } catch (err) {
+                    // DataTransfer not supported
+                }
+            }, 'image/jpeg', 0.82);
+        });
+    }
+
+    // Stop camera button
+    const stopBtn = document.getElementById('stopCameraBtn');
+    if (stopBtn) {
+        stopBtn.addEventListener('click', function() {
+            stopCamera();
+            document.getElementById('cameraPreviewPanel').style.display = 'none';
+            document.getElementById('cameraStartPanel').style.display = 'block';
+        });
+    }
+
+    // Retake photo button
+    const retakeBtn = document.getElementById('retakePhotoBtn');
+    if (retakeBtn) {
+        retakeBtn.addEventListener('click', function() {
+            document.getElementById('capturedPhotoPanel').style.display = 'none';
+            document.getElementById('cameraStartPanel').style.display = 'block';
+            document.getElementById('capturedImage').src = '';
+            document.getElementById('work_area_photo').value = '';
+            document.getElementById('work_area_photo_data').value = '';
+            capturedBlob = null;
+        });
+    }
+
+    // Remove photo button
+    const removeBtn = document.getElementById('removePhotoBtn');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            resetCameraInterface();
+        });
+    }
+}
 </script>
 @endsection
