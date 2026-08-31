@@ -252,19 +252,31 @@ class HraHotWorkController extends Controller
     {
         // Load the locationOwner relationship
         $permit->load('locationOwner');
-        $hraHotWork->load('inspectedBy');
+        $hraHotWork->load('inspections.inspectedBy');
 
         return view('hra.hot-works.show', compact('permit', 'hraHotWork'));
     }
 
     /**
-     * Record (or update) the single inspection for an approved HRA Hot Work.
-     * Inspection data lives on the hra_hot_works row itself.
+     * Record inspection slot #$sequence for an approved HRA Hot Work.
+     * Slot 1 is open once approved; every later slot only opens 30 minutes
+     * after the previous inspection was recorded.
      */
-    public function storeInspection(Request $request, PermitToWork $permit, HraHotWork $hraHotWork)
+    public function storeInspection(Request $request, PermitToWork $permit, HraHotWork $hraHotWork, int $sequence)
     {
         if ($hraHotWork->ehs_approval !== 'approved') {
             return redirect()->back()->with('error', 'Inspection can only be recorded for an approved HRA Hot Work.');
+        }
+
+        $hraHotWork->load('inspections');
+
+        if ($sequence < 1 || $sequence > $hraHotWork->requiredInspectionCount()) {
+            return redirect()->back()->with('error', 'Nomor inspeksi tidak valid.');
+        }
+
+        if (!$hraHotWork->isInspectionSlotUnlocked($sequence)) {
+            return redirect()->back()->with('error',
+                "Inspeksi #{$sequence} belum bisa diisi. Selesaikan inspeksi sebelumnya lalu tunggu 30 menit.");
         }
 
         $validated = $request->validate([
@@ -276,16 +288,15 @@ class HraHotWorkController extends Controller
             'inspection_photo_data' => 'nullable|string',
         ]);
 
-        $photoPath = $this->storeInspectionPhoto($request) ?? $hraHotWork->inspection_photo_path;
-
-        $hraHotWork->update([
-            'inspector_name'          => $validated['inspector_name'],
-            'inspector_email'         => $validated['inspector_email'],
-            'inspection_finding_type' => $validated['finding_type'],
-            'inspection_findings'     => $validated['findings'],
-            'inspection_photo_path'   => $photoPath,
-            'inspected_at'            => now(),
-            'inspected_by'            => auth()->id(),
+        $inspection = $hraHotWork->inspections()->create([
+            'sequence'        => $sequence,
+            'inspector_name'  => $validated['inspector_name'],
+            'inspector_email' => $validated['inspector_email'],
+            'finding_type'    => $validated['finding_type'],
+            'findings'        => $validated['findings'],
+            'photo_path'      => $this->storeInspectionPhoto($request),
+            'inspected_at'    => now(),
+            'inspected_by'    => auth()->id(),
         ]);
 
         // Notify EHS team (same recipients logic as the main permit inspection)
@@ -302,7 +313,7 @@ class HraHotWorkController extends Controller
                 if (!empty($ccEmails)) {
                     $mail->cc($ccEmails);
                 }
-                $mail->send(new \App\Mail\HraInspectionNotification($hraHotWork->fresh('permitToWork')));
+                $mail->send(new \App\Mail\HraInspectionNotification($hraHotWork->loadMissing('permitToWork'), $inspection));
             }
         } catch (\Exception $e) {
             \Log::error('[HRA Hot Work] Inspection notification failed', [
@@ -313,7 +324,7 @@ class HraHotWorkController extends Controller
 
         return redirect()
             ->route('hra.hot-works.show', [$permit, $hraHotWork])
-            ->with('success', 'Inspection recorded successfully.');
+            ->with('success', "Inspeksi #{$sequence} berhasil dicatat.");
     }
 
     /**

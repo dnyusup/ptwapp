@@ -290,8 +290,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/reject', [HraHotWorkController::class, 'reject'])->name('hra.hot-works.reject');
     Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/process', [HraHotWorkController::class, 'processApproval'])->name('hra.hot-works.process-approval');
     Route::get('/permits/{permit}/hra/hot-works/{hraHotWork}/download-pdf', [HraHotWorkController::class, 'downloadPdf'])->name('hra.hot-works.download-pdf');
-    // HRA Hot Work inspection (single inspection stored on the HRA row)
-    Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/inspection', [HraHotWorkController::class, 'storeInspection'])->name('hra.hot-works.inspection.store');
+    // HRA Hot Work inspections (up to 4 per HRA, in hra_hot_work_inspections)
+    Route::post('/permits/{permit}/hra/hot-works/{hraHotWork}/inspection/{sequence}', [HraHotWorkController::class, 'storeInspection'])
+        ->whereNumber('sequence')->name('hra.hot-works.inspection.store');
     
     // HRA LOTO/Isolation routes
     Route::get('/permits/{permit}/hra/loto-isolations', [HraLotoIsolationController::class, 'index'])->name('hra.loto-isolations.index');

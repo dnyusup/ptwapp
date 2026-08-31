@@ -318,8 +318,12 @@
 
             @if($hraHotWork->ehs_approval === 'approved')
             @php
-                $inspStatus = $hraHotWork->inspection_status; // Not Inspected | OK | NOK
-                $inspBadge  = $inspStatus === 'OK' ? 'success' : ($inspStatus === 'NOK' ? 'danger' : 'secondary');
+                $required   = $hraHotWork->requiredInspectionCount();
+                $doneCount  = $hraHotWork->inspections->count();
+                $inspStatus = $hraHotWork->inspection_status;
+                $inspBadge  = $inspStatus === 'Complete' ? 'success'
+                            : (str_contains($inspStatus, 'NOK') ? 'danger'
+                            : ($inspStatus === 'Not Inspected' ? 'secondary' : 'warning'));
                 $canInspect = auth()->user()->role === 'administrator'
                     || (auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS')
                     || $hraHotWork->user_id == auth()->id()
@@ -328,70 +332,85 @@
             <!-- Inspection Card -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header" style="background: linear-gradient(135deg, #6610f2 0%, #6f42c1 100%); color: white; border: none;">
-                    <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
-                        <i class="fas fa-clipboard-check me-2"></i>Inspection
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <h5 class="mb-0" style="font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-clipboard-check me-2"></i>Inspection
+                        </h5>
+                        <span class="badge bg-{{ $inspBadge }}">{{ $inspStatus }} &middot; {{ $doneCount }}/{{ $required }}</span>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                        <div>
-                            <strong>Status Inspection:</strong>
-                            <span class="badge bg-{{ $inspBadge }} ms-1">{{ $inspStatus }}</span>
-                            @if($hraHotWork->isInspected())
-                                <small class="text-muted ms-2">
-                                    <i class="fas fa-clock me-1"></i>{{ $hraHotWork->inspected_at->format('d/m/Y H:i') }}
-                                </small>
-                            @endif
-                        </div>
-                        @if($canInspect)
-                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#hraInspectionModal">
-                            <i class="fas fa-{{ $hraHotWork->isInspected() ? 'edit' : 'plus' }} me-1"></i>
-                            {{ $hraHotWork->isInspected() ? 'Update Inspection' : 'Add Inspection' }}
-                        </button>
-                        @endif
-                    </div>
-
-                    @if($hraHotWork->isInspected())
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Inspector:</strong>
-                            <div class="mt-1">{{ $hraHotWork->inspector_name ?? '-' }}</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Email Inspector:</strong>
-                            <div class="mt-1">{{ $hraHotWork->inspector_email ?? '-' }}</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Finding Type:</strong>
-                            <div class="mt-1"><span class="badge bg-{{ $inspBadge }}">{{ $hraHotWork->inspection_finding_type ?? '-' }}</span></div>
-                        </div>
-                        @if($hraHotWork->inspectedBy)
-                        <div class="col-md-6 mb-3">
-                            <strong>Dicatat oleh:</strong>
-                            <div class="mt-1">{{ $hraHotWork->inspectedBy->name }}</div>
-                        </div>
-                        @endif
-                        <div class="col-12 mb-3">
-                            <strong>Temuan Inspeksi:</strong>
-                            <div class="mt-2 p-3 bg-light rounded">{{ $hraHotWork->inspection_findings ?? '-' }}</div>
-                        </div>
-                        @if($hraHotWork->inspection_photo_path)
-                        <div class="col-12">
-                            <strong><i class="fas fa-camera me-2"></i>Foto Inspeksi:</strong>
-                            <div class="mt-2">
-                                <a href="{{ url('media/' . $hraHotWork->inspection_photo_path) }}" target="_blank">
-                                    <img src="{{ url('media/' . $hraHotWork->inspection_photo_path) }}" alt="Inspection Photo"
-                                         class="img-fluid rounded" style="max-height: 360px; cursor: pointer;">
-                                </a>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
-                    @else
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-info-circle me-1"></i>Belum ada inspeksi untuk HRA Hot Work ini.
+                    <p class="text-muted small mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Wajib <strong>{{ $required }}</strong> inspeksi
+                        @if($hraHotWork->additional_inspection_duration)
+                            (durasi inspeksi tambahan: <strong>{{ $hraHotWork->additional_inspection_duration }}</strong>)
+                        @endif.
+                        Inspeksi #1 aktif sekarang; inspeksi berikutnya aktif 30 menit setelah inspeksi sebelumnya dicatat.
                     </p>
-                    @endif
+
+                    <div class="row g-3">
+                        @for($seq = 1; $seq <= $required; $seq++)
+                            @php
+                                $insp     = $hraHotWork->inspections->firstWhere('sequence', $seq);
+                                $prevDone = $seq === 1 || $hraHotWork->inspections->firstWhere('sequence', $seq - 1);
+                                $unlocked = $hraHotWork->isInspectionSlotUnlocked($seq);
+                                $unlockAt = $hraHotWork->inspectionSlotUnlockAt($seq);
+                            @endphp
+                            <div class="col-md-6">
+                                <div class="border rounded h-100 p-3 {{ $insp ? 'bg-light' : ($unlocked ? 'border-primary' : 'bg-light') }}">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Inspeksi #{{ $seq }}</strong>
+                                        @if($insp)
+                                            <span class="badge bg-{{ $insp->finding_type === 'NOK' ? 'danger' : 'success' }}">{{ $insp->finding_type }}</span>
+                                        @elseif($unlocked)
+                                            <span class="badge bg-primary">Aktif</span>
+                                        @else
+                                            <span class="badge bg-secondary"><i class="fas fa-lock me-1"></i>Terkunci</span>
+                                        @endif
+                                    </div>
+
+                                    @if($insp)
+                                        <div class="small">
+                                            <div class="mb-1"><i class="fas fa-clock me-1 text-muted"></i>{{ $insp->inspected_at->format('d/m/Y H:i') }}</div>
+                                            <div class="mb-1"><i class="fas fa-user me-1 text-muted"></i>{{ $insp->inspector_name }}
+                                                <span class="text-muted">({{ $insp->inspector_email }})</span></div>
+                                            <div class="mb-2 p-2 bg-white border rounded">{{ $insp->findings }}</div>
+                                            @if($insp->photo_path)
+                                                <a href="{{ url('media/' . $insp->photo_path) }}" target="_blank">
+                                                    <img src="{{ url('media/' . $insp->photo_path) }}" alt="Foto Inspeksi #{{ $seq }}"
+                                                         class="img-fluid rounded" style="max-height: 160px;">
+                                                </a>
+                                            @endif
+                                            @if($insp->inspectedBy)
+                                                <div class="text-muted mt-1">Dicatat oleh: {{ $insp->inspectedBy->name }}</div>
+                                            @endif
+                                        </div>
+                                    @elseif($unlocked)
+                                        @if($canInspect)
+                                            <button type="button" class="btn btn-sm btn-primary hra-insp-open"
+                                                    data-bs-toggle="modal" data-bs-target="#hraInspectionModal"
+                                                    data-seq="{{ $seq }}">
+                                                <i class="fas fa-plus me-1"></i>Isi Inspeksi #{{ $seq }}
+                                            </button>
+                                        @else
+                                            <span class="text-muted small">Menunggu inspeksi oleh petugas berwenang.</span>
+                                        @endif
+                                    @else
+                                        <div class="text-muted small">
+                                            @if(!$prevDone)
+                                                <i class="fas fa-lock me-1"></i>Selesaikan Inspeksi #{{ $seq - 1 }} dulu.
+                                            @else
+                                                <i class="fas fa-hourglass-half me-1"></i>Aktif pada
+                                                <strong>{{ optional($unlockAt)->format('d/m/Y H:i') }}</strong>
+                                                <span class="d-block">(30 menit setelah Inspeksi #{{ $seq - 1 }})</span>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
                 </div>
             </div>
             @endif
@@ -1040,12 +1059,15 @@
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="hraInspectionModalLabel">
-                    <i class="fas fa-clipboard-check me-2"></i>{{ $hraHotWork->isInspected() ? 'Update' : 'Add' }} Inspection
+                    <i class="fas fa-clipboard-check me-2"></i>Isi Inspeksi <span id="hraInsp_seqLabel">#1</span>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('hra.hot-works.inspection.store', [$permit, $hraHotWork]) }}" method="POST" enctype="multipart/form-data">
+            <form id="hraInspectionForm" method="POST" enctype="multipart/form-data"
+                  data-base="{{ url('permits/'.$permit->id.'/hra/hot-works/'.$hraHotWork->id.'/inspection') }}"
+                  action="{{ url('permits/'.$permit->id.'/hra/hot-works/'.$hraHotWork->id.'/inspection/'.(old('_seq') ?: 1)) }}">
                 @csrf
+                <input type="hidden" name="_seq" id="hraInsp_seq" value="{{ old('_seq') ?: 1 }}">
                 <div class="modal-body">
                     <div class="alert alert-info">
                         <strong>HRA:</strong> {{ $hraHotWork->hra_permit_number }}<br>
@@ -1056,12 +1078,12 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Inspector Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="inspector_name" required
-                                   value="{{ old('inspector_name', $hraHotWork->inspector_name ?? auth()->user()->name) }}">
+                                   value="{{ old('inspector_name', auth()->user()->name) }}">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Inspector Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control" name="inspector_email" required
-                                   value="{{ old('inspector_email', $hraHotWork->inspector_email ?? auth()->user()->email) }}">
+                                   value="{{ old('inspector_email', auth()->user()->email) }}">
                         </div>
                     </div>
 
@@ -1070,8 +1092,8 @@
                             <label class="form-label fw-semibold">Finding Type <span class="text-danger">*</span></label>
                             <select class="form-select" name="finding_type" required>
                                 <option value="">-- Pilih Tipe --</option>
-                                <option value="OK"  {{ old('finding_type', $hraHotWork->inspection_finding_type) === 'OK' ? 'selected' : '' }}>OK</option>
-                                <option value="NOK" {{ old('finding_type', $hraHotWork->inspection_finding_type) === 'NOK' ? 'selected' : '' }}>NOK</option>
+                                <option value="OK"  {{ old('finding_type') === 'OK' ? 'selected' : '' }}>OK</option>
+                                <option value="NOK" {{ old('finding_type') === 'NOK' ? 'selected' : '' }}>NOK</option>
                             </select>
                         </div>
                     </div>
@@ -1079,7 +1101,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Inspection Findings <span class="text-danger">*</span></label>
                         <textarea class="form-control" name="findings" rows="5" required
-                                  placeholder="Hasil temuan inspeksi, kondisi keselamatan, observasi, dan rekomendasi...">{{ old('findings', $hraHotWork->inspection_findings) }}</textarea>
+                                  placeholder="Hasil temuan inspeksi, kondisi keselamatan, observasi, dan rekomendasi...">{{ old('findings') }}</textarea>
                     </div>
 
                     <div class="mb-1">
@@ -1133,14 +1155,7 @@
                         <input type="hidden" id="hraInsp_photoData" name="inspection_photo_data">
                         <input type="file" id="hraInsp_photoFile" name="inspection_photo" accept="image/*"
                                style="display:none;pointer-events:none;" tabindex="-1">
-
-                        @if($hraHotWork->inspection_photo_path)
-                            <div class="mt-2">
-                                <small class="text-muted d-block mb-1">Foto tersimpan saat ini (biarkan kosong jika tidak ingin mengubah):</small>
-                                <img src="{{ url('media/' . $hraHotWork->inspection_photo_path) }}" alt="Current photo"
-                                     class="img-thumbnail" style="max-height:120px;">
-                            </div>
-                        @endif
+                        <div class="form-text">Foto wajib diambil langsung dari kamera (tidak bisa pilih dari galeri).</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1161,20 +1176,32 @@
 
 @push('scripts')
 <script>
-@if($errors->any())
-document.addEventListener('DOMContentLoaded', function () {
-    var m = document.getElementById('hraInspectionModal');
-    if (m) new bootstrap.Modal(m).show();
-});
-@endif
-
 @if($hraHotWork->ehs_approval === 'approved')
-/* ================= HRA Inspection photo: camera only (mirrors main-permit rule) ============= */
+/* ================= HRA Inspection (slot picker + camera-only photo) ================= */
 (function () {
     const modalEl   = document.getElementById('hraInspectionModal');
     if (!modalEl) return;
 
     const $ = id => document.getElementById(id);
+    const form = $('hraInspectionForm');
+
+    // Point the form at the chosen slot and update the title.
+    function setSlot(seq) {
+        seq = parseInt(seq, 10) || 1;
+        form.action = form.dataset.base + '/' + seq;
+        $('hraInsp_seq').value = seq;
+        $('hraInsp_seqLabel').textContent = '#' + seq;
+    }
+
+    document.querySelectorAll('.hra-insp-open').forEach(function (btn) {
+        btn.addEventListener('click', function () { setSlot(this.dataset.seq); });
+    });
+
+    @if($errors->any())
+    setSlot({{ (int) (old('_seq') ?: 1) }});
+    new bootstrap.Modal(modalEl).show();
+    @endif
+
     const photoData = $('hraInsp_photoData');
     const photoFile = $('hraInsp_photoFile');
     const MAX_W = 1280, MAX_H = 960;

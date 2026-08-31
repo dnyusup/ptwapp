@@ -107,14 +107,6 @@ class HraHotWork extends Model
         'rejected_at',
         'rejected_by',
         'created_via',
-        // Inspection (one per HRA, recorded after EHS approval)
-        'inspector_name',
-        'inspector_email',
-        'inspection_finding_type',
-        'inspection_findings',
-        'inspection_photo_path',
-        'inspected_at',
-        'inspected_by',
     ];
 
     protected $casts = [
@@ -125,10 +117,12 @@ class HraHotWork extends Model
         'ehs_approved_at' => 'datetime',
         'final_approved_at' => 'datetime',
         'rejected_at' => 'datetime',
-        'inspected_at' => 'datetime',
         'area_owner_notified' => 'boolean',
         'ehs_notified' => 'boolean',
     ];
+
+    /** Minutes that must elapse between one inspection and the next. */
+    public const INSPECTION_INTERVAL_MINUTES = 30;
 
     /**
      * Generate unique HRA permit number
@@ -183,31 +177,88 @@ class HraHotWork extends Model
     }
 
     /**
-     * Relationship with User who recorded the inspection
+     * Inspections recorded against this HRA (max 4, ordered by sequence).
      */
-    public function inspectedBy()
+    public function inspections()
     {
-        return $this->belongsTo(User::class, 'inspected_by');
+        return $this->hasMany(HraHotWorkInspection::class, 'hra_hot_work_id')->orderBy('sequence');
     }
 
     /**
-     * Whether an inspection has been recorded for this HRA.
+     * Number of inspections required = additional inspection duration / 30 min.
+     * "90min" -> 3. Missing / not applicable -> 1. Always between 1 and 4.
      */
-    public function isInspected(): bool
+    public function requiredInspectionCount(): int
     {
-        return !is_null($this->inspected_at);
+        $minutes = (int) preg_replace('/\D/', '', (string) $this->additional_inspection_duration);
+        $count   = $minutes > 0 ? intdiv($minutes, self::INSPECTION_INTERVAL_MINUTES) : 1;
+
+        return max(1, min(4, $count));
     }
 
     /**
-     * Inspection status label: "Not Inspected" | "OK" | "NOK".
+     * When inspection slot #$sequence becomes fillable.
+     * Slot 1 is always open (returns null). For later slots it is 30 minutes
+     * after the previous inspection; null if the previous one is not done yet.
+     */
+    public function inspectionSlotUnlockAt(int $sequence): ?\Illuminate\Support\Carbon
+    {
+        if ($sequence <= 1) {
+            return null;
+        }
+
+        $previous = $this->inspections->firstWhere('sequence', $sequence - 1);
+
+        return $previous
+            ? $previous->inspected_at->copy()->addMinutes(self::INSPECTION_INTERVAL_MINUTES)
+            : null;
+    }
+
+    /**
+     * Whether inspection slot #$sequence can be filled right now:
+     * not already done, all previous slots done, and (for slot >= 2) the
+     * 30-minute wait after the previous inspection has passed.
+     */
+    public function isInspectionSlotUnlocked(int $sequence): bool
+    {
+        if ($this->inspections->firstWhere('sequence', $sequence)) {
+            return false; // already recorded
+        }
+
+        for ($i = 1; $i < $sequence; $i++) {
+            if (!$this->inspections->firstWhere('sequence', $i)) {
+                return false; // a previous inspection is still missing
+            }
+        }
+
+        if ($sequence <= 1) {
+            return true;
+        }
+
+        $unlockAt = $this->inspectionSlotUnlockAt($sequence);
+
+        return $unlockAt !== null && now()->gte($unlockAt);
+    }
+
+    /**
+     * Overall inspection progress label for the card header.
      */
     public function getInspectionStatusAttribute(): string
     {
-        if (!$this->isInspected()) {
+        $required = $this->requiredInspectionCount();
+        $done     = $this->inspections->count();
+
+        if ($done === 0) {
             return 'Not Inspected';
         }
 
-        return $this->inspection_finding_type === 'NOK' ? 'NOK' : 'OK';
+        if ($done < $required) {
+            return "In Progress ({$done}/{$required})";
+        }
+
+        return $this->inspections->contains('finding_type', 'NOK')
+            ? 'Complete (NOK found)'
+            : 'Complete';
     }
 
     /**
