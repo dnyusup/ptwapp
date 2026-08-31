@@ -632,39 +632,38 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-6">
+                        <div class="col-4">
                             <div class="inspection-stat">
                                 <div class="circle gradient-blue">{{ $inspectionStats['total'] }}</div>
                                 <div class="fw-semibold">Total</div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <div class="inspection-stat">
-                                <div class="circle gradient-green">{{ $inspectionStats['passed'] }}</div>
-                                <div class="fw-semibold">Passed</div>
+                                <div class="circle gradient-green">{{ $inspectionStats['ok'] }}</div>
+                                <div class="fw-semibold">OK</div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <div class="inspection-stat">
-                                <div class="circle gradient-red">{{ $inspectionStats['failed'] }}</div>
-                                <div class="fw-semibold">Failed</div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="inspection-stat">
-                                <div class="circle gradient-yellow">{{ $inspectionStats['pending'] }}</div>
-                                <div class="fw-semibold">Pending</div>
+                                <div class="circle gradient-red">{{ $inspectionStats['nok'] }}</div>
+                                <div class="fw-semibold">NOK</div>
                             </div>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="fw-semibold">Pass Rate</span>
-                            <span class="fw-bold text-success">{{ $inspectionStats['passRate'] }}%</span>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-semibold">NOK by Category</span>
+                            <span class="badge bg-danger">{{ $inspectionStats['nok'] }} total</span>
                         </div>
-                        <div class="progress-custom">
-                            <div class="progress-bar bg-success" style="width: {{ $inspectionStats['passRate'] }}%"></div>
-                        </div>
+                        @forelse($inspectionStats['nokByCategory'] as $category => $count)
+                            <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                                <span class="small">{{ $category }}</span>
+                                <span class="badge bg-danger">{{ $count }}</span>
+                            </div>
+                        @empty
+                            <div class="text-muted small">Tidak ada temuan NOK.</div>
+                        @endforelse
                     </div>
                 </div>
             </div>

@@ -155,14 +155,17 @@ class ReportsController extends Controller
 
     private function getInspectionStats()
     {
-        $totalInspections = Inspection::count();
+        $nokByCategory = Inspection::where('finding_type', 'NOK')
+            ->get()
+            ->groupBy(fn ($i) => $i->inspection_category ?: 'Lain-lain')
+            ->map->count()
+            ->sortDesc();
 
         return [
-            'total' => $totalInspections,
-            'passed' => 0,
-            'failed' => 0,
-            'pending' => $totalInspections,
-            'passRate' => 0
+            'total'         => Inspection::count(),
+            'ok'            => Inspection::where('finding_type', 'OK')->count(),
+            'nok'           => Inspection::where('finding_type', 'NOK')->count(),
+            'nokByCategory' => $nokByCategory,
         ];
     }
 
