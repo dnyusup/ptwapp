@@ -1114,7 +1114,7 @@
                     </div>
 
                     <div class="mb-1">
-                        <label class="form-label fw-semibold"><i class="fas fa-camera me-1"></i>Foto Inspeksi</label>
+                        <label class="form-label fw-semibold"><i class="fas fa-camera me-1"></i>Foto Inspeksi <span class="text-danger">*</span></label>
 
                         {{-- Mobile: native camera capture --}}
                         <div id="hraInsp_mobileBox" class="border rounded p-3 bg-light" style="display:none;">
@@ -1164,7 +1164,7 @@
                         <input type="hidden" id="hraInsp_photoData" name="inspection_photo_data">
                         <input type="file" id="hraInsp_photoFile" name="inspection_photo" accept="image/*"
                                style="display:none;pointer-events:none;" tabindex="-1">
-                        <div class="form-text">Foto wajib diambil langsung dari kamera (tidak bisa pilih dari galeri).</div>
+                        <div class="form-text">Wajib. Foto harus diambil langsung dari kamera (tidak bisa pilih dari galeri).</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1358,6 +1358,16 @@
     modalEl.addEventListener('hidden.bs.modal', function () {
         stopCamera();
         resetMobile();
+    });
+
+    // Photo is mandatory — block submit until one has been captured.
+    form.addEventListener('submit', function (e) {
+        const hasPhoto = (photoData.value && photoData.value.length > 0)
+            || (photoFile.files && photoFile.files.length > 0);
+        if (!hasPhoto) {
+            e.preventDefault();
+            alert('Foto inspeksi wajib. Ambil foto langsung dari kamera terlebih dahulu.');
+        }
     });
 })();
 @endif

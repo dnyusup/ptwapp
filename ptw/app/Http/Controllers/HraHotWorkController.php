@@ -288,13 +288,28 @@ class HraHotWorkController extends Controller
             'inspection_photo_data' => 'nullable|string',
         ]);
 
+        // Photo is mandatory and must come from the camera (file or base64 payload).
+        if (!$request->hasFile('inspection_photo') && !$request->filled('inspection_photo_data')) {
+            return back()
+                ->withInput()
+                ->withErrors(['inspection_photo' => 'Foto inspeksi wajib diambil langsung dari kamera.']);
+        }
+
+        $photoPath = $this->storeInspectionPhoto($request);
+
+        if (!$photoPath) {
+            return back()
+                ->withInput()
+                ->withErrors(['inspection_photo' => 'Foto inspeksi gagal disimpan. Silakan ambil ulang foto.']);
+        }
+
         $inspection = $hraHotWork->inspections()->create([
             'sequence'        => $sequence,
             'inspector_name'  => $validated['inspector_name'],
             'inspector_email' => $validated['inspector_email'],
             'finding_type'    => $validated['finding_type'],
             'findings'        => $validated['findings'],
-            'photo_path'      => $this->storeInspectionPhoto($request),
+            'photo_path'      => $photoPath,
             'inspected_at'    => now(),
             'inspected_by'    => auth()->id(),
         ]);
