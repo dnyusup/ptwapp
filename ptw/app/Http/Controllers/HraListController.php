@@ -14,6 +14,7 @@ use App\Models\HraWorkAtHeight;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 
 class HraListController extends Controller
 {
@@ -84,18 +85,210 @@ class HraListController extends Controller
     }
 
     /**
+     * Only Administrator and Bekaert EHS may use anything in this controller.
+     */
+    private function authorizeAccess(): void
+    {
+        $user = auth()->user();
+        if ($user->role !== 'administrator'
+            && !($user->role === 'bekaert' && $user->department === 'EHS')) {
+            abort(403, 'You are not allowed to access the HRA list.');
+        }
+    }
+
+    private function isAdmin(): bool
+    {
+        return auth()->user()->role === 'administrator';
+    }
+
+    /**
      * Display a unified listing of every HRA across all permits.
      */
     public function index(Request $request)
     {
-        $currentUser = auth()->user();
+        $this->authorizeAccess();
 
-        // Only Administrator and Bekaert EHS may access the HRA list.
-        if ($currentUser->role !== 'administrator'
-            && !($currentUser->role === 'bekaert' && $currentUser->department === 'EHS')) {
-            abort(403, 'You are not allowed to access the HRA list.');
+        $items = $this->filteredItems($request);
+
+        // Summary widgets — computed from the full filtered set (before pagination),
+        // so they stay in sync with whatever filters are active on the table.
+        $summary = [
+            'total'    => $items->count(),
+            'byStatus' => $items->groupBy('status_label')->map->count()->sortDesc(),
+            'byType'   => $items->groupBy('type_label')->map->count()->sortDesc(),
+            'byArea'   => $items->groupBy('area')->map->count()->sortDesc(),
+        ];
+
+        // Manual pagination over the merged collection.
+        $perPage = 20;
+        $page    = Paginator::resolveCurrentPage('page');
+        $hras    = new LengthAwarePaginator(
+            $items->forPage($page, $perPage)->values(),
+            $items->count(),
+            $perPage,
+            $page,
+            ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
+        );
+
+        $areas     = Area::where('is_active', true)->orderBy('name')->get();
+        $typeList  = collect($this->hraTypes())->map(fn ($c, $k) => ['key' => $k, 'label' => $c['label']])->values();
+
+        return view('hras.index', compact('hras', 'areas', 'typeList', 'summary'));
+    }
+
+    /**
+     * Cancel a single HRA (only allowed while it is Draft or Pending Approval).
+     */
+    public function cancel(Request $request, string $type, int $id)
+    {
+        $this->authorizeAccess();
+        abort_if(!$this->resolveModel($type), 404);
+
+        $cancelled = $this->cancelEligible($type, [$id]);
+
+        return back()->with('success', $cancelled
+            ? 'HRA has been cancelled.'
+            : 'This HRA cannot be cancelled (only Draft or Pending Approval can be).');
+    }
+
+    /**
+     * Delete a single HRA (Administrator only).
+     */
+    public function destroy(Request $request, string $type, int $id)
+    {
+        $this->authorizeAccess();
+        abort_unless($this->isAdmin(), 403, 'Only administrators can delete HRA.');
+
+        $model = $this->resolveModel($type);
+        abort_if(!$model, 404);
+
+        $model::where('id', $id)->delete();
+
+        return back()->with('success', 'HRA has been deleted.');
+    }
+
+    /**
+     * Bulk cancel — either an explicit selection or every HRA matching the filters.
+     */
+    public function bulkCancel(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $grouped = $this->resolveBulkTargets($request);
+        $total = 0;
+
+        foreach ($grouped as $type => $ids) {
+            $total += $this->cancelEligible($type, $ids);
         }
 
+        return back()->with('success', $total > 0
+            ? "{$total} HRA(s) have been cancelled."
+            : 'No HRA was cancelled (only Draft or Pending Approval can be).');
+    }
+
+    /**
+     * Bulk delete — Administrator only.
+     */
+    public function bulkDelete(Request $request)
+    {
+        $this->authorizeAccess();
+        abort_unless($this->isAdmin(), 403, 'Only administrators can delete HRA.');
+
+        $grouped = $this->resolveBulkTargets($request);
+        $total = 0;
+
+        foreach ($grouped as $type => $ids) {
+            $model = $this->resolveModel($type);
+            if (!$model) {
+                continue;
+            }
+            $total += $model::whereIn('id', $ids)->delete();
+        }
+
+        return back()->with('success', $total > 0
+            ? "{$total} HRA(s) have been deleted."
+            : 'No HRA was deleted.');
+    }
+
+    /**
+     * Resolve which HRAs a bulk action targets, grouped as [type_key => [ids]].
+     *
+     * scope=all  -> re-run the current filters and target the whole result set.
+     * otherwise  -> use the "type_key:id" tokens the user ticked.
+     */
+    private function resolveBulkTargets(Request $request): array
+    {
+        if ($request->get('scope') === 'all') {
+            return $this->filteredItems($request)
+                ->groupBy('type_key')
+                ->map(fn ($rows) => $rows->pluck('id')->all())
+                ->all();
+        }
+
+        $grouped = [];
+        foreach ((array) $request->get('selected', []) as $token) {
+            if (!str_contains((string) $token, ':')) {
+                continue;
+            }
+            [$type, $id] = explode(':', $token, 2);
+            if (!is_numeric($id) || !$this->resolveModel($type)) {
+                continue;
+            }
+            $grouped[$type][] = (int) $id;
+        }
+
+        return $grouped;
+    }
+
+    private function resolveModel(string $type): ?string
+    {
+        return $this->hraTypes()[$type]['model'] ?? null;
+    }
+
+    /**
+     * Cancel the given HRA ids of one type, but only those currently
+     * Draft or Pending Approval. Returns how many were actually cancelled.
+     */
+    private function cancelEligible(string $type, array $ids): int
+    {
+        $config = $this->hraTypes()[$type] ?? null;
+        if (!$config || empty($ids)) {
+            return 0;
+        }
+        $model = $config['model'];
+
+        $eligible = $model::whereIn('id', $ids)->get()
+            ->filter(function ($row) use ($config) {
+                $approval = $config['hasApproval'] ? ($row->ehs_approval ?? null) : null;
+
+                return in_array(
+                    $this->statusLabel($approval, $row->status ?? null),
+                    ['Draft', 'Pending Approval'],
+                    true
+                );
+            })
+            ->pluck('id')
+            ->all();
+
+        if (empty($eligible)) {
+            return 0;
+        }
+
+        $payload = ['status' => 'cancelled'];
+        if ($config['hasApproval']) {
+            // clear the pending EHS approval so the row reads as Cancelled
+            $payload['ehs_approval'] = null;
+        }
+
+        return $model::whereIn('id', $eligible)->update($payload);
+    }
+
+    /**
+     * Build the merged, filtered, sorted collection of HRA rows.
+     * Shared by index() and the bulk actions so "select all filtered" is exact.
+     */
+    private function filteredItems(Request $request): Collection
+    {
         $search   = trim((string) $request->get('search'));
         $type     = $request->get('type');
         $status   = $request->get('status');
@@ -121,10 +314,6 @@ class HraListController extends Controller
             if ($areaId) {
                 $query->whereHas('permitToWork', fn ($q) => $q->where('area_id', $areaId));
             }
-
-            // NOTE: status is filtered later on the merged collection using the same
-            // normalized label the table badge shows, so approval status (EHS) and the
-            // base status column never disagree with what the user filtered on.
 
             if ($dateFrom) {
                 $query->whereDate('end_datetime', '>=', $dateFrom);
@@ -193,32 +382,7 @@ class HraListController extends Controller
             $items = $items->filter(fn ($i) => $i['status_label'] === $wantedLabel);
         }
 
-        $items = $items->sortByDesc('created_at')->values();
-
-        // Summary widgets — computed from the full filtered set (before pagination),
-        // so they stay in sync with whatever filters are active on the table.
-        $summary = [
-            'total'    => $items->count(),
-            'byStatus' => $items->groupBy('status_label')->map->count()->sortDesc(),
-            'byType'   => $items->groupBy('type_label')->map->count()->sortDesc(),
-            'byArea'   => $items->groupBy('area')->map->count()->sortDesc(),
-        ];
-
-        // Manual pagination over the merged collection.
-        $perPage = 20;
-        $page    = Paginator::resolveCurrentPage('page');
-        $hras    = new LengthAwarePaginator(
-            $items->forPage($page, $perPage)->values(),
-            $items->count(),
-            $perPage,
-            $page,
-            ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
-        );
-
-        $areas     = Area::where('is_active', true)->orderBy('name')->get();
-        $typeList  = collect($this->hraTypes())->map(fn ($c, $k) => ['key' => $k, 'label' => $c['label']])->values();
-
-        return view('hras.index', compact('hras', 'areas', 'typeList', 'summary'));
+        return $items->sortByDesc('created_at')->values();
     }
 
     /**

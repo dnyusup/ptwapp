@@ -173,10 +173,25 @@
         </div>
     </div>
 
+    @php $isAdmin = auth()->user()->role === 'administrator'; @endphp
+
+    {{-- Hidden form used for every bulk action --}}
+    <form id="bulkForm" method="POST" class="d-none">
+        @csrf
+        <input type="hidden" name="scope" id="bulkScope" value="selected">
+        <div id="bulkSelectedInputs"></div>
+        <input type="hidden" name="type" value="{{ request('type') }}">
+        <input type="hidden" name="status" value="{{ request('status') }}">
+        <input type="hidden" name="area" value="{{ request('area') }}">
+        <input type="hidden" name="date_from" value="{{ request('date_from') }}">
+        <input type="hidden" name="date_to" value="{{ request('date_to') }}">
+        <input type="hidden" name="search" value="{{ request('search') }}">
+    </form>
+
     <!-- HRA Table -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white">
-            <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0">
                     <i class="fas fa-triangle-exclamation me-2"></i>HRA List
                 </h5>
@@ -188,6 +203,32 @@
                     @endif
                 </small>
             </div>
+
+            @if($hras->count() > 0)
+            <div id="bulkBar" class="d-flex align-items-center flex-wrap gap-2 mt-2 pt-2 border-top">
+                <span class="small text-muted">
+                    <span id="bulkCount">0</span> selected
+                </span>
+                <span id="bulkAllFilteredWrap" class="small d-none">
+                    &mdash;
+                    <a href="#" id="bulkSelectAllFiltered">Select all {{ $hras->total() }} filtered HRA</a>
+                </span>
+                <span id="bulkAllActive" class="small text-success fw-semibold d-none">
+                    <i class="fas fa-check-circle me-1"></i>All {{ $hras->total() }} filtered HRA selected.
+                    <a href="#" id="bulkClearAll">Clear</a>
+                </span>
+                <div class="ms-auto d-flex gap-2">
+                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning" disabled>
+                        <i class="fas fa-ban me-1"></i>Cancel selected
+                    </button>
+                    @if($isAdmin)
+                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger" disabled>
+                        <i class="fas fa-trash me-1"></i>Delete selected
+                    </button>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
         <div class="card-body p-0">
             @if($hras->count() > 0)
@@ -195,6 +236,9 @@
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-light">
                             <tr>
+                                <th style="width:34px;" class="text-center">
+                                    <input type="checkbox" id="checkAll" class="form-check-input" title="Select all on this page">
+                                </th>
                                 <th>HRA Number</th>
                                 <th>Type</th>
                                 <th>Permit</th>
@@ -212,6 +256,11 @@
                         <tbody>
                             @foreach($hras as $hra)
                             <tr>
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input rowCheck"
+                                           value="{{ $hra['type_key'] }}:{{ $hra['id'] }}"
+                                           data-label="{{ $hra['hra_permit_number'] }}">
+                                </td>
                                 <td><span class="fw-semibold text-primary">{{ $hra['hra_permit_number'] }}</span></td>
                                 <td>
                                     <span class="text-nowrap"><i class="{{ $hra['type_icon'] }} me-1 text-muted"></i>{{ $hra['type_label'] }}</span>
@@ -255,14 +304,35 @@
                                     @endif
                                 </td>
                                 <td>{{ $hra['created_by'] }}</td>
-                                <td class="text-center">
-                                    @if($hra['show_url'])
-                                        <a href="{{ $hra['show_url'] }}" class="btn btn-sm btn-outline-primary" title="View">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
+                                <td class="text-center text-nowrap">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        @if($hra['show_url'])
+                                            <a href="{{ $hra['show_url'] }}" class="btn btn-outline-primary" title="View">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        @endif
+                                        @if(in_array($hra['status_label'], ['Draft', 'Pending Approval']))
+                                            <form method="POST" action="{{ route('hras.cancel', [$hra['type_key'], $hra['id']]) }}"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Cancel HRA {{ $hra['hra_permit_number'] }}? Its status will be set to Cancelled.');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-warning" title="Cancel">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        @if($isAdmin)
+                                            <form method="POST" action="{{ route('hras.destroy', [$hra['type_key'], $hra['id']]) }}"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('DELETE HRA {{ $hra['hra_permit_number'] }}? This action cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                             @endforeach
@@ -304,6 +374,111 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         });
     }
+
+    // ---- Bulk actions ----
+    const ROUTES = {
+        cancel: @json(route('hras.bulk-cancel')),
+        delete: @json(route('hras.bulk-delete')),
+    };
+    const PAGE_TOTAL     = {{ $hras->count() }};
+    const FILTERED_TOTAL = {{ $hras->total() }};
+
+    const rowChecks   = Array.from(document.querySelectorAll('.rowCheck'));
+    const checkAll    = document.getElementById('checkAll');
+    const bulkCount   = document.getElementById('bulkCount');
+    const btnCancel   = document.getElementById('btnBulkCancel');
+    const btnDelete   = document.getElementById('btnBulkDelete');
+    const allFilteredWrap = document.getElementById('bulkAllFilteredWrap');
+    const allActive       = document.getElementById('bulkAllActive');
+    const linkSelectAll   = document.getElementById('bulkSelectAllFiltered');
+    const linkClearAll    = document.getElementById('bulkClearAll');
+    const bulkForm        = document.getElementById('bulkForm');
+    const bulkScope       = document.getElementById('bulkScope');
+    const bulkInputs      = document.getElementById('bulkSelectedInputs');
+
+    let scopeAll = false;
+
+    function selectedValues() {
+        return rowChecks.filter(c => c.checked).map(c => c.value);
+    }
+
+    function refresh() {
+        const n = selectedValues().length;
+        if (scopeAll) {
+            bulkCount.textContent = FILTERED_TOTAL;
+            allActive.classList.remove('d-none');
+            allFilteredWrap.classList.add('d-none');
+        } else {
+            bulkCount.textContent = n;
+            allActive.classList.add('d-none');
+            // offer "select all filtered" only when the whole page is ticked and there is more beyond it
+            allFilteredWrap.classList.toggle('d-none', !(n === PAGE_TOTAL && FILTERED_TOTAL > PAGE_TOTAL));
+        }
+        const has = scopeAll || n > 0;
+        if (btnCancel) btnCancel.disabled = !has;
+        if (btnDelete) btnDelete.disabled = !has;
+        if (checkAll) checkAll.checked = n === PAGE_TOTAL && n > 0;
+    }
+
+    function clearScopeAll() {
+        scopeAll = false;
+        refresh();
+    }
+
+    rowChecks.forEach(c => c.addEventListener('change', clearScopeAll));
+    if (checkAll) {
+        checkAll.addEventListener('change', function() {
+            rowChecks.forEach(c => { c.checked = checkAll.checked; });
+            clearScopeAll();
+        });
+    }
+    if (linkSelectAll) {
+        linkSelectAll.addEventListener('click', function(e) {
+            e.preventDefault();
+            scopeAll = true;
+            refresh();
+        });
+    }
+    if (linkClearAll) {
+        linkClearAll.addEventListener('click', function(e) {
+            e.preventDefault();
+            rowChecks.forEach(c => { c.checked = false; });
+            if (checkAll) checkAll.checked = false;
+            clearScopeAll();
+        });
+    }
+
+    function submitBulk(kind) {
+        const values = selectedValues();
+        const n = scopeAll ? FILTERED_TOTAL : values.length;
+        if (!scopeAll && n === 0) return;
+
+        const verb = kind === 'delete' ? 'DELETE' : 'Cancel';
+        let msg = scopeAll
+            ? `${verb} ALL ${n} filtered HRA?`
+            : `${verb} ${n} selected HRA?`;
+        if (kind === 'delete') msg += ' This action cannot be undone.';
+        if (!confirm(msg)) return;
+
+        bulkInputs.innerHTML = '';
+        bulkScope.value = scopeAll ? 'all' : 'selected';
+        if (!scopeAll) {
+            values.forEach(v => {
+                const i = document.createElement('input');
+                i.type = 'hidden';
+                i.name = 'selected[]';
+                i.value = v;
+                bulkInputs.appendChild(i);
+            });
+        }
+        bulkForm.action = ROUTES[kind];
+        bulkForm.submit();
+    }
+
+    if (btnCancel) btnCancel.addEventListener('click', () => submitBulk('cancel'));
+    if (btnDelete) btnDelete.addEventListener('click', () => submitBulk('delete'));
+
+    refresh();
 });
 </script>
 
