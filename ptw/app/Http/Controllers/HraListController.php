@@ -90,10 +90,10 @@ class HraListController extends Controller
     {
         $currentUser = auth()->user();
 
-        // Contractors only see HRAs that belong to their company's permits.
-        $companyName = null;
-        if ($currentUser->role === 'contractor' && $currentUser->company_id) {
-            $companyName = $currentUser->company->company_name ?? null;
+        // Only Administrator and Bekaert EHS may access the HRA list.
+        if ($currentUser->role !== 'administrator'
+            && !($currentUser->role === 'bekaert' && $currentUser->department === 'EHS')) {
+            abort(403, 'You are not allowed to access the HRA list.');
         }
 
         $search   = trim((string) $request->get('search'));
@@ -118,21 +118,13 @@ class HraListController extends Controller
                     'user:id,name',
                 ]);
 
-            if ($companyName) {
-                $query->whereHas('permitToWork', fn ($q) => $q->where('receiver_company_name', $companyName));
-            }
-
             if ($areaId) {
                 $query->whereHas('permitToWork', fn ($q) => $q->where('area_id', $areaId));
             }
 
-            if ($status) {
-                if ($config['hasApproval'] && in_array($status, ['pending', 'approved', 'rejected'], true)) {
-                    $query->where('ehs_approval', $status);
-                } else {
-                    $query->where('status', $status);
-                }
-            }
+            // NOTE: status is filtered later on the merged collection using the same
+            // normalized label the table badge shows, so approval status (EHS) and the
+            // base status column never disagree with what the user filtered on.
 
             if ($dateFrom) {
                 $query->whereDate('end_datetime', '>=', $dateFrom);
@@ -183,6 +175,22 @@ class HraListController extends Controller
                         : null,
                 ]);
             });
+        }
+
+        // Status filter — applied here (not at the DB level) so it matches the exact
+        // label rendered in the table, regardless of EHS approval vs. base status.
+        if ($status) {
+            $wantedLabel = [
+                'pending'   => 'Pending Approval',
+                'approved'  => 'Approved',
+                'rejected'  => 'Rejected',
+                'draft'     => 'Draft',
+                'active'    => 'Active',
+                'completed' => 'Completed',
+                'cancelled' => 'Cancelled',
+            ][$status] ?? ucfirst($status);
+
+            $items = $items->filter(fn ($i) => $i['status_label'] === $wantedLabel);
         }
 
         $items = $items->sortByDesc('created_at')->values();

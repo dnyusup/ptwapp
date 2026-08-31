@@ -34,9 +34,11 @@
         <a class="nav-link {{ Request::routeIs('permits.*') ? 'active' : '' }}" href="{{ route('permits.index') }}">
             <i class="fas fa-clipboard-list"></i>Permits
         </a>
+        @if(auth()->user()->role === 'administrator' || (auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS'))
         <a class="nav-link {{ Request::routeIs('hras.*') ? 'active' : '' }}" href="{{ route('hras.index') }}">
             <i class="fas fa-triangle-exclamation"></i>HRA's
         </a>
+        @endif
         @if(auth()->user()->role !== 'contractor')
         <a class="nav-link {{ Request::routeIs('permits.create') ? 'active' : '' }}" href="{{ route('permits.create') }}">
             <i class="fas fa-plus-circle"></i>New Permit
