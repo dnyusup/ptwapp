@@ -218,11 +218,15 @@
                     <a href="#" id="bulkClearAll">Clear</a>
                 </span>
                 <div class="ms-auto d-flex gap-2">
-                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning">
+                    {{-- inline colors: custom.css .btn-warning points at an undefined
+                         --warning-gradient var, which resolves to a transparent bg --}}
+                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning"
+                            style="background-color:#f59e0b;border-color:#f59e0b;color:#fff;">
                         <i class="fas fa-ban me-1"></i>Cancel selected
                     </button>
                     @if($isAdmin)
-                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger">
+                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger"
+                            style="background-color:#ef4444;border-color:#ef4444;color:#fff;">
                         <i class="fas fa-trash me-1"></i>Delete selected
                     </button>
                     @endif
