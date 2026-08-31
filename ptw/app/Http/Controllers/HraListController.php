@@ -112,7 +112,11 @@ class HraListController extends Controller
             }
 
             $query = $config['model']::query()
-                ->with(['permitToWork:id,permit_number,work_title,receiver_company_name,area_id,work_location', 'user:id,name']);
+                ->with([
+                    'permitToWork:id,permit_number,work_title,receiver_company_name,area_id,work_location',
+                    'permitToWork.area:id,name',
+                    'user:id,name',
+                ]);
 
             if ($companyName) {
                 $query->whereHas('permitToWork', fn ($q) => $q->where('receiver_company_name', $companyName));
@@ -164,12 +168,14 @@ class HraListController extends Controller
                     'permit_number'     => $permit->permit_number ?? ($hra->permit_number ?? '-'),
                     'work_title'        => $permit->work_title ?? '-',
                     'company'           => $permit->receiver_company_name ?? '-',
+                    'area'              => $permit->area->name ?? 'No Area',
                     'location'          => $hra->work_location ?: ($permit->work_location ?? '-'),
                     'worker_name'       => $hra->worker_name ?: '-',
                     'start_datetime'    => $hra->start_datetime,
                     'end_datetime'      => $hra->end_datetime,
                     'status'            => $hra->status ?? null,
                     'approval'          => $approval,
+                    'status_label'      => $this->statusLabel($approval, $hra->status ?? null),
                     'created_by'        => $hra->user->name ?? '-',
                     'created_at'        => $hra->created_at,
                     'show_url'          => ($permit && $config['route'])
@@ -180,6 +186,15 @@ class HraListController extends Controller
         }
 
         $items = $items->sortByDesc('created_at')->values();
+
+        // Summary widgets — computed from the full filtered set (before pagination),
+        // so they stay in sync with whatever filters are active on the table.
+        $summary = [
+            'total'    => $items->count(),
+            'byStatus' => $items->groupBy('status_label')->map->count()->sortDesc(),
+            'byType'   => $items->groupBy('type_label')->map->count()->sortDesc(),
+            'byArea'   => $items->groupBy('area')->map->count()->sortDesc(),
+        ];
 
         // Manual pagination over the merged collection.
         $perPage = 20;
@@ -195,6 +210,30 @@ class HraListController extends Controller
         $areas     = Area::where('is_active', true)->orderBy('name')->get();
         $typeList  = collect($this->hraTypes())->map(fn ($c, $k) => ['key' => $k, 'label' => $c['label']])->values();
 
-        return view('hras.index', compact('hras', 'areas', 'typeList'));
+        return view('hras.index', compact('hras', 'areas', 'typeList', 'summary'));
+    }
+
+    /**
+     * Normalize an HRA's approval + base status into one display label.
+     */
+    private function statusLabel(?string $approval, ?string $status): string
+    {
+        if ($approval === 'approved') {
+            return 'Approved';
+        }
+        if ($approval === 'pending') {
+            return 'Pending Approval';
+        }
+        if ($approval === 'rejected') {
+            return 'Rejected';
+        }
+
+        return match ($status) {
+            'completed' => 'Completed',
+            'active'    => 'Active',
+            'cancelled' => 'Cancelled',
+            null, ''    => 'Draft',
+            default     => ucfirst($status),
+        };
     }
 }

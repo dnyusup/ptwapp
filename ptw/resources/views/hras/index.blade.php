@@ -85,6 +85,94 @@
         </div>
     </div>
 
+    @php
+        // label shown in the summary  ->  value expected by the ?status= filter
+        $statusFilterMap = [
+            'Pending Approval' => 'pending',
+            'Approved'         => 'approved',
+            'Rejected'         => 'rejected',
+            'Completed'        => 'completed',
+            'Active'           => 'active',
+            'Cancelled'        => 'cancelled',
+            'Draft'            => 'draft',
+        ];
+        $statusColorMap = [
+            'Pending Approval' => 'warning',
+            'Approved'         => 'success',
+            'Rejected'         => 'danger',
+            'Completed'        => 'primary',
+            'Active'           => 'success',
+            'Cancelled'        => 'danger',
+            'Draft'            => 'secondary',
+        ];
+        $typeKeyMap = $typeList->pluck('key', 'label');
+        $areaIdMap  = $areas->pluck('id', 'name');
+    @endphp
+
+    <!-- Summary dashboard (follows the active table filters) -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <div class="row g-3">
+                <div class="col-lg-4 col-md-6">
+                    <div class="text-uppercase text-muted fw-semibold mb-2" style="font-size:.72rem;letter-spacing:.5px;">
+                        <i class="fas fa-flag me-1"></i>By Status
+                        <span class="text-dark">&middot; {{ $summary['total'] }} total</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1">
+                        @forelse($summary['byStatus'] as $label => $count)
+                            <a href="{{ route('hras.index', array_merge(request()->except(['status','page']), ['status' => $statusFilterMap[$label] ?? null])) }}"
+                               class="badge bg-{{ $statusColorMap[$label] ?? 'secondary' }} text-decoration-none {{ request('status') === ($statusFilterMap[$label] ?? '_') ? 'border border-2 border-dark' : '' }}"
+                               style="font-weight:500;">
+                                {{ $label }} <span class="ms-1 opacity-75">{{ $count }}</span>
+                            </a>
+                        @empty
+                            <span class="text-muted small">No data</span>
+                        @endforelse
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="text-uppercase text-muted fw-semibold mb-2" style="font-size:.72rem;letter-spacing:.5px;">
+                        <i class="fas fa-layer-group me-1"></i>By Type
+                    </div>
+                    <div class="d-flex flex-wrap gap-1">
+                        @forelse($summary['byType'] as $label => $count)
+                            <a href="{{ route('hras.index', array_merge(request()->except(['type','page']), ['type' => $typeKeyMap[$label] ?? null])) }}"
+                               class="badge bg-light text-dark border text-decoration-none {{ request('type') === ($typeKeyMap[$label] ?? '_') ? 'border-2 border-primary' : '' }}"
+                               style="font-weight:500;">
+                                {{ $label }} <span class="ms-1 text-primary">{{ $count }}</span>
+                            </a>
+                        @empty
+                            <span class="text-muted small">No data</span>
+                        @endforelse
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="text-uppercase text-muted fw-semibold mb-2" style="font-size:.72rem;letter-spacing:.5px;">
+                        <i class="fas fa-location-dot me-1"></i>By Area
+                    </div>
+                    <div class="d-flex flex-wrap gap-1">
+                        @forelse($summary['byArea'] as $label => $count)
+                            @php $aid = $areaIdMap[$label] ?? null; @endphp
+                            @if($aid)
+                                <a href="{{ route('hras.index', array_merge(request()->except(['area','page']), ['area' => $aid])) }}"
+                                   class="badge bg-light text-dark border text-decoration-none {{ (string) request('area') === (string) $aid ? 'border-2 border-primary' : '' }}"
+                                   style="font-weight:500;">
+                                    {{ $label }} <span class="ms-1 text-primary">{{ $count }}</span>
+                                </a>
+                            @else
+                                <span class="badge bg-light text-muted border" style="font-weight:500;">
+                                    {{ $label }} <span class="ms-1">{{ $count }}</span>
+                                </span>
+                            @endif
+                        @empty
+                            <span class="text-muted small">No data</span>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- HRA Table -->
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white">
