@@ -22,6 +22,7 @@ use App\Http\Controllers\InspectionController;
 use App\Http\Controllers\ContractorUserController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\HraListController;
 
 // Debug route - hapus setelah testing
 Route::get('/debug-storage/{permitId}', function ($permitId) {
@@ -79,6 +80,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/work-schedule-trend', [ReportsController::class, 'getWorkScheduleTrend'])->name('reports.work-schedule-trend');
     Route::resource('permits', PermitToWorkController::class);
     Route::get('/permits-export', [PermitToWorkController::class, 'export'])->name('permits.export');
+
+    // Unified list of all HRA types across every permit
+    Route::get('/hras', [HraListController::class, 'index'])->name('hras.index');
     
     // Test route for expired permits functionality
     Route::get('/test/expired-permits', function() {
