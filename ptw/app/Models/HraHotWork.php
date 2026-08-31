@@ -107,6 +107,15 @@ class HraHotWork extends Model
         'rejected_at',
         'rejected_by',
         'created_via',
+        // Inspection (one per HRA, recorded after EHS approval)
+        'inspector_name',
+        'inspector_email',
+        'inspection_category',
+        'inspection_finding_type',
+        'inspection_findings',
+        'inspection_photo_path',
+        'inspected_at',
+        'inspected_by',
     ];
 
     protected $casts = [
@@ -117,6 +126,7 @@ class HraHotWork extends Model
         'ehs_approved_at' => 'datetime',
         'final_approved_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'inspected_at' => 'datetime',
         'area_owner_notified' => 'boolean',
         'ehs_notified' => 'boolean',
     ];
@@ -171,6 +181,34 @@ class HraHotWork extends Model
     public function rejectedBy()
     {
         return $this->belongsTo(User::class, 'rejected_by');
+    }
+
+    /**
+     * Relationship with User who recorded the inspection
+     */
+    public function inspectedBy()
+    {
+        return $this->belongsTo(User::class, 'inspected_by');
+    }
+
+    /**
+     * Whether an inspection has been recorded for this HRA.
+     */
+    public function isInspected(): bool
+    {
+        return !is_null($this->inspected_at);
+    }
+
+    /**
+     * Inspection status label: "Not Inspected" | "OK" | "NOK".
+     */
+    public function getInspectionStatusAttribute(): string
+    {
+        if (!$this->isInspected()) {
+            return 'Not Inspected';
+        }
+
+        return $this->inspection_finding_type === 'NOK' ? 'NOK' : 'OK';
     }
 
     /**

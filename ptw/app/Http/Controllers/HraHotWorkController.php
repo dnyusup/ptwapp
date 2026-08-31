@@ -252,8 +252,165 @@ class HraHotWorkController extends Controller
     {
         // Load the locationOwner relationship
         $permit->load('locationOwner');
-        
+        $hraHotWork->load('inspectedBy');
+
         return view('hra.hot-works.show', compact('permit', 'hraHotWork'));
+    }
+
+    /**
+     * Record (or update) the single inspection for an approved HRA Hot Work.
+     * Inspection data lives on the hra_hot_works row itself.
+     */
+    public function storeInspection(Request $request, PermitToWork $permit, HraHotWork $hraHotWork)
+    {
+        if ($hraHotWork->ehs_approval !== 'approved') {
+            return redirect()->back()->with('error', 'Inspection can only be recorded for an approved HRA Hot Work.');
+        }
+
+        $validated = $request->validate([
+            'inspector_name'        => 'required|string|max:255',
+            'inspector_email'       => 'required|email|max:255',
+            'inspection_category'   => 'required|string|max:255',
+            'finding_type'          => 'required|in:OK,NOK',
+            'findings'              => 'required|string',
+            'inspection_photo'      => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
+            'inspection_photo_data' => 'nullable|string',
+        ]);
+
+        $photoPath = $this->storeInspectionPhoto($request) ?? $hraHotWork->inspection_photo_path;
+
+        $hraHotWork->update([
+            'inspector_name'          => $validated['inspector_name'],
+            'inspector_email'         => $validated['inspector_email'],
+            'inspection_category'     => $validated['inspection_category'],
+            'inspection_finding_type' => $validated['finding_type'],
+            'inspection_findings'     => $validated['findings'],
+            'inspection_photo_path'   => $photoPath,
+            'inspected_at'            => now(),
+            'inspected_by'            => auth()->id(),
+        ]);
+
+        // Notify EHS team (same recipients logic as the main permit inspection)
+        try {
+            $ehsEmails = \App\Services\EhsEmailService::getEhsEmails($permit->area_id);
+
+            if (count($ehsEmails) > 0) {
+                $ccEmails = array_values(array_unique(array_filter([
+                    $permit->locationOwner->email ?? null,
+                    $validated['inspector_email'],
+                ])));
+
+                $mail = \Mail::to($ehsEmails);
+                if (!empty($ccEmails)) {
+                    $mail->cc($ccEmails);
+                }
+                $mail->send(new \App\Mail\HraInspectionNotification($hraHotWork->fresh('permitToWork')));
+            }
+        } catch (\Exception $e) {
+            \Log::error('[HRA Hot Work] Inspection notification failed', [
+                'error'  => $e->getMessage(),
+                'hra_id' => $hraHotWork->id,
+            ]);
+        }
+
+        return redirect()
+            ->route('hra.hot-works.show', [$permit, $hraHotWork])
+            ->with('success', 'Inspection recorded successfully.');
+    }
+
+    /**
+     * Store an inspection photo from a file upload or a base64 payload.
+     */
+    private function storeInspectionPhoto(Request $request): ?string
+    {
+        try {
+            if ($request->hasFile('inspection_photo')) {
+                $file = $request->file('inspection_photo');
+                $filename = 'hra_inspection_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('hra_inspections', $filename, 'public');
+                $this->resizeStoredImage(\Storage::disk('public')->path($path));
+                return $path;
+            }
+
+            if ($request->filled('inspection_photo_data')) {
+                $data = $request->input('inspection_photo_data');
+                if (preg_match('/^data:image\/(\w+);base64,/', $data, $m)) {
+                    $ext = $m[1] === 'jpeg' ? 'jpg' : $m[1];
+                    $binary = base64_decode(substr($data, strpos($data, ',') + 1));
+                    if ($binary !== false) {
+                        $path = 'hra_inspections/hra_inspection_' . time() . '_' . uniqid() . '.' . $ext;
+                        \Storage::disk('public')->put($path, $binary);
+                        $this->resizeStoredImage(\Storage::disk('public')->path($path));
+                        return $path;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('[HRA Hot Work] Inspection photo upload failed', ['error' => $e->getMessage()]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Downscale an already-saved image to fit within maxWidth x maxHeight using GD,
+     * re-encoding at a lower quality to keep the file small. Mirrors the behaviour
+     * of InspectionController for the main-permit inspection photos. No-op if GD is
+     * unavailable or the image is already within bounds.
+     */
+    private function resizeStoredImage(string $filePath, int $maxWidth = 1280, int $maxHeight = 960): void
+    {
+        if (!function_exists('imagecreatefromjpeg') || !file_exists($filePath)) {
+            return;
+        }
+
+        try {
+            $info = @getimagesize($filePath);
+            if (!$info) {
+                return;
+            }
+
+            [$origW, $origH, $type] = $info;
+
+            if ($origW <= $maxWidth && $origH <= $maxHeight && $type === IMAGETYPE_JPEG) {
+                return;
+            }
+
+            $ratio = min($maxWidth / $origW, $maxHeight / $origH, 1);
+            $newW  = (int) round($origW * $ratio);
+            $newH  = (int) round($origH * $ratio);
+
+            $src = match ($type) {
+                IMAGETYPE_JPEG => imagecreatefromjpeg($filePath),
+                IMAGETYPE_PNG  => imagecreatefrompng($filePath),
+                IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? imagecreatefromwebp($filePath) : null,
+                default        => null,
+            };
+
+            if (!$src) {
+                return;
+            }
+
+            $dst = imagecreatetruecolor($newW, $newH);
+            if ($type === IMAGETYPE_PNG) {
+                imagealphablending($dst, false);
+                imagesavealpha($dst, true);
+            }
+
+            imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+
+            match ($type) {
+                IMAGETYPE_JPEG => imagejpeg($dst, $filePath, 85),
+                IMAGETYPE_PNG  => imagepng($dst, $filePath, 8),
+                IMAGETYPE_WEBP => function_exists('imagewebp') ? imagewebp($dst, $filePath, 85) : null,
+                default        => null,
+            };
+
+            imagedestroy($src);
+            imagedestroy($dst);
+        } catch (\Throwable $e) {
+            \Log::warning('[HRA Hot Work] Image resize failed', ['file' => $filePath, 'error' => $e->getMessage()]);
+        }
     }
 
     /**
