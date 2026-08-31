@@ -303,6 +303,57 @@ class TaskController extends Controller
             $tasks = $tasks->merge($rejectedHras);
         }
 
+        // HRA Hot Work - inspections still outstanding (Waiting Inspection only).
+        // "No Inspected" (36h+ overdue) is intentionally excluded from tasks.
+        // Shown to the permit issuer/responsible and to contractors of the permit's company.
+        $contractorCompany = ($user->role === 'contractor' && $user->company)
+            ? $user->company->company_name
+            : null;
+
+        $hotWorksPendingInspection = HraHotWork::with(['permitToWork.area', 'inspections', 'user'])
+            ->where('approval_status', 'approved')
+            ->where('ehs_approval', 'approved')
+            ->get()
+            ->filter(fn ($hw) => $hw->displayStatus() === 'Waiting Inspection');
+
+        foreach ($hotWorksPendingInspection as $hw) {
+            $permit = $hw->permitToWork;
+            if (!$permit) {
+                continue;
+            }
+
+            $isPermitIssuer = $permit->permit_issuer_id == $user->id;
+            $isContractorOfCompany = $contractorCompany
+                && $permit->receiver_company_name
+                && $permit->receiver_company_name === $contractorCompany;
+
+            if (!$isPermitIssuer && !$isContractorOfCompany) {
+                continue;
+            }
+
+            $done     = $hw->inspections->count();
+            $required = $hw->requiredInspectionCount();
+
+            $tasks->push([
+                'id' => $hw->id,
+                'type' => 'hra',
+                'subtype' => 'hot_work_inspection',
+                'title' => 'HRA Hot Work - ' . ($permit->work_title ?? $hw->work_description ?? 'N/A'),
+                'permit_number' => $hw->hra_permit_number ?? $permit->permit_number,
+                'description' => "Inspeksi Hot Work perlu dilakukan ({$done}/{$required})",
+                'company' => $permit->receiver_company_name,
+                'location' => $hw->work_location ?? ($permit->work_location ?? '-'),
+                'area_id' => $permit->area_id,
+                'area_name' => $permit->area->name ?? '',
+                'created_by' => $hw->user->name ?? '-',
+                'date' => $hw->end_datetime ?? $hw->updated_at,
+                'priority' => 'medium',
+                'route' => route('hra.hot-works.show', ['permit' => $permit->id, 'hraHotWork' => $hw->id]),
+                'badge_class' => 'bg-warning',
+                'badge_text' => 'Waiting Inspection',
+            ]);
+        }
+
         // Sort by date descending
         return $tasks->sortByDesc('date')->values();
     }
@@ -373,6 +424,31 @@ class TaskController extends Controller
                 ->where('user_id', $user->id)
                 ->count();
         }
+
+        // HRA Hot Work pending inspection (permit issuer/responsible or matching contractor company)
+        $contractorCompany = ($user->role === 'contractor' && $user->company)
+            ? $user->company->company_name
+            : null;
+
+        $count += HraHotWork::with(['permitToWork', 'inspections'])
+            ->where('approval_status', 'approved')
+            ->where('ehs_approval', 'approved')
+            ->get()
+            ->filter(function ($hw) use ($user, $contractorCompany) {
+                if ($hw->displayStatus() !== 'Waiting Inspection') {
+                    return false;
+                }
+                $permit = $hw->permitToWork;
+                if (!$permit) {
+                    return false;
+                }
+                if ($permit->permit_issuer_id == $user->id) {
+                    return true;
+                }
+                return $contractorCompany
+                    && $permit->receiver_company_name === $contractorCompany;
+            })
+            ->count();
 
         return $count;
     }

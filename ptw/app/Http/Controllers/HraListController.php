@@ -347,9 +347,11 @@ class HraListController extends Controller
                 $statusLabel = $this->statusLabel($approval, $hra->status ?? null);
 
                 // Hot Work: approved but mandatory inspections still outstanding.
-                if ($key === 'hot-works' && method_exists($hra, 'displayStatus')
-                    && $hra->displayStatus() === 'Waiting Inspection') {
-                    $statusLabel = 'Waiting Inspection';
+                if ($key === 'hot-works' && method_exists($hra, 'displayStatus')) {
+                    $ds = $hra->displayStatus();
+                    if (in_array($ds, ['Waiting Inspection', 'No Inspected'], true)) {
+                        $statusLabel = $ds;
+                    }
                 }
 
                 $items->push([
@@ -391,6 +393,7 @@ class HraListController extends Controller
                 'completed'          => 'Completed',
                 'cancelled'          => 'Cancelled',
                 'waiting_inspection' => 'Waiting Inspection',
+                'no_inspected'       => 'No Inspected',
             ][$status] ?? ucfirst($status);
 
             $items = $items->filter(fn ($i) => $i['status_label'] === $wantedLabel);

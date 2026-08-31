@@ -43,6 +43,7 @@
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                         <option value="waiting_inspection" {{ request('status') == 'waiting_inspection' ? 'selected' : '' }}>Waiting Inspection</option>
+                        <option value="no_inspected" {{ request('status') == 'no_inspected' ? 'selected' : '' }}>No Inspected</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
@@ -92,6 +93,7 @@
             'Pending Approval'   => 'pending',
             'Approved'           => 'approved',
             'Waiting Inspection' => 'waiting_inspection',
+            'No Inspected'       => 'no_inspected',
             'Rejected'           => 'rejected',
             'Completed'          => 'completed',
             'Active'             => 'active',
@@ -102,6 +104,7 @@
             'Pending Approval'   => 'warning',
             'Approved'           => 'success',
             'Waiting Inspection' => 'warning',
+            'No Inspected'       => 'danger',
             'Rejected'           => 'danger',
             'Completed'          => 'primary',
             'Active'             => 'success',
@@ -296,6 +299,7 @@
                                             'Completed' => 'primary',
                                             'Rejected'  => 'danger',
                                             'Cancelled' => 'danger',
+                                            'No Inspected' => 'danger',
                                             'Pending Approval'   => 'warning',
                                             'Waiting Inspection' => 'warning',
                                             default     => 'secondary',

@@ -105,6 +105,10 @@
                     <span class="badge bg-warning text-dark fs-6 px-3 py-2">
                         <i class="fas fa-clipboard-check me-2"></i>Waiting Inspection
                     </span>
+                @elseif($displayStatus === 'No Inspected')
+                    <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="fas fa-triangle-exclamation me-2"></i>No Inspected
+                    </span>
                 @elseif($displayStatus === 'Approved')
                     <span class="badge bg-success fs-6 px-3 py-2">
                         <i class="fas fa-check-circle me-2"></i>Approved

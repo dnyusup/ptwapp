@@ -169,9 +169,17 @@
                                         </div>
                                     </div>
                                 @elseif($hra->approval_status === 'approved')
-                                    @if($hra->displayStatus() === 'Waiting Inspection')
+                                    @php $hraDs = $hra->displayStatus(); @endphp
+                                    @if($hraDs === 'Waiting Inspection')
                                         <span class="badge bg-warning text-dark">
                                             <i class="fas fa-clipboard-check me-1"></i>Waiting Inspection
+                                        </span>
+                                        <div class="small text-muted mt-1">
+                                            {{ $hra->inspections->count() }}/{{ $hra->requiredInspectionCount() }} inspeksi
+                                        </div>
+                                    @elseif($hraDs === 'No Inspected')
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-triangle-exclamation me-1"></i>No Inspected
                                         </span>
                                         <div class="small text-muted mt-1">
                                             {{ $hra->inspections->count() }}/{{ $hra->requiredInspectionCount() }} inspeksi

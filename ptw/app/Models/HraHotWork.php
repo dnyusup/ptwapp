@@ -124,6 +124,9 @@ class HraHotWork extends Model
     /** Minutes that must elapse between one inspection and the next. */
     public const INSPECTION_INTERVAL_MINUTES = 30;
 
+    /** Hours after the hot work end time before missing inspections escalate to "No Inspected". */
+    public const INSPECTION_OVERDUE_HOURS = 36;
+
     /**
      * Generate unique HRA permit number
      */
@@ -252,8 +255,9 @@ class HraHotWork extends Model
      * Status shown to users. Same as the approval status, except an approved HRA
      * whose mandatory inspections are still outstanding reads "Waiting Inspection"
      * (once the hot work end time has passed, or once the first inspection is done
-     * but later ones are still required). It flips back to "Approved" when every
-     * required inspection has been recorded.
+     * but later ones are still required), and escalates to "No Inspected" once it
+     * is more than 36 hours past the hot work end time. It flips back to "Approved"
+     * when every required inspection has been recorded.
      */
     public function displayStatus(): string
     {
@@ -269,6 +273,11 @@ class HraHotWork extends Model
 
         if ($this->inspectionsComplete()) {
             return 'Approved';
+        }
+
+        if ($this->end_datetime
+            && now()->greaterThan($this->end_datetime->copy()->addHours(self::INSPECTION_OVERDUE_HOURS))) {
+            return 'No Inspected';
         }
 
         $endPassed = $this->end_datetime && now()->greaterThan($this->end_datetime);
