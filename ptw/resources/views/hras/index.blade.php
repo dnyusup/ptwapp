@@ -42,6 +42,7 @@
                         <option value="">All Status</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="waiting_inspection" {{ request('status') == 'waiting_inspection' ? 'selected' : '' }}>Waiting Inspection</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                         <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
@@ -88,22 +89,24 @@
     @php
         // label shown in the summary  ->  value expected by the ?status= filter
         $statusFilterMap = [
-            'Pending Approval' => 'pending',
-            'Approved'         => 'approved',
-            'Rejected'         => 'rejected',
-            'Completed'        => 'completed',
-            'Active'           => 'active',
-            'Cancelled'        => 'cancelled',
-            'Draft'            => 'draft',
+            'Pending Approval'   => 'pending',
+            'Approved'           => 'approved',
+            'Waiting Inspection' => 'waiting_inspection',
+            'Rejected'           => 'rejected',
+            'Completed'          => 'completed',
+            'Active'             => 'active',
+            'Cancelled'          => 'cancelled',
+            'Draft'              => 'draft',
         ];
         $statusColorMap = [
-            'Pending Approval' => 'warning',
-            'Approved'         => 'success',
-            'Rejected'         => 'danger',
-            'Completed'        => 'primary',
-            'Active'           => 'success',
-            'Cancelled'        => 'danger',
-            'Draft'            => 'secondary',
+            'Pending Approval'   => 'warning',
+            'Approved'           => 'success',
+            'Waiting Inspection' => 'warning',
+            'Rejected'           => 'danger',
+            'Completed'          => 'primary',
+            'Active'             => 'success',
+            'Cancelled'          => 'danger',
+            'Draft'              => 'secondary',
         ];
         $typeKeyMap = $typeList->pluck('key', 'label');
         $areaIdMap  = $areas->pluck('id', 'name');
@@ -286,26 +289,19 @@
                                 <td class="text-nowrap">{{ $hra['end_datetime'] ? \Carbon\Carbon::parse($hra['end_datetime'])->format('d M Y H:i') : '-' }}</td>
                                 <td>
                                     @php
-                                        $approval = $hra['approval'];
-                                        $status = $hra['status'];
+                                        $label = $hra['status_label'];
+                                        $badge = match($label) {
+                                            'Approved'  => 'success',
+                                            'Active'    => 'success',
+                                            'Completed' => 'primary',
+                                            'Rejected'  => 'danger',
+                                            'Cancelled' => 'danger',
+                                            'Pending Approval'   => 'warning',
+                                            'Waiting Inspection' => 'warning',
+                                            default     => 'secondary',
+                                        };
                                     @endphp
-                                    @if($approval === 'approved')
-                                        <span class="badge bg-success">Approved</span>
-                                    @elseif($approval === 'pending')
-                                        <span class="badge bg-warning">Pending Approval</span>
-                                    @elseif($approval === 'rejected')
-                                        <span class="badge bg-danger">Rejected</span>
-                                    @elseif($status === 'completed')
-                                        <span class="badge bg-primary">Completed</span>
-                                    @elseif($status === 'active')
-                                        <span class="badge bg-success">Active</span>
-                                    @elseif($status === 'cancelled')
-                                        <span class="badge bg-danger">Cancelled</span>
-                                    @elseif($status)
-                                        <span class="badge bg-secondary">{{ ucfirst($status) }}</span>
-                                    @else
-                                        <span class="badge bg-secondary">Draft</span>
-                                    @endif
+                                    <span class="badge bg-{{ $badge }}{{ $badge === 'warning' ? ' text-dark' : '' }}">{{ $label }}</span>
                                 </td>
                                 <td>{{ $hra['created_by'] }}</td>
                                 <td class="text-center text-nowrap">

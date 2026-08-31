@@ -15,7 +15,7 @@ class HraHotWorkController extends Controller
      */
     public function index(PermitToWork $permit)
     {
-        $hras = $permit->hraHotWorks()->with('user')->orderBy('created_at', 'desc')->get();
+        $hras = $permit->hraHotWorks()->with(['user', 'inspections'])->orderBy('created_at', 'desc')->get();
         return view('hra.hot-works.index', compact('permit', 'hras'));
     }
 

@@ -92,19 +92,24 @@
             </div>
             <div class="d-flex gap-2 align-items-center flex-wrap">
                 <!-- Status Badge - Moved to the leftmost position -->
-                @if(($hraHotWork->approval_status ?? 'draft') === 'draft')
+                @php $displayStatus = $hraHotWork->displayStatus(); @endphp
+                @if($displayStatus === 'Draft')
                     <span class="badge bg-secondary fs-6 px-3 py-2">
                         <i class="fas fa-file-alt me-2"></i>Draft
                     </span>
-                @elseif($hraHotWork->approval_status === 'pending')
+                @elseif($displayStatus === 'Waiting for Approval')
                     <span class="badge bg-warning text-dark fs-6 px-3 py-2">
                         <i class="fas fa-clock me-2"></i>Waiting for Approval
                     </span>
-                @elseif($hraHotWork->approval_status === 'approved')
+                @elseif($displayStatus === 'Waiting Inspection')
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                        <i class="fas fa-clipboard-check me-2"></i>Waiting Inspection
+                    </span>
+                @elseif($displayStatus === 'Approved')
                     <span class="badge bg-success fs-6 px-3 py-2">
                         <i class="fas fa-check-circle me-2"></i>Approved
                     </span>
-                @elseif($hraHotWork->approval_status === 'rejected')
+                @elseif($displayStatus === 'Rejected')
                     <span class="badge bg-danger fs-6 px-3 py-2">
                         <i class="fas fa-times-circle me-2"></i>Rejected
                     </span>

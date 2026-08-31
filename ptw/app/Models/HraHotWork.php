@@ -241,6 +241,46 @@ class HraHotWork extends Model
     }
 
     /**
+     * Whether every mandatory inspection has been recorded.
+     */
+    public function inspectionsComplete(): bool
+    {
+        return $this->inspections->count() >= $this->requiredInspectionCount();
+    }
+
+    /**
+     * Status shown to users. Same as the approval status, except an approved HRA
+     * whose mandatory inspections are still outstanding reads "Waiting Inspection"
+     * (once the hot work end time has passed, or once the first inspection is done
+     * but later ones are still required). It flips back to "Approved" when every
+     * required inspection has been recorded.
+     */
+    public function displayStatus(): string
+    {
+        $approval = $this->approval_status ?? 'draft';
+
+        if ($approval !== 'approved') {
+            return match ($approval) {
+                'pending'  => 'Waiting for Approval',
+                'rejected' => 'Rejected',
+                default    => 'Draft',
+            };
+        }
+
+        if ($this->inspectionsComplete()) {
+            return 'Approved';
+        }
+
+        $endPassed = $this->end_datetime && now()->greaterThan($this->end_datetime);
+
+        if ($endPassed || $this->inspections->count() >= 1) {
+            return 'Waiting Inspection';
+        }
+
+        return 'Approved';
+    }
+
+    /**
      * Overall inspection progress label for the card header.
      */
     public function getInspectionStatusAttribute(): string

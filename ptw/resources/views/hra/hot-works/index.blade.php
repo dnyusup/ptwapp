@@ -169,12 +169,21 @@
                                         </div>
                                     </div>
                                 @elseif($hra->approval_status === 'approved')
-                                    <span class="badge bg-success">
-                                        <i class="fas fa-check-circle me-1"></i>Approved
-                                    </span>
-                                    <div class="small text-muted mt-1">
-                                        {{ $hra->final_approved_at ? $hra->final_approved_at->format('d M Y H:i') : '' }}
-                                    </div>
+                                    @if($hra->displayStatus() === 'Waiting Inspection')
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clipboard-check me-1"></i>Waiting Inspection
+                                        </span>
+                                        <div class="small text-muted mt-1">
+                                            {{ $hra->inspections->count() }}/{{ $hra->requiredInspectionCount() }} inspeksi
+                                        </div>
+                                    @else
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Approved
+                                        </span>
+                                        <div class="small text-muted mt-1">
+                                            {{ $hra->final_approved_at ? $hra->final_approved_at->format('d M Y H:i') : '' }}
+                                        </div>
+                                    @endif
                                 @elseif($hra->approval_status === 'rejected')
                                     <span class="badge bg-danger">
                                         <i class="fas fa-times-circle me-1"></i>Rejected

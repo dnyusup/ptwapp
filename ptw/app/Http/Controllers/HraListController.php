@@ -311,6 +311,11 @@ class HraListController extends Controller
                     'user:id,name',
                 ]);
 
+            // Hot Work has a post-approval "Waiting Inspection" state.
+            if ($key === 'hot-works') {
+                $query->with('inspections');
+            }
+
             if ($areaId) {
                 $query->whereHas('permitToWork', fn ($q) => $q->where('area_id', $areaId));
             }
@@ -339,6 +344,14 @@ class HraListController extends Controller
 
                 $approval = $config['hasApproval'] ? ($hra->ehs_approval ?? null) : null;
 
+                $statusLabel = $this->statusLabel($approval, $hra->status ?? null);
+
+                // Hot Work: approved but mandatory inspections still outstanding.
+                if ($key === 'hot-works' && method_exists($hra, 'displayStatus')
+                    && $hra->displayStatus() === 'Waiting Inspection') {
+                    $statusLabel = 'Waiting Inspection';
+                }
+
                 $items->push([
                     'type_key'          => $key,
                     'type_label'        => $config['label'],
@@ -356,7 +369,7 @@ class HraListController extends Controller
                     'end_datetime'      => $hra->end_datetime,
                     'status'            => $hra->status ?? null,
                     'approval'          => $approval,
-                    'status_label'      => $this->statusLabel($approval, $hra->status ?? null),
+                    'status_label'      => $statusLabel,
                     'created_by'        => $hra->user->name ?? '-',
                     'created_at'        => $hra->created_at,
                     'show_url'          => ($permit && $config['route'])
@@ -370,13 +383,14 @@ class HraListController extends Controller
         // label rendered in the table, regardless of EHS approval vs. base status.
         if ($status) {
             $wantedLabel = [
-                'pending'   => 'Pending Approval',
-                'approved'  => 'Approved',
-                'rejected'  => 'Rejected',
-                'draft'     => 'Draft',
-                'active'    => 'Active',
-                'completed' => 'Completed',
-                'cancelled' => 'Cancelled',
+                'pending'             => 'Pending Approval',
+                'approved'            => 'Approved',
+                'rejected'           => 'Rejected',
+                'draft'              => 'Draft',
+                'active'             => 'Active',
+                'completed'          => 'Completed',
+                'cancelled'          => 'Cancelled',
+                'waiting_inspection' => 'Waiting Inspection',
             ][$status] ?? ucfirst($status);
 
             $items = $items->filter(fn ($i) => $i['status_label'] === $wantedLabel);
