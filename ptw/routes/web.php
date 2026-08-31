@@ -23,6 +23,7 @@ use App\Http\Controllers\ContractorUserController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\HraListController;
+use App\Http\Controllers\InspectionListController;
 
 // Debug route - hapus setelah testing
 Route::get('/debug-storage/{permitId}', function ($permitId) {
@@ -87,6 +88,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/hras-bulk-delete', [HraListController::class, 'bulkDelete'])->name('hras.bulk-delete');
     Route::post('/hras/{type}/{id}/cancel', [HraListController::class, 'cancel'])->name('hras.cancel');
     Route::delete('/hras/{type}/{id}', [HraListController::class, 'destroy'])->name('hras.destroy');
+
+    // Global list of all main-permit inspections
+    Route::get('/inspections', [InspectionListController::class, 'index'])->name('inspections.list');
     
     // Test route for expired permits functionality
     Route::get('/test/expired-permits', function() {

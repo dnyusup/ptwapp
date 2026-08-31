@@ -38,6 +38,9 @@
         <a class="nav-link {{ Request::routeIs('hras.*') ? 'active' : '' }}" href="{{ route('hras.index') }}">
             <i class="fas fa-triangle-exclamation"></i>HRA's
         </a>
+        <a class="nav-link {{ Request::routeIs('inspections.list') ? 'active' : '' }}" href="{{ route('inspections.list') }}">
+            <i class="fas fa-clipboard-check"></i>Inspections
+        </a>
         @endif
         @if(auth()->user()->role !== 'contractor')
         <a class="nav-link {{ Request::routeIs('permits.create') ? 'active' : '' }}" href="{{ route('permits.create') }}">
