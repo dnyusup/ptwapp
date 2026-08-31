@@ -34,7 +34,7 @@
         <a class="nav-link {{ Request::routeIs('permits.*') ? 'active' : '' }}" href="{{ route('permits.index') }}">
             <i class="fas fa-clipboard-list"></i>Permits
         </a>
-        @if(auth()->user()->role === 'administrator' || (auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS'))
+        @if(auth()->user()->role === 'administrator' || auth()->user()->role === 'bekaert' || (auth()->user()->role === 'contractor' && auth()->user()->company_id))
         <a class="nav-link {{ Request::routeIs('hras.*') ? 'active' : '' }}" href="{{ route('hras.index') }}">
             <i class="fas fa-triangle-exclamation"></i>HRA's
         </a>

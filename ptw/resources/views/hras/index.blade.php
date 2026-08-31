@@ -181,6 +181,7 @@
 
     @php $isAdmin = auth()->user()->role === 'administrator'; @endphp
 
+    @if($canManage)
     {{-- Hidden form used for every bulk action --}}
     <form id="bulkForm" method="POST" class="d-none">
         @csrf
@@ -193,6 +194,7 @@
         <input type="hidden" name="date_to" value="{{ request('date_to') }}">
         <input type="hidden" name="search" value="{{ request('search') }}">
     </form>
+    @endif
 
     <!-- HRA Table -->
     <div class="card border-0 shadow-sm">
@@ -210,7 +212,7 @@
                 </small>
             </div>
 
-            @if($hras->count() > 0)
+            @if($hras->count() > 0 && $canManage)
             <div id="bulkBar" class="d-flex align-items-center flex-wrap gap-2 mt-2 pt-2 border-top">
                 <span class="small text-muted">
                     <span id="bulkCount">0</span> selected
@@ -246,9 +248,11 @@
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-light">
                             <tr>
+                                @if($canManage)
                                 <th style="width:34px;" class="text-center">
                                     <input type="checkbox" id="checkAll" class="form-check-input" title="Select all on this page">
                                 </th>
+                                @endif
                                 <th>HRA Number</th>
                                 <th>Type</th>
                                 <th>Permit</th>
@@ -266,11 +270,13 @@
                         <tbody>
                             @foreach($hras as $hra)
                             <tr>
+                                @if($canManage)
                                 <td class="text-center">
                                     <input type="checkbox" class="form-check-input rowCheck"
                                            value="{{ $hra['type_key'] }}:{{ $hra['id'] }}"
                                            data-label="{{ $hra['hra_permit_number'] }}">
                                 </td>
+                                @endif
                                 <td><span class="fw-semibold text-primary">{{ $hra['hra_permit_number'] }}</span></td>
                                 <td>
                                     <span class="text-nowrap"><i class="{{ $hra['type_icon'] }} me-1 text-muted"></i>{{ $hra['type_label'] }}</span>
@@ -315,7 +321,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         @endif
-                                        @if(in_array($hra['status_label'], ['Draft', 'Pending Approval']))
+                                        @if($canManage && in_array($hra['status_label'], ['Draft', 'Pending Approval']))
                                             <form method="POST" action="{{ route('hras.cancel', [$hra['type_key'], $hra['id']]) }}"
                                                   class="d-inline"
                                                   onsubmit="return confirm('Cancel HRA {{ $hra['hra_permit_number'] }}? Its status will be set to Cancelled.');">
@@ -379,6 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    @if($canManage)
     // ---- Bulk actions ----
     const ROUTES = {
         cancel: @json(route('hras.bulk-cancel')),
@@ -487,6 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnDelete) btnDelete.addEventListener('click', () => submitBulk('delete'));
 
     refresh();
+    @endif
 });
 </script>
 

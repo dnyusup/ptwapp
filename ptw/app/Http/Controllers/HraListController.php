@@ -85,13 +85,19 @@ class HraListController extends Controller
     }
 
     /**
-     * Only Administrator and Bekaert EHS may use anything in this controller.
+     * Who may open the HRA list at all: Administrator, any Bekaert user, or a
+     * contractor that belongs to a company. What each of them actually SEES is
+     * narrowed later by scopeForUser().
      */
     private function authorizeAccess(): void
     {
         $user = auth()->user();
-        if ($user->role !== 'administrator'
-            && !($user->role === 'bekaert' && $user->department === 'EHS')) {
+
+        $allowed = $user->role === 'administrator'
+            || $user->role === 'bekaert'
+            || ($user->role === 'contractor' && $user->company_id);
+
+        if (!$allowed) {
             abort(403, 'You are not allowed to access the HRA list.');
         }
     }
@@ -99,6 +105,46 @@ class HraListController extends Controller
     private function isAdmin(): bool
     {
         return auth()->user()->role === 'administrator';
+    }
+
+    /**
+     * Full access (see everything, and manage/cancel/delete): Administrator and Bekaert EHS.
+     */
+    private function canManage(): bool
+    {
+        $user = auth()->user();
+
+        return $user->role === 'administrator'
+            || ($user->role === 'bekaert' && $user->department === 'EHS');
+    }
+
+    /**
+     * Narrow an HRA query to what the current user is allowed to see.
+     *  - Admin / Bekaert EHS: everything.
+     *  - Other Bekaert users: only permits where they are the issuer / responsible.
+     *  - Contractors: only permits for their own company.
+     */
+    private function scopeForUser($query)
+    {
+        if ($this->canManage()) {
+            return $query;
+        }
+
+        $user = auth()->user();
+
+        if ($user->role === 'contractor') {
+            $companyName = $user->company->company_name ?? null;
+
+            return $query->whereHas('permitToWork', fn ($q) => $companyName
+                ? $q->where('receiver_company_name', $companyName)
+                : $q->whereRaw('1 = 0'));
+        }
+
+        // Bekaert (non-EHS)
+        return $query->whereHas('permitToWork', function ($q) use ($user) {
+            $q->where('permit_issuer_id', $user->id)
+                ->orWhere('responsible_person_email', $user->email);
+        });
     }
 
     /**
@@ -130,10 +176,11 @@ class HraListController extends Controller
             ['path' => Paginator::resolveCurrentPath(), 'query' => $request->query()]
         );
 
-        $areas     = Area::where('is_active', true)->orderBy('name')->get();
-        $typeList  = collect($this->hraTypes())->map(fn ($c, $k) => ['key' => $k, 'label' => $c['label']])->values();
+        $areas      = Area::where('is_active', true)->orderBy('name')->get();
+        $typeList   = collect($this->hraTypes())->map(fn ($c, $k) => ['key' => $k, 'label' => $c['label']])->values();
+        $canManage  = $this->canManage();
 
-        return view('hras.index', compact('hras', 'areas', 'typeList', 'summary'));
+        return view('hras.index', compact('hras', 'areas', 'typeList', 'summary', 'canManage'));
     }
 
     /**
@@ -142,6 +189,7 @@ class HraListController extends Controller
     public function cancel(Request $request, string $type, int $id)
     {
         $this->authorizeAccess();
+        abort_unless($this->canManage(), 403, 'You are not allowed to cancel HRA.');
         abort_if(!$this->resolveModel($type), 404);
 
         $cancelled = $this->cancelEligible($type, [$id]);
@@ -173,6 +221,7 @@ class HraListController extends Controller
     public function bulkCancel(Request $request)
     {
         $this->authorizeAccess();
+        abort_unless($this->canManage(), 403, 'You are not allowed to cancel HRA.');
 
         $grouped = $this->resolveBulkTargets($request);
         $total = 0;
@@ -315,6 +364,9 @@ class HraListController extends Controller
             if ($key === 'hot-works') {
                 $query->with('inspections');
             }
+
+            // Restrict to what this user is allowed to see.
+            $this->scopeForUser($query);
 
             if ($areaId) {
                 $query->whereHas('permitToWork', fn ($q) => $q->where('area_id', $areaId));
