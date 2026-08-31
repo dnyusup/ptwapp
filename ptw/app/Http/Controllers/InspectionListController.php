@@ -106,10 +106,12 @@ class InspectionListController extends Controller
         });
     }
 
-    public function index(Request $request)
+    /**
+     * The scoped + filtered Inspection query (no pagination), shared by
+     * index() and export().
+     */
+    private function filteredQuery(Request $request)
     {
-        $this->authorizeAccess();
-
         $query = Inspection::query()->with([
             'permit:id,permit_number,work_title,receiver_company_name,area_id',
             'permit.area:id,name',
@@ -146,6 +148,15 @@ class InspectionListController extends Controller
             });
         }
 
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $query = $this->filteredQuery($request);
+
         // Summary from the full filtered set (before pagination).
         $all = (clone $query)->get();
         $summary = [
@@ -170,5 +181,35 @@ class InspectionListController extends Controller
         $categories = $this->categories;
 
         return view('inspections.list', compact('inspections', 'summary', 'areas', 'companies', 'categories'));
+    }
+
+    /**
+     * Download the current (filtered + scoped) inspection list as a spreadsheet.
+     */
+    public function export(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $rows = $this->filteredQuery($request)->latest()->get()->map(function ($i) {
+            $findingStyle = $i->finding_type === 'OK' ? 'ok' : ($i->finding_type === 'NOK' ? 'nok' : '');
+
+            return [
+                ['String', $i->created_at ? $i->created_at->format('d/m/Y H:i') : '-'],
+                ['String', $i->permit_number],
+                ['String', $i->permit->work_title ?? '-'],
+                ['String', $i->permit->receiver_company_name ?? '-'],
+                ['String', $i->permit->area->name ?? 'No Area'],
+                ['String', $i->inspector_name],
+                ['String', $i->inspector_email],
+                ['String', $i->inspection_category ?: '-'],
+                ['String', $i->finding_type ?: '-', $findingStyle],
+                ['String', $i->findings],
+            ];
+        })->all();
+
+        $headers = ['Date & Time', 'Permit', 'Work Title', 'Company', 'Area',
+                    'Inspector', 'Inspector Email', 'Category', 'Finding', 'Findings'];
+
+        return $this->spreadsheetDownload('Inspections', $headers, $rows, 'inspections_export');
     }
 }

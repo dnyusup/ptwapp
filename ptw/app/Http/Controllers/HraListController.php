@@ -184,6 +184,43 @@ class HraListController extends Controller
     }
 
     /**
+     * Download the current (filtered + scoped) HRA list as a spreadsheet.
+     */
+    public function export(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $rows = $this->filteredItems($request)->map(function ($i) {
+            $findingStyle = match ($i['status_label']) {
+                'Approved', 'Completed', 'Active' => 'ok',
+                'Rejected', 'Cancelled', 'No Inspected' => 'nok',
+                default => '',
+            };
+
+            return [
+                ['String', $i['hra_permit_number']],
+                ['String', $i['type_label']],
+                ['String', $i['permit_number']],
+                ['String', $i['work_title']],
+                ['String', $i['company']],
+                ['String', $i['area']],
+                ['String', $i['location']],
+                ['String', $i['worker_name']],
+                ['String', $i['start_datetime'] ? \Carbon\Carbon::parse($i['start_datetime'])->format('d/m/Y H:i') : '-'],
+                ['String', $i['end_datetime'] ? \Carbon\Carbon::parse($i['end_datetime'])->format('d/m/Y H:i') : '-'],
+                ['String', $i['status_label'], $findingStyle],
+                ['String', $i['created_by']],
+                ['String', $i['created_at'] ? \Carbon\Carbon::parse($i['created_at'])->format('d/m/Y H:i') : '-'],
+            ];
+        })->all();
+
+        $headers = ['HRA Number', 'Type', 'Permit', 'Work Title', 'Company', 'Area', 'Location',
+                    'Worker', 'Start', 'End', 'Status', 'Created By', 'Created At'];
+
+        return $this->spreadsheetDownload('HRA', $headers, $rows, 'hra_export');
+    }
+
+    /**
      * Cancel a single HRA (only allowed while it is Draft or Pending Approval).
      */
     public function cancel(Request $request, string $type, int $id)

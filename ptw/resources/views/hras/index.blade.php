@@ -203,13 +203,18 @@
                 <h5 class="mb-0">
                     <i class="fas fa-triangle-exclamation me-2"></i>HRA List
                 </h5>
-                <small class="text-muted">
-                    @if(request()->hasAny(['type', 'status', 'date_from', 'date_to', 'search', 'area']))
-                        <i class="fas fa-filter me-1"></i>Filtered results: <strong>{{ $hras->total() }}</strong>
-                    @else
-                        Total HRA: <strong>{{ $hras->total() }}</strong>
-                    @endif
-                </small>
+                <div class="d-flex align-items-center gap-3">
+                    <small class="text-muted">
+                        @if(request()->hasAny(['type', 'status', 'date_from', 'date_to', 'search', 'area']))
+                            <i class="fas fa-filter me-1"></i>Filtered results: <strong>{{ $hras->total() }}</strong>
+                        @else
+                            Total HRA: <strong>{{ $hras->total() }}</strong>
+                        @endif
+                    </small>
+                    <a href="{{ route('hras.export', request()->query()) }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-download me-1"></i>Download
+                    </a>
+                </div>
             </div>
 
             @if($hras->count() > 0 && $canManage)

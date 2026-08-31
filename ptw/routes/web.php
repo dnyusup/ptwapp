@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
 
     // Unified list of all HRA types across every permit
     Route::get('/hras', [HraListController::class, 'index'])->name('hras.index');
+    Route::get('/hras-export', [HraListController::class, 'export'])->name('hras.export');
     Route::post('/hras-bulk-cancel', [HraListController::class, 'bulkCancel'])->name('hras.bulk-cancel');
     Route::post('/hras-bulk-delete', [HraListController::class, 'bulkDelete'])->name('hras.bulk-delete');
     Route::post('/hras/{type}/{id}/cancel', [HraListController::class, 'cancel'])->name('hras.cancel');
@@ -91,6 +92,7 @@ Route::middleware('auth')->group(function () {
 
     // Global list of all main-permit inspections
     Route::get('/inspections', [InspectionListController::class, 'index'])->name('inspections.list');
+    Route::get('/inspections-export', [InspectionListController::class, 'export'])->name('inspections.export');
     
     // Test route for expired permits functionality
     Route::get('/test/expired-permits', function() {

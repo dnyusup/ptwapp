@@ -148,14 +148,19 @@
         <div class="card-header bg-white">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Inspection List</h5>
-                <small class="text-muted">
-                    @if(request()->hasAny(['finding_type', 'category', 'area', 'company', 'date_from', 'date_to', 'search']))
-                        <i class="fas fa-filter me-1"></i>Filtered results: <strong>{{ $inspections->total() }}</strong>
-                    @else
-                        Total inspections: <strong>{{ $inspections->total() }}</strong>
-                    @endif
-                    &middot; NOK: <strong class="text-danger">{{ $summary['nok'] }}</strong>
-                </small>
+                <div class="d-flex align-items-center gap-3">
+                    <small class="text-muted">
+                        @if(request()->hasAny(['finding_type', 'category', 'area', 'company', 'date_from', 'date_to', 'search']))
+                            <i class="fas fa-filter me-1"></i>Filtered results: <strong>{{ $inspections->total() }}</strong>
+                        @else
+                            Total inspections: <strong>{{ $inspections->total() }}</strong>
+                        @endif
+                        &middot; NOK: <strong class="text-danger">{{ $summary['nok'] }}</strong>
+                    </small>
+                    <a href="{{ route('inspections.export', request()->query()) }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-download me-1"></i>Download
+                    </a>
+                </div>
             </div>
         </div>
         <div class="card-body p-0">
