@@ -110,7 +110,6 @@ class HraHotWork extends Model
         // Inspection (one per HRA, recorded after EHS approval)
         'inspector_name',
         'inspector_email',
-        'inspection_category',
         'inspection_finding_type',
         'inspection_findings',
         'inspection_photo_path',

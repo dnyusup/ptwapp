@@ -43,9 +43,6 @@
                                 <tr><td class="info-label">Inspector:</td><td><strong>{{ $hra->inspector_name }}</strong></td></tr>
                                 <tr><td class="info-label">Inspector Email:</td><td>{{ $hra->inspector_email }}</td></tr>
                                 <tr><td class="info-label">Inspection Date:</td><td>{{ optional($hra->inspected_at)->format('d M Y H:i') }}</td></tr>
-                                @if($hra->inspection_category)
-                                <tr><td class="info-label">Category:</td><td>{{ $hra->inspection_category }}</td></tr>
-                                @endif
                                 <tr>
                                     <td class="info-label">Finding Type:</td>
                                     <td>

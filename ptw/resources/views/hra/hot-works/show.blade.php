@@ -362,10 +362,6 @@
                             <div class="mt-1">{{ $hraHotWork->inspector_email ?? '-' }}</div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <strong>Kategori Inspeksi:</strong>
-                            <div class="mt-1">{{ $hraHotWork->inspection_category ?? '-' }}</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
                             <strong>Finding Type:</strong>
                             <div class="mt-1"><span class="badge bg-{{ $inspBadge }}">{{ $hraHotWork->inspection_finding_type ?? '-' }}</span></div>
                         </div>
@@ -1070,24 +1066,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-7 mb-3">
-                            <label class="form-label fw-semibold">Inspection Category <span class="text-danger">*</span></label>
-                            <select class="form-select" name="inspection_category" required>
-                                <option value="">-- Pilih Kategori --</option>
-                                @foreach([
-                                    'Kepatuhan APD',
-                                    'Kebersihan/Penempatan Barang/Akses/5R',
-                                    'Kepatuhan standar Hotwork',
-                                    'Kepatuhan standar WaH',
-                                    'Kepatuhan standar LOTOTO',
-                                    'Bahan Kimia',
-                                    'Lain-lain',
-                                ] as $cat)
-                                    <option value="{{ $cat }}" {{ old('inspection_category', $hraHotWork->inspection_category) === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-5 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label fw-semibold">Finding Type <span class="text-danger">*</span></label>
                             <select class="form-select" name="finding_type" required>
                                 <option value="">-- Pilih Tipe --</option>
@@ -1105,13 +1084,61 @@
 
                     <div class="mb-1">
                         <label class="form-label fw-semibold"><i class="fas fa-camera me-1"></i>Foto Inspeksi</label>
-                        <input type="file" class="form-control" name="inspection_photo" accept="image/*" capture="environment">
-                        <div class="form-text">JPG / PNG, maks 5 MB. Kosongkan jika tidak ingin mengubah foto.</div>
+
+                        {{-- Mobile: native camera capture --}}
+                        <div id="hraInsp_mobileBox" class="border rounded p-3 bg-light" style="display:none;">
+                            <div id="hraInsp_mobilePrompt" class="text-center">
+                                <button type="button" id="hraInsp_mobileTrigger" class="btn btn-outline-primary mb-2">
+                                    <i class="fas fa-camera me-2"></i>Ambil Foto
+                                </button>
+                                <input type="file" id="hraInsp_mobileInput" accept="image/*" capture="environment" class="d-none">
+                                <p class="text-muted small mb-0"><i class="fas fa-info-circle me-1"></i>Klik untuk membuka kamera</p>
+                            </div>
+                            <div id="hraInsp_mobilePreview" class="text-center" style="display:none;">
+                                <img id="hraInsp_mobileImg" src="" alt="Preview" class="img-fluid rounded mb-2" style="max-height:300px;">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <button type="button" id="hraInsp_mobileRetake" class="btn btn-warning"><i class="fas fa-redo me-1"></i>Ambil Ulang</button>
+                                    <button type="button" id="hraInsp_mobileRemove" class="btn btn-danger"><i class="fas fa-trash me-1"></i>Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Desktop: live camera (getUserMedia) only, no file picking --}}
+                        <div id="hraInsp_desktopBox" class="border rounded p-3 bg-light" style="display:none;">
+                            <div id="hraInsp_noCam" class="text-center" style="display:none;">
+                                <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                                <p class="text-muted small mb-0">Kamera tidak tersedia di perangkat ini. Gunakan HP untuk mengambil foto inspeksi.</p>
+                            </div>
+                            <div id="hraInsp_camStart" class="text-center">
+                                <button type="button" id="hraInsp_startCam" class="btn btn-outline-primary"><i class="fas fa-camera me-2"></i>Buka Kamera</button>
+                                <p class="text-muted small mt-2 mb-0"><i class="fas fa-info-circle me-1"></i>Foto hanya bisa diambil langsung dari kamera</p>
+                            </div>
+                            <div id="hraInsp_camPreview" style="display:none;">
+                                <video id="hraInsp_video" autoplay playsinline class="w-100 rounded" style="max-height:300px;background:#000;"></video>
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" id="hraInsp_capture" class="btn btn-success"><i class="fas fa-camera me-1"></i>Ambil Foto</button>
+                                    <button type="button" id="hraInsp_stopCam" class="btn btn-secondary"><i class="fas fa-times me-1"></i>Tutup Kamera</button>
+                                </div>
+                            </div>
+                            <div id="hraInsp_captured" style="display:none;">
+                                <img id="hraInsp_capturedImg" src="" alt="Captured" class="img-fluid rounded" style="max-height:300px;">
+                                <div class="d-flex gap-2 mt-2 justify-content-center">
+                                    <button type="button" id="hraInsp_retake" class="btn btn-warning"><i class="fas fa-redo me-1"></i>Ambil Ulang</button>
+                                    <button type="button" id="hraInsp_removeCap" class="btn btn-danger"><i class="fas fa-trash me-1"></i>Hapus Foto</button>
+                                </div>
+                            </div>
+                            <canvas id="hraInsp_canvas" style="display:none;"></canvas>
+                        </div>
+
+                        <input type="hidden" id="hraInsp_photoData" name="inspection_photo_data">
+                        <input type="file" id="hraInsp_photoFile" name="inspection_photo" accept="image/*"
+                               style="display:none;pointer-events:none;" tabindex="-1">
+
                         @if($hraHotWork->inspection_photo_path)
                             <div class="mt-2">
-                                <small class="text-muted d-block mb-1">Foto saat ini:</small>
+                                <small class="text-muted d-block mb-1">Foto tersimpan saat ini (biarkan kosong jika tidak ingin mengubah):</small>
                                 <img src="{{ url('media/' . $hraHotWork->inspection_photo_path) }}" alt="Current photo"
-                                     class="img-thumbnail" style="max-height: 120px;">
+                                     class="img-thumbnail" style="max-height:120px;">
                             </div>
                         @endif
                     </div>
@@ -1139,6 +1166,164 @@ document.addEventListener('DOMContentLoaded', function () {
     var m = document.getElementById('hraInspectionModal');
     if (m) new bootstrap.Modal(m).show();
 });
+@endif
+
+@if($hraHotWork->ehs_approval === 'approved')
+/* ================= HRA Inspection photo: camera only (mirrors main-permit rule) ============= */
+(function () {
+    const modalEl   = document.getElementById('hraInspectionModal');
+    if (!modalEl) return;
+
+    const $ = id => document.getElementById(id);
+    const photoData = $('hraInsp_photoData');
+    const photoFile = $('hraInsp_photoFile');
+    const MAX_W = 1280, MAX_H = 960;
+
+    function isMobile() {
+        const ua = navigator.userAgent;
+        if (/Windows NT|Macintosh/i.test(ua)) return false;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    }
+
+    function clearPhoto() {
+        photoData.value = '';
+        try { photoFile.value = ''; } catch (e) {}
+    }
+
+    function setPhotoFromCanvas(canvas, quality) {
+        const b64 = canvas.toDataURL('image/jpeg', quality);
+        photoData.value = b64;
+        canvas.toBlob(function (blob) {
+            try {
+                const dt = new DataTransfer();
+                dt.items.add(new File([blob], 'hra_inspection.jpg', { type: 'image/jpeg' }));
+                photoFile.files = dt.files;
+            } catch (e) { /* base64 fallback is enough */ }
+        }, 'image/jpeg', quality);
+    }
+
+    function drawResized(source, sw, sh) {
+        let w = sw, h = sh;
+        if (w > MAX_W || h > MAX_H) {
+            const r = Math.min(MAX_W / w, MAX_H / h);
+            w = Math.round(w * r); h = Math.round(h * r);
+        }
+        const canvas = $('hraInsp_canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(source, 0, 0, w, h);
+        return canvas;
+    }
+
+    /* ---------- Mobile: native capture ---------- */
+    function resetMobile() {
+        $('hraInsp_mobileInput').value = '';
+        $('hraInsp_mobileImg').src = '';
+        $('hraInsp_mobilePrompt').style.display = 'block';
+        $('hraInsp_mobilePreview').style.display = 'none';
+    }
+
+    function openMobileCamera() { $('hraInsp_mobileInput').click(); }
+
+    $('hraInsp_mobileTrigger').addEventListener('click', openMobileCamera);
+    $('hraInsp_mobileRetake').addEventListener('click', openMobileCamera);
+    $('hraInsp_mobileRemove').addEventListener('click', function () { clearPhoto(); resetMobile(); });
+
+    $('hraInsp_mobileInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        if (file.size > 15 * 1024 * 1024) { alert('Ukuran foto terlalu besar (maks 15 MB).'); this.value = ''; return; }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = new Image();
+            img.onload = function () {
+                const canvas = drawResized(img, img.width, img.height);
+                setPhotoFromCanvas(canvas, 0.82);
+                $('hraInsp_mobileImg').src = canvas.toDataURL('image/jpeg', 0.82);
+                $('hraInsp_mobilePrompt').style.display = 'none';
+                $('hraInsp_mobilePreview').style.display = 'block';
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    /* ---------- Desktop: getUserMedia ---------- */
+    let stream = null;
+
+    function stopCamera() {
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        const v = $('hraInsp_video');
+        if (v) v.srcObject = null;
+    }
+
+    function showDesktopPanel(which) {
+        ['hraInsp_noCam', 'hraInsp_camStart', 'hraInsp_camPreview', 'hraInsp_captured']
+            .forEach(id => $(id).style.display = (id === which ? 'block' : 'none'));
+    }
+
+    function resetDesktop() {
+        stopCamera();
+        showDesktopPanel('hraInsp_camStart');
+        $('hraInsp_capturedImg').src = '';
+    }
+
+    async function hasCamera() {
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return false;
+            const devs = await navigator.mediaDevices.enumerateDevices();
+            return devs.some(d => d.kind === 'videoinput');
+        } catch (e) { return false; }
+    }
+
+    $('hraInsp_startCam').addEventListener('click', async function () {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+            });
+            $('hraInsp_video').srcObject = stream;
+            showDesktopPanel('hraInsp_camPreview');
+        } catch (err) {
+            showDesktopPanel('hraInsp_noCam');
+            alert('Tidak dapat mengakses kamera. Silakan gunakan HP untuk mengambil foto inspeksi.');
+        }
+    });
+
+    $('hraInsp_stopCam').addEventListener('click', function () {
+        stopCamera();
+        showDesktopPanel('hraInsp_camStart');
+    });
+
+    $('hraInsp_capture').addEventListener('click', function () {
+        const v = $('hraInsp_video');
+        const canvas = drawResized(v, v.videoWidth, v.videoHeight);
+        setPhotoFromCanvas(canvas, 0.8);
+        $('hraInsp_capturedImg').src = canvas.toDataURL('image/jpeg', 0.8);
+        stopCamera();
+        showDesktopPanel('hraInsp_captured');
+    });
+
+    $('hraInsp_retake').addEventListener('click', function () { clearPhoto(); $('hraInsp_startCam').click(); });
+    $('hraInsp_removeCap').addEventListener('click', function () { clearPhoto(); resetDesktop(); });
+
+    /* ---------- modal lifecycle ---------- */
+    modalEl.addEventListener('shown.bs.modal', async function () {
+        clearPhoto();
+        if (isMobile()) {
+            $('hraInsp_mobileBox').style.display = 'block';
+            $('hraInsp_desktopBox').style.display = 'none';
+            resetMobile();
+        } else {
+            $('hraInsp_mobileBox').style.display = 'none';
+            $('hraInsp_desktopBox').style.display = 'block';
+            (await hasCamera()) ? resetDesktop() : showDesktopPanel('hraInsp_noCam');
+        }
+    });
+
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        stopCamera();
+        resetMobile();
+    });
+})();
 @endif
 
 function requestApproval() {

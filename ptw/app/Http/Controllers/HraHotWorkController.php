@@ -270,7 +270,6 @@ class HraHotWorkController extends Controller
         $validated = $request->validate([
             'inspector_name'        => 'required|string|max:255',
             'inspector_email'       => 'required|email|max:255',
-            'inspection_category'   => 'required|string|max:255',
             'finding_type'          => 'required|in:OK,NOK',
             'findings'              => 'required|string',
             'inspection_photo'      => 'nullable|image|mimes:jpeg,jpg,png|max:5120',
@@ -282,7 +281,6 @@ class HraHotWorkController extends Controller
         $hraHotWork->update([
             'inspector_name'          => $validated['inspector_name'],
             'inspector_email'         => $validated['inspector_email'],
-            'inspection_category'     => $validated['inspection_category'],
             'inspection_finding_type' => $validated['finding_type'],
             'inspection_findings'     => $validated['findings'],
             'inspection_photo_path'   => $photoPath,
