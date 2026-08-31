@@ -165,7 +165,7 @@
         </div>
         <div class="card-body p-0">
             @if($inspections->count() > 0)
-                <div class="table-responsive">
+                <div class="table-responsive table-sticky">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-light">
                             <tr>

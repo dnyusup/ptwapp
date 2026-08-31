@@ -1520,3 +1520,23 @@ p, span, div:not(.stats-number):not(.text-white):not(.text-white-50) {
         font-size: 0.75rem;
     }
 }
+
+/* ============================================================
+   Sticky table header for list pages (Permits / HRA's / Inspections)
+   Header stays put while the table body scrolls.
+   ============================================================ */
+.table-sticky {
+    max-height: calc(100vh - 220px);
+    min-height: 300px;
+    overflow: auto;
+}
+.table-sticky > table {
+    margin-bottom: 0;
+}
+.table-sticky thead th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+}
