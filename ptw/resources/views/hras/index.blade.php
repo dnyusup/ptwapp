@@ -23,70 +23,6 @@
         </div>
     @endif
 
-    <!-- Filter and Search -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" action="{{ route('hras.index') }}" class="row g-3 align-items-end">
-                <div class="col-lg-2 col-md-3">
-                    <label for="type" class="form-label">HRA Type</label>
-                    <select name="type" id="type" class="form-select" onchange="this.form.submit()">
-                        <option value="">All Types</option>
-                        @foreach($typeList as $t)
-                            <option value="{{ $t['key'] }}" {{ request('type') == $t['key'] ? 'selected' : '' }}>{{ $t['label'] }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" id="status" class="form-select" onchange="this.form.submit()">
-                        <option value="">All Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="waiting_inspection" {{ request('status') == 'waiting_inspection' ? 'selected' : '' }}>Waiting Inspection</option>
-                        <option value="no_inspected" {{ request('status') == 'no_inspected' ? 'selected' : '' }}>No Inspected</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                </div>
-                <div class="col-lg-3 col-md-4">
-                    <label class="form-label">Work Date</label>
-                    <div class="d-flex gap-1 align-items-center">
-                        <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From" onchange="this.form.submit()">
-                        <span class="text-muted">-</span>
-                        <input type="date" name="date_to" id="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To" onchange="this.form.submit()">
-                    </div>
-                </div>
-                <div class="col-lg-1 col-md-2">
-                    <label for="area" class="form-label">Area</label>
-                    <select name="area" id="area" class="form-select" onchange="this.form.submit()">
-                        <option value="">All</option>
-                        @foreach($areas as $area)
-                            <option value="{{ $area->id }}" {{ request('area') == $area->id ? 'selected' : '' }}>{{ $area->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-3">
-                    <label for="search" class="form-label">Search</label>
-                    <input type="text" name="search" id="search" class="form-control"
-                           placeholder="HRA no, permit, worker..." value="{{ request('search') }}">
-                </div>
-                <div class="col-lg-2 col-md-3">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i> Filter
-                        </button>
-                        <a href="{{ route('hras.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Reset
-                        </a>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     @php
         // label shown in the summary  ->  value expected by the ?status= filter
         $statusFilterMap = [
@@ -176,6 +112,70 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('hras.index') }}" class="row g-3 align-items-end">
+                <div class="col-lg-2 col-md-3">
+                    <label for="type" class="form-label">HRA Type</label>
+                    <select name="type" id="type" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Types</option>
+                        @foreach($typeList as $t)
+                            <option value="{{ $t['key'] }}" {{ request('type') == $t['key'] ? 'selected' : '' }}>{{ $t['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Approval</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="waiting_inspection" {{ request('status') == 'waiting_inspection' ? 'selected' : '' }}>Waiting Inspection</option>
+                        <option value="no_inspected" {{ request('status') == 'no_inspected' ? 'selected' : '' }}>No Inspected</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <label class="form-label">Work Date</label>
+                    <div class="d-flex gap-1 align-items-center">
+                        <input type="date" name="date_from" id="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From" onchange="this.form.submit()">
+                        <span class="text-muted">-</span>
+                        <input type="date" name="date_to" id="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To" onchange="this.form.submit()">
+                    </div>
+                </div>
+                <div class="col-lg-1 col-md-2">
+                    <label for="area" class="form-label">Area</label>
+                    <select name="area" id="area" class="form-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach($areas as $area)
+                            <option value="{{ $area->id }}" {{ request('area') == $area->id ? 'selected' : '' }}>{{ $area->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" name="search" id="search" class="form-control"
+                           placeholder="HRA no, permit, worker..." value="{{ request('search') }}">
+                </div>
+                <div class="col-lg-2 col-md-3">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                        <a href="{{ route('hras.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
