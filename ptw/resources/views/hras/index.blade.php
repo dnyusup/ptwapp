@@ -218,11 +218,11 @@
                     <a href="#" id="bulkClearAll">Clear</a>
                 </span>
                 <div class="ms-auto d-flex gap-2">
-                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning opacity-50">
+                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning">
                         <i class="fas fa-ban me-1"></i>Cancel selected
                     </button>
                     @if($isAdmin)
-                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger opacity-50">
+                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger">
                         <i class="fas fa-trash me-1"></i>Delete selected
                     </button>
                     @endif
@@ -414,12 +414,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // offer "select all filtered" only when the whole page is ticked and there is more beyond it
             allFilteredWrap.classList.toggle('d-none', !(n === PAGE_TOTAL && FILTERED_TOTAL > PAGE_TOTAL));
         }
-        const has = scopeAll || n > 0;
-        // NOTE: don't toggle the `disabled` attribute here — combined with the
-        // `transition: all` on .btn it causes a repaint bug where the enabled
-        // button only shows after a hover. Just dim it; the click handler validates.
-        if (btnCancel) btnCancel.classList.toggle('opacity-50', !has);
-        if (btnDelete) btnDelete.classList.toggle('opacity-50', !has);
+        // NOTE: the bulk buttons are always fully visible and are NEVER mutated by
+        // JS (no disabled attr, no class/style changes). Toggling those on a .btn
+        // that has `transition: all` triggers a Chromium repaint bug where the
+        // button only appears after a mouse hover. Validation happens on click.
         if (checkAll) checkAll.checked = n === PAGE_TOTAL && n > 0;
     }
 
@@ -454,7 +452,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function submitBulk(kind) {
         const values = selectedValues();
         const n = scopeAll ? FILTERED_TOTAL : values.length;
-        if (!scopeAll && n === 0) return;
+        if (!scopeAll && n === 0) {
+            alert('Select at least one HRA first (tick the checkboxes).');
+            return;
+        }
 
         const verb = kind === 'delete' ? 'DELETE' : 'Cancel';
         let msg = scopeAll
