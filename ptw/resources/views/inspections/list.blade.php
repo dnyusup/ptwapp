@@ -18,16 +18,16 @@
     <!-- Filter and Search -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" action="{{ route('inspections.list') }}" class="row g-3 align-items-end">
-                <div class="col-lg-2 col-md-3">
-                    <label for="finding_type" class="form-label">Finding Type</label>
+            <form method="GET" action="{{ route('inspections.list') }}" class="row g-3 align-items-start">
+                <div class="col-lg-1 col-md-3">
+                    <label for="finding_type" class="form-label">Finding</label>
                     <select name="finding_type" id="finding_type" class="form-select" onchange="this.form.submit()">
                         <option value="">All</option>
                         <option value="OK" {{ request('finding_type') == 'OK' ? 'selected' : '' }}>OK</option>
                         <option value="NOK" {{ request('finding_type') == 'NOK' ? 'selected' : '' }}>NOK</option>
                     </select>
                 </div>
-                <div class="col-lg-3 col-md-4">
+                <div class="col-lg-2 col-md-3">
                     <label for="category" class="form-label">Category</label>
                     <select name="category" id="category" class="form-select" onchange="this.form.submit()">
                         <option value="">All Categories</option>
@@ -45,7 +45,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-3">
+                <div class="col-lg-2 col-md-4">
                     <label for="company" class="form-label">Company</label>
                     <select name="company" id="company" class="form-select" onchange="this.form.submit()">
                         <option value="">All Company</option>
@@ -55,21 +55,19 @@
                     </select>
                 </div>
                 <div class="col-lg-2 col-md-4">
-                    <label class="form-label">Date</label>
-                    <div class="d-flex gap-1 align-items-center">
-                        <input type="date" name="date_from" class="form-control form-control-sm" value="{{ request('date_from') }}" title="From" onchange="this.form.submit()">
-                        <span class="text-muted">-</span>
-                        <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To" onchange="this.form.submit()">
-                    </div>
+                    <label class="form-label">Date (from &ndash; to)</label>
+                    <input type="date" name="date_from" class="form-control form-control-sm mb-1" value="{{ request('date_from') }}" title="From" onchange="this.form.submit()">
+                    <input type="date" name="date_to" class="form-control form-control-sm" value="{{ request('date_to') }}" title="To" onchange="this.form.submit()">
                 </div>
-                <div class="col-lg-2 col-md-3">
+                <div class="col-lg-2 col-md-4">
                     <label for="search" class="form-label">Search</label>
                     <input type="text" name="search" id="search" class="form-control" placeholder="Permit, inspector, findings..." value="{{ request('search') }}">
                 </div>
-                <div class="col-lg-2 col-md-3">
+                <div class="col-lg-2 col-md-4">
+                    <label class="form-label d-none d-lg-block">&nbsp;</label>
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
-                        <a href="{{ route('inspections.list') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Reset</a>
+                        <button type="submit" class="btn btn-primary flex-fill"><i class="fas fa-search"></i> Filter</button>
+                        <a href="{{ route('inspections.list') }}" class="btn btn-secondary flex-fill"><i class="fas fa-times"></i> Reset</a>
                     </div>
                 </div>
             </form>
