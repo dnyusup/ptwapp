@@ -460,14 +460,23 @@
                 </div>
             </div>
 
+            @php
+                $hwInspections = $hraHotWork->inspections->sortBy('sequence')->values();
+                $hwRequired    = $hraHotWork->requiredInspectionCount();
+                $hwFirst       = $hwInspections->firstWhere('sequence', 1);
+                $hwLast        = $hwInspections->firstWhere('sequence', $hwRequired);
+                $hwStartTime   = $hwFirst && $hwFirst->inspected_at ? $hwFirst->inspected_at->format('H:i:s') : '';
+                $hwFinishTime  = $hwLast && $hwLast->inspected_at ? $hwLast->inspected_at->format('H:i:s') : '';
+            @endphp
+
             <!-- Fire Watch Time Form -->
             <table style="width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 9px;">
                 <tr>
                     <td style="border: 1px solid #000; padding: 4px; width: 50%;">
-                        <strong>Waktu Mulai :</strong>
+                        <strong>Waktu Mulai :</strong> {{ $hwStartTime }}
                     </td>
                     <td style="border: 1px solid #000; padding: 4px; width: 50%;">
-                        <strong>Waktu Penyelesaian :</strong>
+                        <strong>Waktu Penyelesaian :</strong> {{ $hwFinishTime }}
                     </td>
                 </tr>
                 <tr>
@@ -480,10 +489,12 @@
                         <table style="width: 100%; border-collapse: collapse;">
                             <tr>
                                 <td style="border-right: 1px solid #000; padding: 4px; width: 20%;"><strong>Waktu Fire Inspection:</strong></td>
-                                <td style="border-right: 1px solid #000; padding: 4px; width: 20%;">&nbsp;</td>
-                                <td style="border-right: 1px solid #000; padding: 4px; width: 20%;">&nbsp;</td>
-                                <td style="border-right: 1px solid #000; padding: 4px; width: 20%;">&nbsp;</td>
-                                <td style="padding: 4px; width: 20%;">&nbsp;</td>
+                                @for($hwSeq = 1; $hwSeq <= 4; $hwSeq++)
+                                    @php $hwInsp = $hwInspections->firstWhere('sequence', $hwSeq); @endphp
+                                    <td style="{{ $hwSeq < 4 ? 'border-right: 1px solid #000; ' : '' }}padding: 4px; width: 20%;">
+                                        {{ $hwInsp && $hwInsp->inspected_at ? $hwInsp->inspected_at->format('H:i:s') : '' }}
+                                    </td>
+                                @endfor
                             </tr>
                         </table>
                     </td>

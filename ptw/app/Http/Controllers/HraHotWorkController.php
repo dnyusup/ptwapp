@@ -801,7 +801,7 @@ class HraHotWorkController extends Controller
             'locationOwner'
         ]);
         
-        $hraHotWork->load(['user', 'areaOwnerApprovedBy', 'ehsApprovedBy']);
+        $hraHotWork->load(['user', 'areaOwnerApprovedBy', 'ehsApprovedBy', 'inspections']);
 
         // Generate QR Code for HRA
         $qrUrl = url('/permits/' . $permit->id . '/hra/hot-works/' . $hraHotWork->id);
