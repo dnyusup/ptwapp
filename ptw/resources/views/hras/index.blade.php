@@ -218,11 +218,11 @@
                     <a href="#" id="bulkClearAll">Clear</a>
                 </span>
                 <div class="ms-auto d-flex gap-2">
-                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning" disabled>
+                    <button type="button" id="btnBulkCancel" class="btn btn-sm btn-warning opacity-50">
                         <i class="fas fa-ban me-1"></i>Cancel selected
                     </button>
                     @if($isAdmin)
-                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger" disabled>
+                    <button type="button" id="btnBulkDelete" class="btn btn-sm btn-danger opacity-50">
                         <i class="fas fa-trash me-1"></i>Delete selected
                     </button>
                     @endif
@@ -415,8 +415,11 @@ document.addEventListener('DOMContentLoaded', function() {
             allFilteredWrap.classList.toggle('d-none', !(n === PAGE_TOTAL && FILTERED_TOTAL > PAGE_TOTAL));
         }
         const has = scopeAll || n > 0;
-        if (btnCancel) btnCancel.disabled = !has;
-        if (btnDelete) btnDelete.disabled = !has;
+        // NOTE: don't toggle the `disabled` attribute here — combined with the
+        // `transition: all` on .btn it causes a repaint bug where the enabled
+        // button only shows after a hover. Just dim it; the click handler validates.
+        if (btnCancel) btnCancel.classList.toggle('opacity-50', !has);
+        if (btnDelete) btnDelete.classList.toggle('opacity-50', !has);
         if (checkAll) checkAll.checked = n === PAGE_TOTAL && n > 0;
     }
 
