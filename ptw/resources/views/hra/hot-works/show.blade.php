@@ -333,10 +333,7 @@
                 $inspBadge  = $inspStatus === 'Complete' ? 'success'
                             : (str_contains($inspStatus, 'NOK') ? 'danger'
                             : ($inspStatus === 'Not Inspected' ? 'secondary' : 'warning'));
-                $canInspect = auth()->user()->role === 'administrator'
-                    || (auth()->user()->role === 'bekaert' && auth()->user()->department === 'EHS')
-                    || $hraHotWork->user_id == auth()->id()
-                    || $permit->permit_issuer_id == auth()->id();
+                $canInspect = $hraHotWork->canBeInspectedBy(auth()->user(), $permit);
             @endphp
             <!-- Inspection Card -->
             <div class="card border-0 shadow-sm mb-4">

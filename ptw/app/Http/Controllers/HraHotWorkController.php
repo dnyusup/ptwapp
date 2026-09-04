@@ -268,6 +268,12 @@ class HraHotWorkController extends Controller
             return redirect()->back()->with('error', 'Inspection can only be recorded for an approved HRA Hot Work.');
         }
 
+        abort_unless(
+            $hraHotWork->canBeInspectedBy(auth()->user(), $permit),
+            403,
+            'You are not allowed to record inspections for this HRA Hot Work.'
+        );
+
         $hraHotWork->load('inspections');
 
         if ($sequence < 1 || $sequence > $hraHotWork->requiredInspectionCount()) {

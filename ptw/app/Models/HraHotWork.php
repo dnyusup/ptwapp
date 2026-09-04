@@ -290,6 +290,40 @@ class HraHotWork extends Model
     }
 
     /**
+     * Who may record inspections for this HRA Hot Work:
+     *  - Administrator and Bekaert EHS
+     *  - the HRA creator, and the main permit issuer / responsible
+     *  - any contractor whose company matches the permit's contractor company
+     */
+    public function canBeInspectedBy($user, ?PermitToWork $permit = null): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        $permit = $permit ?: $this->permitToWork;
+
+        if ($user->role === 'administrator') {
+            return true;
+        }
+        if ($user->role === 'bekaert' && $user->department === 'EHS') {
+            return true;
+        }
+        if ($this->user_id == $user->id) {
+            return true;
+        }
+        if ($permit && $permit->permit_issuer_id == $user->id) {
+            return true;
+        }
+
+        if ($user->role === 'contractor' && $permit && $permit->receiver_company_name) {
+            return ($user->company->company_name ?? null) === $permit->receiver_company_name;
+        }
+
+        return false;
+    }
+
+    /**
      * Overall inspection progress label for the card header.
      */
     public function getInspectionStatusAttribute(): string
