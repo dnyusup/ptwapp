@@ -7,6 +7,8 @@ use App\Models\PermitToWork;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class MethodStatementController extends Controller
 {
@@ -138,6 +140,78 @@ class MethodStatementController extends Controller
         return view('method-statements.show', compact('permit', 'methodStatement', 'responsibleUsers'));
     }
 
+    public function confirmResponsiblePerson(Request $request, $permitNumber, int $index)
+    {
+        $validated = $request->validate([
+            'signature' => 'required|string|max:350000',
+        ]);
+
+        if (!preg_match('/\Adata:image\/png;base64,([A-Za-z0-9+\/]*={0,2})\z/', $validated['signature'], $matches)) {
+            throw ValidationException::withMessages([
+                'signature' => 'The signature must be a valid PNG image.',
+            ]);
+        }
+
+        $signatureBytes = base64_decode($matches[1], true);
+        if (
+            $signatureBytes === false ||
+            !str_starts_with($signatureBytes, "\x89PNG\r\n\x1a\n") ||
+            strlen($signatureBytes) > 256000
+        ) {
+            throw ValidationException::withMessages([
+                'signature' => 'The signature must be a valid PNG image no larger than 256 KB.',
+            ]);
+        }
+
+        $user = Auth::user();
+
+        $confirmation = DB::transaction(function () use ($permitNumber, $index, $validated, $user) {
+            $methodStatement = MethodStatement::where('permit_number', $permitNumber)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $permit = PermitToWork::where('permit_number', $permitNumber)->firstOrFail();
+
+            abort_unless(
+                $methodStatement->status === 'approved' &&
+                in_array($permit->status, ['approved', 'active', 'in_progress'], true),
+                409,
+                'Responsible persons can confirm only after the permit is approved.'
+            );
+
+            $people = $methodStatement->responsible_persons ?? [];
+            $person = $people[$index] ?? null;
+            abort_unless(is_array($person), 404, 'Responsible person not found.');
+
+            $confirmationKey = 'person:' . $index;
+            $confirmations = $methodStatement->responsible_person_confirmations ?? [];
+            $legacyKey = isset($person['email']) && trim($person['email']) !== ''
+                ? mb_strtolower(trim($person['email']))
+                : null;
+            abort_if(
+                isset($confirmations[$confirmationKey]) || ($legacyKey && isset($confirmations[$legacyKey])),
+                409,
+                'This responsible person has already confirmed.'
+            );
+
+            $confirmation = [
+                'signature' => $validated['signature'],
+                'signed_by' => $user->name,
+                'signed_at' => now()->toIso8601String(),
+            ];
+            $confirmations[$confirmationKey] = $confirmation;
+
+            $methodStatement->responsible_person_confirmations = $confirmations;
+            $methodStatement->save();
+
+            return $confirmation;
+        });
+
+        return response()->json([
+            'message' => 'Confirmation saved successfully.',
+            'confirmation' => $confirmation,
+        ]);
+    }
+
     public function edit($permitNumber)
     {
         $permit = PermitToWork::with(['receiver', 'permitIssuer'])->where('permit_number', $permitNumber)->firstOrFail();
@@ -203,6 +277,7 @@ class MethodStatementController extends Controller
         }
 
         $validatedData['status'] = $request->has('submit') ? 'completed' : 'draft';
+        $validatedData['responsible_person_confirmations'] = null;
 
         $methodStatement->update($validatedData);
 

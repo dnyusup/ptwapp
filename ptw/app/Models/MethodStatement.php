@@ -16,6 +16,7 @@ class MethodStatement extends Model
         'permit_receiver_name',
         'permit_issuer_name',
         'responsible_persons',
+        'responsible_person_confirmations',
         'responsible_person_1',
         'responsible_person_2',
         'responsible_person_3',
@@ -46,7 +47,8 @@ class MethodStatement extends Model
         'risk_activities' => 'array',
         'risk_levels' => 'array',
         'control_measures' => 'array',
-        'responsible_persons' => 'array'
+        'responsible_persons' => 'array',
+        'responsible_person_confirmations' => 'array'
     ];
 
     // Relationship with PermitToWork

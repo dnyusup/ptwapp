@@ -252,6 +252,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/permits/{permitNumber}/method-statement/create', [MethodStatementController::class, 'create'])->name('method-statements.create');
     Route::post('/permits/{permitNumber}/method-statement', [MethodStatementController::class, 'store'])->name('method-statements.store');
     Route::get('/permits/{permitNumber}/method-statement', [MethodStatementController::class, 'show'])->name('method-statements.show');
+    Route::post('/permits/{permitNumber}/method-statement/responsible-persons/{index}/confirm', [MethodStatementController::class, 'confirmResponsiblePerson'])
+        ->whereNumber('index')
+        ->name('method-statements.responsible-persons.confirm');
     Route::get('/permits/{permitNumber}/method-statement/edit', [MethodStatementController::class, 'edit'])->name('method-statements.edit');
     Route::put('/permits/{permitNumber}/method-statement', [MethodStatementController::class, 'update'])->name('method-statements.update');
     Route::post('/permits/{permitNumber}/method-statement/request-approval', [MethodStatementController::class, 'requestApproval'])->name('method-statements.request-approval');

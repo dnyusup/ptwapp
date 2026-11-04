@@ -1,11 +1,60 @@
 @extends('layouts.app')
 
+@section('styles')
+<style>
+    .responsible-person-card {
+        height: 100%;
+    }
+
+    .responsible-person-card .card-body {
+        gap: 1rem;
+    }
+
+    .responsible-person-confirmation img {
+        display: block;
+        width: min(100%, 220px);
+        height: 72px;
+        object-fit: contain;
+        object-position: left center;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+    }
+
+    #responsible-signature-canvas {
+        display: block;
+        width: 100%;
+        height: 190px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #fff;
+        touch-action: none;
+    }
+
+    @media (max-width: 575.98px) {
+        .responsible-person-card .card-body {
+            align-items: stretch !important;
+        }
+
+        .responsible-person-confirmation img {
+            width: 100%;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
 @include('layouts.sidebar-styles')
 @include('layouts.sidebar')
 
 <!-- Main Content -->
 <div class="main-content">
+    @php
+        $responsibleConfirmationVisible = $methodStatement->status === 'approved'
+            && in_array($permit->status, ['approved', 'active', 'in_progress', 'completed', 'expired'], true);
+        $responsibleConfirmationEnabled = $methodStatement->status === 'approved'
+            && in_array($permit->status, ['approved', 'active', 'in_progress'], true);
+    @endphp
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -121,6 +170,10 @@
             <h5 class="mb-0"><i class="fas fa-users me-2"></i>Responsible Persons</h5>
         </div>
         <div class="card-body">
+            <div class="mb-3">
+                <label for="responsible-person-search" class="form-label">Cari nama responsible person</label>
+                <input type="search" class="form-control" id="responsible-person-search" placeholder="Ketik nama untuk mencari..." autocomplete="off">
+            </div>
             <div class="row">
                 @foreach($methodStatement->responsible_persons as $index => $person)
                     @php
@@ -128,10 +181,18 @@
                         if (isset($person['email']) && isset($responsibleUsers)) {
                             $user = $responsibleUsers->get($person['email']);
                         }
+                        $personEmail = $person['email'] ?? null;
+                        $hasPersonEmail = is_string($personEmail) && trim($personEmail) !== '';
+                        $confirmationKey = 'person:' . $index;
+                        $confirmations = $methodStatement->responsible_person_confirmations ?? [];
+                        $legacyConfirmationKey = $hasPersonEmail ? mb_strtolower(trim($personEmail)) : null;
+                        $confirmation = $confirmations[$confirmationKey]
+                            ?? ($legacyConfirmationKey ? ($confirmations[$legacyConfirmationKey] ?? null) : null);
                     @endphp
-                    <div class="col-md-6 mb-3">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body py-3">
+                    <div class="col-12 col-md-6 mb-3 responsible-person-item" data-person-name="{{ $person['name'] ?? '' }}">
+                        <div class="card border-0 shadow-sm responsible-person-card">
+                            <div class="card-body py-3 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between">
+                                <div class="flex-grow-1">
                                 <h6 class="card-title mb-2">
                                     <span class="badge bg-primary me-2">{{ $index + 1 }}</span>
                                     {{ $person['name'] ?? 'Not specified' }}
@@ -140,10 +201,67 @@
                                     <i class="fas fa-phone me-1"></i>
                                     {{ $user && $user->phone ? $user->phone : 'No phone number' }}
                                 </p>
+                                </div>
+                                @if($responsibleConfirmationVisible)
+                                <div class="responsible-person-actions">
+                                    <div class="responsible-person-confirmation small" id="responsible-person-status-{{ $index }}">
+                                        @if($confirmation)
+                                            <span class="badge bg-success mb-2"><i class="fas fa-check-circle me-1"></i>Confirmed</span>
+                                            <img src="{{ $confirmation['signature'] }}" alt="Signature of {{ $person['name'] ?? 'responsible person' }}">
+                                            <div class="text-muted mt-1">
+                                                Signed by {{ $confirmation['signed_by'] ?? ($person['name'] ?? 'Responsible person') }}
+                                                @if(!empty($confirmation['signed_at']))
+                                                    <br>{{ \Carbon\Carbon::parse($confirmation['signed_at'])->format('d M Y H:i') }}
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="badge bg-warning text-dark mb-2">Not confirmed</span>
+                                            @if($responsibleConfirmationEnabled)
+                                                <button type="button" class="btn btn-sm btn-outline-primary d-block" id="responsible-person-confirm-button-{{ $index }}"
+                                                    data-bs-toggle="modal" data-bs-target="#responsible-signature-modal"
+                                                    data-confirm-url="{{ route('method-statements.responsible-persons.confirm', [$permit->permit_number, $index]) }}"
+                                                    data-person-name="{{ $person['name'] ?? 'Responsible person' }}">
+                                                    <i class="fas fa-signature me-1"></i>Confirm
+                                                </button>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
                 @endforeach
+            </div>
+            <div class="alert alert-light text-center mb-0 d-none" id="responsible-person-no-results">
+                Tidak ada responsible person yang cocok dengan pencarian.
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @if($responsibleConfirmationEnabled)
+    <div class="modal fade" id="responsible-signature-modal" tabindex="-1" aria-labelledby="responsible-signature-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title" id="responsible-signature-title">Konfirmasi Responsible Person</h5>
+                        <div class="small text-muted" id="responsible-signature-person"></div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted">Bubuhkan tanda tangan untuk mengonfirmasi bahwa Anda memahami Method Statement ini.</p>
+                    <canvas id="responsible-signature-canvas" aria-label="Area tanda tangan"></canvas>
+                    <div class="invalid-feedback d-block" id="responsible-signature-error" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" id="responsible-signature-clear">Hapus</button>
+                    <button type="button" class="btn btn-primary" id="responsible-signature-submit">
+                        <i class="fas fa-check me-1"></i>Simpan konfirmasi
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -272,3 +390,162 @@
 
 @include('layouts.sidebar-scripts')
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('responsible-person-search');
+    const personCards = Array.from(document.querySelectorAll('.responsible-person-item'));
+    const noResults = document.getElementById('responsible-person-no-results');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLocaleLowerCase();
+            let visibleCount = 0;
+
+            personCards.forEach(function (card) {
+                const matches = card.dataset.personName.toLocaleLowerCase().includes(query);
+                card.classList.toggle('d-none', !matches);
+                visibleCount += matches ? 1 : 0;
+            });
+
+            if (noResults) {
+                noResults.classList.toggle('d-none', visibleCount > 0);
+            }
+        });
+    }
+
+    const modal = document.getElementById('responsible-signature-modal');
+    if (!modal) {
+        return;
+    }
+
+    const canvas = document.getElementById('responsible-signature-canvas');
+    const context = canvas.getContext('2d');
+    const submitButton = document.getElementById('responsible-signature-submit');
+    const clearButton = document.getElementById('responsible-signature-clear');
+    const errorMessage = document.getElementById('responsible-signature-error');
+    const personLabel = document.getElementById('responsible-signature-person');
+    let activeButton = null;
+    let isDrawing = false;
+    let hasSignature = false;
+
+    function resizeCanvas() {
+        const bounds = canvas.getBoundingClientRect();
+        const pixelRatio = window.devicePixelRatio || 1;
+        canvas.width = Math.round(bounds.width * pixelRatio);
+        canvas.height = Math.round(bounds.height * pixelRatio);
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        context.lineWidth = 2.5;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        context.strokeStyle = '#172554';
+    }
+
+    function clearSignature() {
+        context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        hasSignature = false;
+        errorMessage.textContent = '';
+    }
+
+    function getCanvasPoint(event) {
+        const bounds = canvas.getBoundingClientRect();
+        return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+    }
+
+    modal.addEventListener('show.bs.modal', function (event) {
+        activeButton = event.relatedTarget;
+        personLabel.textContent = activeButton ? activeButton.dataset.personName : '';
+        errorMessage.textContent = '';
+    });
+
+    modal.addEventListener('shown.bs.modal', function () {
+        resizeCanvas();
+        clearSignature();
+    });
+
+    canvas.addEventListener('pointerdown', function (event) {
+        event.preventDefault();
+        const point = getCanvasPoint(event);
+        isDrawing = true;
+        hasSignature = true;
+        canvas.setPointerCapture(event.pointerId);
+        context.beginPath();
+        context.arc(point.x, point.y, 1.25, 0, Math.PI * 2);
+        context.fillStyle = '#172554';
+        context.fill();
+        context.beginPath();
+        context.moveTo(point.x, point.y);
+    });
+
+    canvas.addEventListener('pointermove', function (event) {
+        if (!isDrawing) {
+            return;
+        }
+        const point = getCanvasPoint(event);
+        context.lineTo(point.x, point.y);
+        context.stroke();
+    });
+
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (eventName) {
+        canvas.addEventListener(eventName, function () {
+            isDrawing = false;
+        });
+    });
+
+    clearButton.addEventListener('click', clearSignature);
+
+    submitButton.addEventListener('click', async function () {
+        if (!activeButton || !hasSignature) {
+            errorMessage.textContent = hasSignature ? '' : 'Tanda tangan wajib diisi.';
+            return;
+        }
+
+        submitButton.disabled = true;
+        errorMessage.textContent = '';
+
+        try {
+            const response = await fetch(activeButton.dataset.confirmUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ signature: canvas.toDataURL('image/png') })
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Konfirmasi gagal disimpan. Silakan coba lagi.');
+            }
+
+            const status = document.getElementById(activeButton.id.replace('confirm-button', 'status'));
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-success mb-2';
+            badge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Confirmed';
+
+            const signatureImage = document.createElement('img');
+            signatureImage.src = result.confirmation.signature;
+            signatureImage.alt = 'Signature of ' + personLabel.textContent;
+
+            const signer = document.createElement('div');
+            signer.className = 'text-muted mt-1';
+            signer.textContent = 'Signed by ' + result.confirmation.signed_by;
+
+            const signedAt = document.createElement('div');
+            signedAt.textContent = new Date(result.confirmation.signed_at).toLocaleString();
+            signer.appendChild(signedAt);
+
+            status.replaceChildren(badge, signatureImage, signer);
+            activeButton.remove();
+            bootstrap.Modal.getInstance(modal).hide();
+        } catch (error) {
+            errorMessage.textContent = error.message || 'Terjadi kesalahan saat menyimpan konfirmasi.';
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+});
+</script>
+@endpush
