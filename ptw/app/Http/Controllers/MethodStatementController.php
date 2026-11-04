@@ -143,29 +143,41 @@ class MethodStatementController extends Controller
     public function confirmResponsiblePerson(Request $request, $permitNumber, int $index)
     {
         $validated = $request->validate([
-            'signature' => 'required|string|max:350000',
+            'strokes' => 'required|array|min:1|max:50',
+            'strokes.*' => 'required|array|min:1|max:250',
+            'strokes.*.*.x' => 'required|numeric|min:0|max:1000',
+            'strokes.*.*.y' => 'required|numeric|min:0|max:300',
         ]);
 
-        if (!preg_match('/\Adata:image\/png;base64,([A-Za-z0-9+\/]*={0,2})\z/', $validated['signature'], $matches)) {
-            throw ValidationException::withMessages([
-                'signature' => 'The signature must be a valid PNG image.',
-            ]);
+        $pointCount = 0;
+        $paths = [];
+        foreach ($validated['strokes'] as $stroke) {
+            $pointCount += count($stroke);
+            if ($pointCount > 5000) {
+                throw ValidationException::withMessages([
+                    'strokes' => 'The signature contains too many points. Please clear it and sign again.',
+                ]);
+            }
+
+            $points = array_map(
+                fn ($point) => sprintf('%.2f %.2f', (float) $point['x'], (float) $point['y']),
+                $stroke
+            );
+            $path = 'M ' . implode(' L ', $points);
+            if (count($points) === 1) {
+                $path .= ' l 0.1 0.1';
+            }
+            $paths[] = '<path d="' . $path . '"/>';
         }
 
-        $signatureBytes = base64_decode($matches[1], true);
-        if (
-            $signatureBytes === false ||
-            !str_starts_with($signatureBytes, "\x89PNG\r\n\x1a\n") ||
-            strlen($signatureBytes) > 256000
-        ) {
-            throw ValidationException::withMessages([
-                'signature' => 'The signature must be a valid PNG image no larger than 256 KB.',
-            ]);
-        }
+        $signatureSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300">'
+            . '<g fill="none" stroke="#172554" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">'
+            . implode('', $paths)
+            . '</g></svg>';
 
         $user = Auth::user();
 
-        $confirmation = DB::transaction(function () use ($permitNumber, $index, $validated, $user) {
+        $confirmation = DB::transaction(function () use ($permitNumber, $index, $signatureSvg, $user) {
             $methodStatement = MethodStatement::where('permit_number', $permitNumber)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -193,7 +205,7 @@ class MethodStatementController extends Controller
             );
 
             $confirmation = [
-                'signature' => $validated['signature'],
+                'signature' => $signatureSvg,
                 'signed_by' => $user->name,
                 'signed_at' => now()->toIso8601String(),
             ];

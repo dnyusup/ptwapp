@@ -186,6 +186,9 @@
                         $legacyConfirmationKey = $hasPersonEmail ? mb_strtolower(trim($personEmail)) : null;
                         $confirmation = $confirmations[$confirmationKey]
                             ?? ($legacyConfirmationKey ? ($confirmations[$legacyConfirmationKey] ?? null) : null);
+                        $signatureImage = $confirmation && str_starts_with($confirmation['signature'], '<svg')
+                            ? 'data:image/svg+xml,' . rawurlencode($confirmation['signature'])
+                            : ($confirmation['signature'] ?? null);
                     @endphp
                     <div class="col-12 col-md-6 mb-3 responsible-person-item" data-person-name="{{ $person['name'] ?? '' }}">
                         <div class="card border-0 shadow-sm responsible-person-card">
@@ -205,7 +208,7 @@
                                     <div class="responsible-person-confirmation small" id="responsible-person-status-{{ $index }}">
                                         @if($confirmation)
                                             <span class="badge bg-success mb-2"><i class="fas fa-check-circle me-1"></i>Confirmed</span>
-                                            <img src="{{ $confirmation['signature'] }}" alt="Signature of {{ $person['name'] ?? 'responsible person' }}">
+                                            <img src="{{ $signatureImage }}" alt="Signature of {{ $person['name'] ?? 'responsible person' }}">
                                             <div class="text-muted mt-1">
                                                 Signed by {{ $confirmation['signed_by'] ?? ($person['name'] ?? 'Responsible person') }}
                                                 @if(!empty($confirmation['signed_at']))
@@ -427,6 +430,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let activeButton = null;
     let isDrawing = false;
     let hasSignature = false;
+    let strokes = [];
+    let currentStroke = null;
 
     function resizeCanvas() {
         const bounds = canvas.getBoundingClientRect();
@@ -443,12 +448,21 @@ document.addEventListener('DOMContentLoaded', function () {
     function clearSignature() {
         context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
         hasSignature = false;
+        strokes = [];
+        currentStroke = null;
         errorMessage.textContent = '';
     }
 
     function getCanvasPoint(event) {
         const bounds = canvas.getBoundingClientRect();
-        return { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+        const x = event.clientX - bounds.left;
+        const y = event.clientY - bounds.top;
+        return {
+            x: x / bounds.width * 1000,
+            y: y / bounds.height * 300,
+            canvasX: x,
+            canvasY: y
+        };
     }
 
     modal.addEventListener('show.bs.modal', function (event) {
@@ -467,13 +481,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const point = getCanvasPoint(event);
         isDrawing = true;
         hasSignature = true;
+        currentStroke = [{ x: point.x, y: point.y }];
+        strokes.push(currentStroke);
         canvas.setPointerCapture(event.pointerId);
         context.beginPath();
-        context.arc(point.x, point.y, 1.25, 0, Math.PI * 2);
+        context.arc(point.canvasX, point.canvasY, 1.25, 0, Math.PI * 2);
         context.fillStyle = '#172554';
         context.fill();
         context.beginPath();
-        context.moveTo(point.x, point.y);
+        context.moveTo(point.canvasX, point.canvasY);
     });
 
     canvas.addEventListener('pointermove', function (event) {
@@ -481,13 +497,23 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         const point = getCanvasPoint(event);
-        context.lineTo(point.x, point.y);
+        const previousPoint = currentStroke[currentStroke.length - 1];
+        const previousCanvasX = previousPoint.x / 1000 * canvas.clientWidth;
+        const previousCanvasY = previousPoint.y / 300 * canvas.clientHeight;
+        if (Math.hypot(point.canvasX - previousCanvasX, point.canvasY - previousCanvasY) < 1) {
+            return;
+        }
+        if (currentStroke.length < 250 && strokes.reduce((count, stroke) => count + stroke.length, 0) < 5000) {
+            currentStroke.push({ x: point.x, y: point.y });
+        }
+        context.lineTo(point.canvasX, point.canvasY);
         context.stroke();
     });
 
     ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (eventName) {
         canvas.addEventListener(eventName, function () {
             isDrawing = false;
+            currentStroke = null;
         });
     });
 
@@ -510,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
-                body: JSON.stringify({ signature: canvas.toDataURL('image/png') })
+                body: JSON.stringify({ strokes: strokes })
             });
             const result = await response.json();
 
@@ -524,7 +550,9 @@ document.addEventListener('DOMContentLoaded', function () {
             badge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Confirmed';
 
             const signatureImage = document.createElement('img');
-            signatureImage.src = result.confirmation.signature;
+            signatureImage.src = result.confirmation.signature.startsWith('<svg')
+                ? 'data:image/svg+xml,' + encodeURIComponent(result.confirmation.signature)
+                : result.confirmation.signature;
             signatureImage.alt = 'Signature of ' + personLabel.textContent;
 
             const signer = document.createElement('div');
