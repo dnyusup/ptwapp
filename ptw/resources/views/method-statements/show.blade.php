@@ -50,10 +50,8 @@
 <!-- Main Content -->
 <div class="main-content">
     @php
-        $responsibleConfirmationVisible = $methodStatement->status === 'approved'
-            && in_array($permit->status, ['approved', 'active', 'in_progress', 'completed', 'expired'], true);
-        $responsibleConfirmationEnabled = $methodStatement->status === 'approved'
-            && in_array($permit->status, ['approved', 'active', 'in_progress'], true);
+        $responsibleConfirmationVisible = in_array($permit->status, ['approved', 'active', 'in_progress', 'completed', 'expired'], true);
+        $responsibleConfirmationEnabled = in_array($permit->status, ['approved', 'active', 'in_progress'], true);
     @endphp
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
