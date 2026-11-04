@@ -145,8 +145,8 @@ class MethodStatementController extends Controller
         $validated = $request->validate([
             'strokes' => 'required|array|min:1|max:50',
             'strokes.*' => 'required|array|min:1|max:250',
-            'strokes.*.*.x' => 'required|numeric|min:0|max:1000',
-            'strokes.*.*.y' => 'required|numeric|min:0|max:300',
+            'strokes.*.*.x' => 'required|numeric',
+            'strokes.*.*.y' => 'required|numeric',
         ]);
 
         $pointCount = 0;
@@ -160,7 +160,11 @@ class MethodStatementController extends Controller
             }
 
             $points = array_map(
-                fn ($point) => sprintf('%.2f %.2f', (float) $point['x'], (float) $point['y']),
+                fn ($point) => sprintf(
+                    '%.2f %.2f',
+                    min(1000, max(0, (float) $point['x'])),
+                    min(300, max(0, (float) $point['y']))
+                ),
                 $stroke
             );
             $path = 'M ' . implode(' L ', $points);

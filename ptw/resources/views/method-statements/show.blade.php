@@ -481,8 +481,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getCanvasPoint(event) {
         const bounds = canvas.getBoundingClientRect();
-        const x = event.clientX - bounds.left;
-        const y = event.clientY - bounds.top;
+        const x = Math.max(0, Math.min(bounds.width, event.clientX - bounds.left));
+        const y = Math.max(0, Math.min(bounds.height, event.clientY - bounds.top));
         return {
             x: x / bounds.width * 1000,
             y: y / bounds.height * 300,
