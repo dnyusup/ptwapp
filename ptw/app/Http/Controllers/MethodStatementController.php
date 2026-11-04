@@ -175,9 +175,7 @@ class MethodStatementController extends Controller
             . implode('', $paths)
             . '</g></svg>';
 
-        $user = Auth::user();
-
-        $confirmation = DB::transaction(function () use ($permitNumber, $index, $signatureSvg, $user) {
+        $confirmation = DB::transaction(function () use ($permitNumber, $index, $signatureSvg) {
             $methodStatement = MethodStatement::where('permit_number', $permitNumber)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -206,7 +204,6 @@ class MethodStatementController extends Controller
 
             $confirmation = [
                 'signature' => $signatureSvg,
-                'signed_by' => $user->name,
                 'signed_at' => now()->toIso8601String(),
             ];
             $confirmations[$confirmationKey] = $confirmation;

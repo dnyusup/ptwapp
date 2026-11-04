@@ -7,18 +7,35 @@
     }
 
     .responsible-person-card .card-body {
-        gap: 1rem;
+        gap: 0.75rem;
+    }
+
+    .responsible-person-actions {
+        flex: 0 0 auto;
+    }
+
+    .responsible-person-confirmation {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     .responsible-person-confirmation img {
         display: block;
-        width: min(100%, 220px);
-        height: 72px;
+        width: 120px;
+        height: 36px;
+        max-width: 100%;
         object-fit: contain;
-        object-position: left center;
+        object-position: center;
         background: #fff;
         border: 1px solid #e2e8f0;
         border-radius: 6px;
+    }
+
+    .responsible-person-signed-on {
+        white-space: nowrap;
     }
 
     #responsible-signature-canvas {
@@ -33,11 +50,20 @@
 
     @media (max-width: 575.98px) {
         .responsible-person-card .card-body {
-            align-items: stretch !important;
+            gap: 0.5rem;
+        }
+
+        .responsible-person-confirmation {
+            gap: 0.35rem;
         }
 
         .responsible-person-confirmation img {
-            width: 100%;
+            width: 96px;
+            height: 30px;
+        }
+
+        .responsible-person-signed-on {
+            font-size: 0.7rem;
         }
     }
 </style>
@@ -207,12 +233,12 @@
                                 <div class="responsible-person-actions">
                                     <div class="responsible-person-confirmation small" id="responsible-person-status-{{ $index }}">
                                         @if($confirmation)
-                                            <span class="badge bg-success mb-2"><i class="fas fa-check-circle me-1"></i>Confirmed</span>
+                                            <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Confirmed</span>
                                             <img src="{{ $signatureImage }}" alt="Signature of {{ $person['name'] ?? 'responsible person' }}">
-                                            <div class="text-muted mt-1">
-                                                Signed by {{ $confirmation['signed_by'] ?? ($person['name'] ?? 'Responsible person') }}
+                                            <div class="text-muted responsible-person-signed-on">
+                                                Signed on
                                                 @if(!empty($confirmation['signed_at']))
-                                                    <br>{{ \Carbon\Carbon::parse($confirmation['signed_at'])->format('d M Y H:i') }}
+                                                    {{ \Carbon\Carbon::parse($confirmation['signed_at'])->format('d M Y, H:i') }}
                                                 @endif
                                             </div>
                                         @else
@@ -556,12 +582,8 @@ document.addEventListener('DOMContentLoaded', function () {
             signatureImage.alt = 'Signature of ' + personLabel.textContent;
 
             const signer = document.createElement('div');
-            signer.className = 'text-muted mt-1';
-            signer.textContent = 'Signed by ' + result.confirmation.signed_by;
-
-            const signedAt = document.createElement('div');
-            signedAt.textContent = new Date(result.confirmation.signed_at).toLocaleString();
-            signer.appendChild(signedAt);
+            signer.className = 'text-muted responsible-person-signed-on';
+            signer.textContent = 'Signed on ' + new Date(result.confirmation.signed_at).toLocaleString();
 
             status.replaceChildren(badge, signatureImage, signer);
             activeButton.remove();
