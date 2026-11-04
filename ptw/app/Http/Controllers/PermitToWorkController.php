@@ -29,7 +29,7 @@ class PermitToWorkController extends Controller
         // Update expired permits before displaying list
         PermitToWork::updateExpiredPermits();
         
-        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver']);
+        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver', 'methodStatement']);
         
         // Contractors can only see permits from their company
         $currentUser = auth()->user();
@@ -1395,7 +1395,7 @@ class PermitToWorkController extends Controller
      */
     public function export(Request $request)
     {
-        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver', 'locationOwner']);
+        $query = PermitToWork::with(['user', 'permitIssuer', 'authorizer', 'receiver', 'locationOwner', 'methodStatement']);
         
         // Contractors can only see permits from their company
         $currentUser = auth()->user();
@@ -1469,7 +1469,7 @@ class PermitToWorkController extends Controller
 
         $headers = ['Permit Number','Work Title','Company/Contractor','Permit Receiver','Location','Location Owner',
                     'Start Date','End Date','Days','Target Inspections','Total Inspections','Achievement (%)','Inspections Today',
-                    'Status','Created By','Permit Issuer','Created At'];
+                    'Method Statement Confirmation','Confirmation Percentage','Status','Created By','Permit Issuer','Created At'];
         $html .= '<Row>';
         foreach ($headers as $h) {
             $html .= '<Cell ss:StyleID="header"><Data ss:Type="String">' . htmlspecialchars($h) . '</Data></Cell>';
@@ -1482,6 +1482,12 @@ class PermitToWorkController extends Controller
             $target = $days !== null ? $days * 2 : null;
             $count  = $permit->inspections_count ?? 0;
             $pct    = ($target > 0) ? round($count / $target * 100) : null;
+            $confirmationProgress = $permit->methodStatement
+                ? $permit->methodStatement->responsiblePersonConfirmationCounts()
+                : null;
+            $confirmationPercentage = $confirmationProgress && $confirmationProgress['total'] > 0
+                ? (int) round($confirmationProgress['confirmed'] / $confirmationProgress['total'] * 100)
+                : null;
 
             $rowStyle = ($rowNum % 2 === 0) ? ' ss:StyleID="even"' : '';
             $pctStyle = '';
@@ -1503,6 +1509,10 @@ class PermitToWorkController extends Controller
                 ['Number', $count],
                 ['String', $pct !== null ? $pct . '%' : '-', $pctStyle],
                 ['Number', $permit->inspections_today_count ?? 0],
+                ['String', $confirmationProgress && $confirmationProgress['total'] > 0
+                    ? $confirmationProgress['confirmed'] . '/' . $confirmationProgress['total']
+                    : '-'],
+                ['String', $confirmationPercentage !== null ? $confirmationPercentage . '%' : '-'],
                 ['String', ucfirst(str_replace('_', ' ', $permit->status))],
                 ['String', $permit->user->name ?? '-'],
                 ['String', $permit->permitIssuer->name ?? '-'],

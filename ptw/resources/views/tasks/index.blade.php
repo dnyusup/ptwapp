@@ -208,6 +208,7 @@
                                 <option value="hra_rejected">HRA Rejected</option>
                                 <option value="expired">Expired</option>
                                 <option value="pending_extension">Pending Extension</option>
+                                <option value="method_statement_confirmation">Method Statement Confirmation</option>
                             </select>
                         </div>
                         <div class="col-md-auto">

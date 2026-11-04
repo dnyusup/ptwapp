@@ -62,4 +62,34 @@ class MethodStatement extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    public function responsiblePersonConfirmationCounts(): array
+    {
+        $people = $this->responsible_persons ?? [];
+        $confirmations = $this->responsible_person_confirmations ?? [];
+        $total = 0;
+        $confirmed = 0;
+
+        foreach ($people as $index => $person) {
+            $name = is_array($person) ? ($person['name'] ?? '') : $person;
+            if (!is_string($name) || trim($name) === '') {
+                continue;
+            }
+
+            $total++;
+            $email = is_array($person) ? ($person['email'] ?? null) : null;
+            $legacyKey = is_string($email) && trim($email) !== ''
+                ? mb_strtolower(trim($email))
+                : null;
+
+            if (
+                !empty($confirmations['person:' . $index]) ||
+                ($legacyKey && !empty($confirmations[$legacyKey]))
+            ) {
+                $confirmed++;
+            }
+        }
+
+        return ['confirmed' => $confirmed, 'total' => $total];
+    }
 }

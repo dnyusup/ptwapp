@@ -182,7 +182,7 @@ class MethodStatementController extends Controller
             $permit = PermitToWork::where('permit_number', $permitNumber)->firstOrFail();
 
             abort_unless(
-                in_array($permit->status, ['approved', 'active', 'in_progress'], true),
+                in_array($permit->status, ['approved', 'active', 'in_progress', 'completed', 'expired', 'pending_extension_approval'], true),
                 409,
                 'Responsible persons can confirm only after the permit is approved.'
             );

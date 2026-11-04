@@ -35,6 +35,29 @@ class TaskController extends Controller
     public function getTasksForUser($user)
     {
         $tasks = collect();
+
+        $pendingMethodStatementConfirmations = self::getMethodStatementConfirmationPermitsForUser($user);
+        foreach ($pendingMethodStatementConfirmations as $permit) {
+            $progress = $permit->methodStatement->responsiblePersonConfirmationCounts();
+            $tasks->push([
+                'id' => $permit->id,
+                'type' => 'method_statement_confirmation',
+                'subtype' => 'method_statement_confirmation',
+                'title' => $permit->work_title ?: 'Method Statement',
+                'permit_number' => $permit->permit_number,
+                'description' => "Responsible person signatures pending ({$progress['confirmed']}/{$progress['total']})",
+                'company' => $permit->receiver_company_name,
+                'location' => $permit->work_location,
+                'area_id' => $permit->area_id,
+                'area_name' => $permit->area->name ?? '',
+                'created_by' => $permit->permitIssuer->name ?? '-',
+                'date' => $permit->methodStatement->updated_at,
+                'priority' => 'medium',
+                'route' => route('method-statements.show', $permit->permit_number),
+                'badge_class' => 'bg-info',
+                'badge_text' => 'Method Statement Confirmation'
+            ]);
+        }
         
         // EHS Approval Tasks
         if ($user->role === 'bekaert' && $user->department === 'EHS') {
@@ -358,6 +381,36 @@ class TaskController extends Controller
         return $tasks->sortByDesc('date')->values();
     }
 
+    private static function getMethodStatementConfirmationPermitsForUser($user)
+    {
+        $contractorCompany = null;
+        if ($user->role === 'contractor' && $user->company) {
+            $contractorCompany = $user->company->company_name;
+        }
+
+        if ($user->role !== 'contractor' || !$contractorCompany) {
+            $companyName = null;
+        } else {
+            $companyName = $contractorCompany;
+        }
+
+        return PermitToWork::with(['permitIssuer', 'area', 'methodStatement'])
+            ->whereIn('status', ['approved', 'active', 'in_progress', 'completed', 'expired', 'pending_extension_approval'])
+            ->whereHas('methodStatement')
+            ->where(function ($query) use ($user, $companyName) {
+                $query->where('permit_issuer_id', $user->id);
+                if ($companyName) {
+                    $query->orWhere('receiver_company_name', $companyName);
+                }
+            })
+            ->get()
+            ->filter(function ($permit) {
+                $progress = $permit->methodStatement->responsiblePersonConfirmationCounts();
+                return $progress['total'] > 0 && $progress['confirmed'] < $progress['total'];
+            })
+            ->values();
+    }
+
     /**
      * Get task count for current user (for badge in sidebar)
      */
@@ -411,6 +464,8 @@ class TaskController extends Controller
         $count += PermitToWork::where('status', 'expired')
             ->where('permit_issuer_id', $user->id)
             ->count();
+
+        $count += self::getMethodStatementConfirmationPermitsForUser($user)->count();
 
         // HRA Creator - Rejected HRAs
         $rejectedHraModels = [

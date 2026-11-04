@@ -151,6 +151,7 @@
                                 <th class="text-center">Inspections Target</th>
                                 <th class="text-center">Inspections</th>
                                 <th class="text-center">Inspection Today</th>
+                                <th class="text-center">Method Statement Confirmation</th>
                                 <th>Status</th>
                                 <th>Created By</th>
                                 <th class="text-center">Actions</th>
@@ -233,6 +234,24 @@
                                 <td class="text-center">
                                     @if($permit->inspections_today_count > 0)
                                         <span class="badge bg-info">{{ $permit->inspections_today_count }}</span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if($permit->methodStatement)
+                                        @php
+                                            $confirmationProgress = $permit->methodStatement->responsiblePersonConfirmationCounts();
+                                            $confirmationPercentage = $confirmationProgress['total'] > 0
+                                                ? (int) round($confirmationProgress['confirmed'] / $confirmationProgress['total'] * 100)
+                                                : null;
+                                        @endphp
+                                        @if($confirmationProgress['total'] > 0)
+                                            <span class="fw-semibold">{{ $confirmationProgress['confirmed'] }}/{{ $confirmationProgress['total'] }}</span>
+                                            <br><small class="text-muted">{{ $confirmationPercentage }}%</small>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
